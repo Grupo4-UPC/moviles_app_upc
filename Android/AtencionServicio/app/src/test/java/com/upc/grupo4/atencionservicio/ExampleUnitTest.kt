@@ -1,4 +1,4 @@
-package com.example.atencionservicio
+package com.upc.grupo4.atencionservicio
 
 import org.junit.Test
 
