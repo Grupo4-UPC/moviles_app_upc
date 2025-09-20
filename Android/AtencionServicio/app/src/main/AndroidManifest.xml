@@ -14,6 +14,12 @@
         <activity
             android:name=".ForgotPasswordActivity"
             android:exported="false" />
+      <activity
+            android:name=".ItemServiceActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ServiceActivity"
+            android:exported="false" />
         <activity
             android:name=".StartServiceActivity"
             android:exported="false" />
