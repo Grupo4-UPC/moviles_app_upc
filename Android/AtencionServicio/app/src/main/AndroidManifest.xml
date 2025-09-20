@@ -12,8 +12,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AtencionServicio">
         <activity
+            android:name=".ForgotPasswordActivity"
+            android:exported="false" />
+        <activity
             android:name=".StartServiceActivity"
-            android:exported="false"/>
+            android:exported="false" />
         <activity
             android:name=".LoginActivity"
             android:exported="true">
