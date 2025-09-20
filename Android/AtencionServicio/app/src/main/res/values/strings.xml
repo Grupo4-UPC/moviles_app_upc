@@ -1,5 +1,11 @@
 <resources>
     <string name="app_name">Atención de Servicios</string>
+    <string name="login">Iniciar sesión</string>
+    <string name="forgot_password">Olvidé mi contraseña</string>
+    <string name="email">Correo electrónico</string>
+    <string name="password">Contraseña</string>
+    <string name="send">Enviar</string>
+    <string name="back">Volver</string>
     <string name="tracking">Tracking</string>
     <string name="information">Informacion</string>
     <string name="start_service">Iniciar Servicio</string>
