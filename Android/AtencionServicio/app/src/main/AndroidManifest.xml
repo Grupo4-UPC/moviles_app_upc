@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AtencionServicio.NoActionBar">
         <activity
+            android:name=".FAQAdapter"
+            android:exported="false" />
+        <activity
             android:name=".FAQActivity"
             android:exported="false" />
         <activity
