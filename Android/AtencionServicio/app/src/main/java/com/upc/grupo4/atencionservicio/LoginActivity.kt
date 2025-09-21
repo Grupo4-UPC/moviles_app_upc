@@ -50,9 +50,9 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    //Menú y icono FAQ
+    //Icono
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_toolbar, menu)
+        menuInflater.inflate(R.menu.menu_faq, menu)
         return true
     }
 
