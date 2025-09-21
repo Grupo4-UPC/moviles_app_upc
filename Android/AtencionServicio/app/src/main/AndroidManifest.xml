@@ -12,9 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AtencionServicio">
         <activity
+            android:name=".FAQActivity"
+            android:exported="false" />
+        <activity
             android:name=".ForgotPasswordActivity"
             android:exported="false" />
-      <activity
+        <activity
             android:name=".ItemServiceActivity"
             android:exported="false" />
         <activity
