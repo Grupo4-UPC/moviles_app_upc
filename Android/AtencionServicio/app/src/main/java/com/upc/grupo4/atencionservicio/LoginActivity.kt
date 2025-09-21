@@ -6,6 +6,10 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.upc.grupo4.atencionservicio.databinding.ActivityLoginBinding
+import androidx.appcompat.widget.Toolbar
+import android.view.Menu
+import android.view.MenuItem
+
 
 class LoginActivity : AppCompatActivity() {
     lateinit var loginBinding: ActivityLoginBinding
@@ -16,6 +20,11 @@ class LoginActivity : AppCompatActivity() {
         enableEdgeToEdge()
         loginBinding = ActivityLoginBinding .inflate(layoutInflater)
         setContentView(loginBinding.root)
+
+        //Toolbar
+        val toolbar: Toolbar = loginBinding.loginToolbar
+        setSupportActionBar(toolbar)
+        supportActionBar?.title = "Sodimac App"
 
         // Agregar ícono de la casa
 
@@ -40,4 +49,23 @@ class LoginActivity : AppCompatActivity() {
             startActivity(intent)
         }
     }
+
+    //Menú y icono FAQ
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_toolbar, menu)
+        return true
+    }
+
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when(item.itemId) {
+            R.id.menu_faq -> {
+                startActivity(Intent(this, FAQActivity::class.java))
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
 }
+
