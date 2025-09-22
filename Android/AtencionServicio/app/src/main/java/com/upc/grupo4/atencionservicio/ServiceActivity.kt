@@ -1,12 +1,16 @@
 package com.upc.grupo4.atencionservicio
 
+import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 data class Service(
@@ -17,6 +21,7 @@ data class Service(
     val sku: String
 )
 class ServiceActivity : AppCompatActivity() {
+    private lateinit var toolbar: Toolbar
     private lateinit var serviceListContainer: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,6 +33,10 @@ class ServiceActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        toolbar = findViewById(R.id.toolbarService)
+        setSupportActionBar(toolbar)
+        supportActionBar?.title = "Atencion de Servicio"
 
 
         serviceListContainer = findViewById<LinearLayout>(R.id.serviceListContainer)
@@ -54,10 +63,31 @@ class ServiceActivity : AppCompatActivity() {
             tvSKU.text = "SKU: ${service.sku}"
 
             btnStartService.setOnClickListener {
-                Toast.makeText(this, "Iniciando servicio para: ${service.clientName}", Toast.LENGTH_SHORT).show()
+                val intent = Intent(this, StartServiceActivity::class.java)
+                startActivity(intent)
             }
 
             serviceListContainer.addView(itemView)
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_faq, menu)
+        return true
+    }
+
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when(item.itemId) {
+            R.id.menu_home -> {
+                startActivity(Intent(this, LoginActivity::class.java))
+                true
+            }
+            R.id.menu_faq -> {
+                startActivity(Intent(this, FAQActivity::class.java))
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 }

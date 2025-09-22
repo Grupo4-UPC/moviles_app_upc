@@ -1,2 +1,9 @@
 # Mac folder
 .DS_Store
+
+# IntelliJ
+*.iml
+.idea/
+misc.xml
+deploymentTargetDropDown.xml
+render.experimental.xml

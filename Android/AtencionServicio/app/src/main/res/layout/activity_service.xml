@@ -6,7 +6,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:fitsSystemWindows="true"
     tools:context=".ServiceActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbarService"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:elevation="4dp"
+        app:title="@string/app_name"
+        app:titleTextColor="@android:color/white" />
+
     <LinearLayout
         android:id="@+id/serviceListContainer"
         android:orientation="vertical"

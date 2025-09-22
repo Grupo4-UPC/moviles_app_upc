@@ -1,18 +1,23 @@
 package com.upc.grupo4.atencionservicio
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import com.google.android.material.button.MaterialButton
 
 class StartServiceActivity : AppCompatActivity() {
 
-    private lateinit var trackingBtn: MaterialButton
-    private lateinit var informationBtn: MaterialButton
+    private lateinit var btnTracking: MaterialButton
+    private lateinit var btnInformation: MaterialButton
     private lateinit var contentContainer: FrameLayout
+    private lateinit var toolbar: Toolbar
+    private lateinit var btnBack: MaterialButton
 
     // Information view variables
     private lateinit var txtClient: TextView
@@ -28,33 +33,43 @@ class StartServiceActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_start_service)
 
-        trackingBtn = findViewById(R.id.tracking_btn)
-        informationBtn = findViewById(R.id.information_btn)
+        toolbar = findViewById(R.id.toolbarService)
+        setSupportActionBar(toolbar)
+        supportActionBar?.title = "Atencion de Servicio"
+
+        btnTracking = findViewById(R.id.btnTracking)
+        btnInformation = findViewById(R.id.btnInformation)
         contentContainer = findViewById(R.id.contentContainer)
+        btnBack = findViewById(R.id.btnBack)
 
         // Set initial state
         setSelectedButton(1)
 
-        trackingBtn.setOnClickListener {
+        btnTracking.setOnClickListener {
             setSelectedButton(1)
         }
 
-        informationBtn.setOnClickListener {
+        btnInformation.setOnClickListener {
             setSelectedButton(2)
+        }
+
+        btnBack.setOnClickListener {
+            val intent = Intent(this, ServiceActivity::class.java)
+            startActivity(intent)
         }
     }
 
     private fun setSelectedButton(selected: Int) {
         when (selected) {
             1 -> {
-                styleButtonAsFilled(trackingBtn)
-                styleButtonAsOutlined(informationBtn)
+                styleButtonAsFilled(btnTracking)
+                styleButtonAsOutlined(btnInformation)
                 showContent(R.layout.tracking_content)
             }
 
             2 -> {
-                styleButtonAsOutlined(trackingBtn)
-                styleButtonAsFilled(informationBtn)
+                styleButtonAsOutlined(btnTracking)
+                styleButtonAsFilled(btnInformation)
                 showContent(R.layout.information_content)
             }
         }
