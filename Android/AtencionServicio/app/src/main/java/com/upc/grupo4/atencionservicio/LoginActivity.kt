@@ -24,11 +24,8 @@ class LoginActivity : AppCompatActivity() {
         //Toolbar
         val toolbar: Toolbar = loginBinding.loginToolbar
         setSupportActionBar(toolbar)
-        supportActionBar?.title = "Sodimac App"
+        supportActionBar?.title = "Atencion de Servicio"
 
-        // Agregar ícono de la casa
-
-//        supportActionBar?.title = "  Sodimac App"
 
         loginBinding.btnLogin.setOnClickListener {
             val email = loginBinding.etEmail.text?.toString()?.trim().orEmpty()
@@ -45,7 +42,7 @@ class LoginActivity : AppCompatActivity() {
         }
 
         loginBinding.btnLogin.setOnClickListener {
-            val intent = Intent(this, StartServiceActivity::class.java)
+            val intent = Intent(this, ServiceActivity::class.java)
             startActivity(intent)
         }
     }
