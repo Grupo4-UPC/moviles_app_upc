@@ -1,57 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    >
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:layout_gravity="center|top"
+        android:layout_marginStart="-10dp"
+        android:layout_marginTop="10dp"
+        android:backgroundTint="@color/white">
 
-        <TextView
-            android:id="@+id/tvServiceID"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="OS - 354140 - 2"
-            android:textStyle="bold"
-            android:textSize="16sp" />
+            android:orientation="vertical"
+            android:padding="16dp">
 
-        <TextView
-            android:id="@+id/tvClientName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Cliente: Juan Pérez"
-            android:textSize="14sp" />
+            <TextView
+                android:id="@+id/tvServiceID"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="OS - 354140 - 2"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/tvAddress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Dirección: Av. Siempre Viva 123"
-            android:textSize="14sp" />
+            <TextView
+                android:id="@+id/tvClientName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cliente: Juan Pérez"
+                android:textSize="14sp" />
 
-        <TextView
-            android:id="@+id/tvShift"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Turno: Mañana"
-            android:textSize="14sp" />
+            <TextView
+                android:id="@+id/tvAddress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dirección: Av. Siempre Viva 123"
+                android:textSize="14sp" />
 
-        <TextView
-            android:id="@+id/tvSKU"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="SKU: 001234"
-            android:textSize="14sp" />
+            <TextView
+                android:id="@+id/tvShift"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Turno: Mañana"
+                android:textSize="14sp" />
 
-        <Button
-            android:id="@+id/btnStartService"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Iniciar servicio"
-            android:layout_marginTop="8dp" />
-    </LinearLayout>
+            <TextView
+                android:id="@+id/tvSKU"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SKU: 001234"
+                android:textSize="14sp" />
 
-</androidx.cardview.widget.CardView>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnServiceInfo"
+                    style="@style/MySegmentedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="15dp"
+                    android:text="@string/service_information" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnStartService"
+                    style="@style/MySegmentedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:backgroundTint="@color/blue_500"
+                    android:text="@string/start_service"
+                    android:textColor="@color/white" />
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</LinearLayout>

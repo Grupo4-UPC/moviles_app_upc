@@ -5,8 +5,8 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:fitsSystemWindows="true"
+    android:orientation="vertical"
     tools:context=".ServiceActivity">
 
     <androidx.appcompat.widget.Toolbar
@@ -20,8 +20,8 @@
 
     <LinearLayout
         android:id="@+id/serviceListContainer"
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:orientation="vertical" />
 
 </LinearLayout>

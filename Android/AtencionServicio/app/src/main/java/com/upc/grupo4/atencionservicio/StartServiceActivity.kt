@@ -95,23 +95,23 @@ class StartServiceActivity : AppCompatActivity() {
         contentContainer.removeAllViews()
         val view = layoutInflater.inflate(layoutId, contentContainer, false)
 
-        if (layoutId == R.layout.information_content) {
-            txtClient = view.findViewById(R.id.txt_client)
-            txtCellphone = view.findViewById(R.id.txt_cellphone)
-            txtAddress = view.findViewById(R.id.txt_address)
-            txtTypeService = view.findViewById(R.id.txt_type_service)
-            txtProduct = view.findViewById(R.id.txt_product)
-            txtDateService = view.findViewById(R.id.txt_date_service)
-            txtObservation = view.findViewById(R.id.txt_observation)
-
-            txtClient.text = "Jose Lopez Perez"
-            txtCellphone.text = "943562152"
-            txtAddress.text = "Jr Los Sauces 123 - Urb. Sagitario - Surco"
-            txtTypeService.text = "Visita tecnica cabinas / duchas / tinas"
-            txtProduct.text = "10787 - Columna asturias"
-            txtDateService.text = "2025-08-01"
-            txtObservation.text = "Ninguno"
-        }
+//        if (layoutId == R.layout.information_content) {
+//            txtClient = view.findViewById(R.id.txt_client)
+//            txtCellphone = view.findViewById(R.id.txt_cellphone)
+//            txtAddress = view.findViewById(R.id.txt_address)
+//            txtTypeService = view.findViewById(R.id.txt_type_service)
+//            txtProduct = view.findViewById(R.id.txt_product)
+//            txtDateService = view.findViewById(R.id.txt_date_service)
+//            txtObservation = view.findViewById(R.id.txt_observation)
+//
+//            txtClient.text = "Jose Lopez Perez"
+//            txtCellphone.text = "943562152"
+//            txtAddress.text = "Jr Los Sauces 123 - Urb. Sagitario - Surco"
+//            txtTypeService.text = "Visita tecnica cabinas / duchas / tinas"
+//            txtProduct.text = "10787 - Columna asturias"
+//            txtDateService.text = "2025-08-01"
+//            txtObservation.text = "Ninguno"
+//        }
 
         contentContainer.addView(view)
     }

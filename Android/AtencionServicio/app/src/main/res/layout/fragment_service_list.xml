@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ServiceListFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/toggleButtonGroup"
+            style="@style/MySegmentedButtonToggleGroup"
+            app:shapeAppearanceOverlay="@style/MyRoundedShapeAppearance">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnToStart"
+                style="@style/MySegmentedButton"
+                android:text="Por iniciar: 1"
+                android:textColor="@color/toggle_button_text_color_selector"
+                app:backgroundTint="@color/toggle_button_background_color_selector"
+                app:strokeColor="@color/toggle_button_stroke_color_selector" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnEnded"
+                style="@style/MySegmentedButton"
+                android:text="Finalizados: 0"
+                android:textColor="@color/toggle_button_text_color_selector"
+                app:backgroundTint="@color/toggle_button_background_color_selector"
+                app:strokeColor="@color/toggle_button_stroke_color_selector" />
+
+        </com.google.android.material.button.MaterialButtonToggleGroup>
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/fragment_service_list_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="70dp"
+        android:gravity="center" />
+</FrameLayout>

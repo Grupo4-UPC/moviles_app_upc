@@ -42,7 +42,7 @@ class LoginActivity : AppCompatActivity() {
         }
 
         loginBinding.btnLogin.setOnClickListener {
-            val intent = Intent(this, ServiceActivity::class.java)
+            val intent = Intent(this, MenuActivity::class.java)
             startActivity(intent)
         }
     }
