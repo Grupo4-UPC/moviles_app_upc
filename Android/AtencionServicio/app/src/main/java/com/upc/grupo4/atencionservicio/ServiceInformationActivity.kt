@@ -24,8 +24,6 @@ class ServiceInformationActivity : AppCompatActivity() {
 
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back)
 
-        supportActionBar?.setDisplayShowTitleEnabled(false)
-
         serviceInformationContainer = findViewById(R.id.service_info_container)
 
         val serviceInformation: ServiceInformationModel? =
