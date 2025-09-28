@@ -5,57 +5,53 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import com.upc.grupo4.atencionservicio.databinding.ActivityLoginBinding
 import androidx.appcompat.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
-
+import com.upc.grupo4.atencionservicio.databinding.ActivityLoginBinding
 
 class LoginActivity : AppCompatActivity() {
-    lateinit var loginBinding: ActivityLoginBinding
-
+    private lateinit var binding: ActivityLoginBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        loginBinding = ActivityLoginBinding .inflate(layoutInflater)
-        setContentView(loginBinding.root)
+        binding = ActivityLoginBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        //Toolbar
-        val toolbar: Toolbar = loginBinding.loginToolbar
+        // Toolbar
+        val toolbar: Toolbar = binding.loginToolbar
         setSupportActionBar(toolbar)
-        supportActionBar?.title = "Atencion de Servicio"
+        supportActionBar?.title = "Atención de Servicio"
 
+        binding.btnLogin.setOnClickListener {
+            val email = binding.etEmail.text?.toString()?.trim().orEmpty()
+            val password = binding.etPassword.text?.toString()?.trim().orEmpty()
 
-        loginBinding.btnLogin.setOnClickListener {
-            val email = loginBinding.etEmail.text?.toString()?.trim().orEmpty()
-            val pass = loginBinding.etPassword.text?.toString()?.trim().orEmpty()
-            if (email.isEmpty() || pass.isEmpty()) {
+            if (email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "Ingrese usuario y contraseña", Toast.LENGTH_SHORT).show()
-            } else {
+            } else if (email == "admin" && password == "admin") {
+
                 Toast.makeText(this, "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show()
+                startActivity(Intent(this, ServiceActivity::class.java))
+                finish()
+            } else {
+                Toast.makeText(this, "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show()
             }
         }
 
-        loginBinding.btnForgot.setOnClickListener {
+        binding.btnForgot.setOnClickListener {
             startActivity(Intent(this, ForgotPasswordActivity::class.java))
-        }
-
-        loginBinding.btnLogin.setOnClickListener {
-            val intent = Intent(this, ServiceActivity::class.java)
-            startActivity(intent)
         }
     }
 
-    //Icono
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_faq, menu)
         return true
     }
 
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when(item.itemId) {
+        return when (item.itemId) {
             R.id.menu_faq -> {
                 startActivity(Intent(this, FAQActivity::class.java))
                 true
@@ -63,6 +59,4 @@ class LoginActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
-
 }
-
