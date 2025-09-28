@@ -48,24 +48,22 @@ class PendingServicesFragment : Fragment() {
 
         pendingServicesList.forEach { service ->
             val itemView = layoutInflater.inflate(
-                R.layout.activity_item_service,
+                R.layout.item_service,
                 pendingServiceListContainer,
                 false
             )
 
             val tvServiceID: TextView = itemView.findViewById(R.id.tvServiceID)
-            val tvClientName: TextView = itemView.findViewById(R.id.tvClientName)
             val tvAddress: TextView = itemView.findViewById(R.id.tvAddress)
             val tvShift: TextView = itemView.findViewById(R.id.tvShift)
-            val tvSKU: TextView = itemView.findViewById(R.id.tvSKU)
+            val tvProduct: TextView = itemView.findViewById(R.id.tvProduct)
             val btnServiceInfo: Button = itemView.findViewById(R.id.btnServiceInfo)
             val btnStartService: Button = itemView.findViewById(R.id.btnStartService)
 
             tvServiceID.text = "OS - ${service.id}"
-            tvClientName.text = "Cliente: ${service.clientName}"
-            tvAddress.text = "Dirección: ${service.address}"
-            tvShift.text = "Turno: ${service.shift}"
-            tvSKU.text = "SKU: ${service.sku}"
+            tvAddress.text = service.address
+            tvShift.text = service.shift
+            tvProduct.text = service.product
 
             val serviceInformation = ServiceInformationModel(
                 service.clientName,

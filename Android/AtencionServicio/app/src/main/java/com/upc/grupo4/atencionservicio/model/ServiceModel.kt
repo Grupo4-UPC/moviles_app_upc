@@ -7,7 +7,7 @@ data class ServiceModel(
     val clientName: String,
     val address: String,
     val shift: String,
-    val sku: String
+    val product: String
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString() ?: "",
@@ -22,7 +22,7 @@ data class ServiceModel(
         parcel.writeString(clientName)
         parcel.writeString(address)
         parcel.writeString(shift)
-        parcel.writeString(sku)
+        parcel.writeString(product)
     }
 
     override fun describeContents(): Int {

@@ -6,25 +6,26 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:fitsSystemWindows="true"
+    android:background="@android:color/white"
     tools:context=".ServiceInformationActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
-        app:elevation="0dp"> <!-- Remove shadow if you want it flat like the mock -->
+        app:elevation="0dp">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar_service_info"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize">
 
-            <ImageView
-                android:id="@+id/iv_back_arrow"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_back"
-                app:tint="@color/mock_text_dark" /> <!-- Or your preferred icon color -->
+<!--            <ImageView-->
+<!--                android:id="@+id/iv_back_arrow"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:src="@drawable/ic_back"-->
+<!--                app:tint="@color/mock_text_dark" />-->
 
             <TextView
                 android:id="@+id/tv_toolbar_title"

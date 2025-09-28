@@ -21,20 +21,21 @@
                 android:layout_height="wrap_content"
                 android:text="@string/client"
                 android:textSize="16sp"
+                android:drawablePadding="8dp"
                 app:drawableStartCompat="@drawable/ic_user" />
 
             <TextView
                 android:id="@+id/txt_client"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="24dp"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="24dp"
                 android:layout_marginTop="10dp"
                 android:text="@string/cellphone"
                 android:textSize="16sp" />
@@ -49,7 +50,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:layout_centerVertical="true"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginStart="24dp"
                     android:autoLink="phone"
                     android:textColor="@color/blue_500"
                     android:textSize="16sp"
@@ -82,13 +83,14 @@
                 android:layout_height="wrap_content"
                 android:text="@string/address"
                 android:textSize="16sp"
+                android:drawablePadding="8dp"
                 app:drawableStartCompat="@drawable/ic_home" />
 
             <TextView
                 android:id="@+id/txt_address"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="24dp"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -104,12 +106,13 @@
                 android:layout_height="wrap_content"
                 android:text="@string/additional_info"
                 android:textSize="16sp"
+                android:drawablePadding="8dp"
                 app:drawableStartCompat="@drawable/ic_info" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="24dp"
                 android:layout_marginTop="20dp"
                 android:text="@string/type_service"
                 android:textSize="16sp" />
@@ -118,14 +121,14 @@
                 android:id="@+id/txt_type_service"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="24dp"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="24dp"
                 android:layout_marginTop="20dp"
                 android:text="@string/product"
                 android:textSize="16sp" />
@@ -134,14 +137,14 @@
                 android:id="@+id/txt_product"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="24dp"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="24dp"
                 android:layout_marginTop="20dp"
                 android:text="@string/date_service"
                 android:textSize="16sp" />
@@ -150,14 +153,14 @@
                 android:id="@+id/txt_date_service"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="24dp"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="24dp"
                 android:layout_marginTop="20dp"
                 android:text="@string/observation"
                 android:textSize="16sp" />
@@ -166,14 +169,14 @@
                 android:id="@+id/txt_observation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="24dp"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="24dp"
                 android:layout_marginTop="20dp"
                 android:text="@string/shift"
                 android:textSize="16sp" />
@@ -182,14 +185,14 @@
                 android:id="@+id/txt_service_shift"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="24dp"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="24dp"
                 android:layout_marginTop="20dp"
                 android:text="@string/address_reference"
                 android:textSize="16sp" />
@@ -198,7 +201,7 @@
                 android:id="@+id/txt_address_reference"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="24dp"
                 android:textSize="16sp"
                 android:textStyle="bold" />
         </LinearLayout>

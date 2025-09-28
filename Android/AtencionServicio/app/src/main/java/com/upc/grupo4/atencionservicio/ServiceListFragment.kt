@@ -48,13 +48,13 @@ class ServiceListFragment : Fragment() {
         }
 
         pendingServicesList = listOf(
-            ServiceModel("354140-2", "Juan Pérez", "Av. Siempre Viva 123", "Mañana", "001234"),
-            ServiceModel("354140-3", "Maria Gómez", "Calle Ficticia 456", "Tarde", "001235"),
-            ServiceModel("354140-4", "Carlos López2", "Av. La Paz 789", "Noche", "001236")
+            ServiceModel("354140-2", "Juan Pérez", "Av. Siempre Viva 123", "Mañana", "Ducha"),
+            ServiceModel("354140-3", "Maria Gómez", "Calle Ficticia 456", "Tarde", "Terma"),
+            ServiceModel("354140-4", "Carlos López2", "Av. La Paz 789", "Noche", "Armario")
         )
 
         finishedServicesList = listOf(
-            ServiceModel("354140-1", "Luisa Pérez", "Av. Siempre Viva 147", "", ""),
+            ServiceModel("354140-1", "Luisa Pérez", "Av. Siempre Viva 147", "Mañana", "Ropero"),
         )
     }
 

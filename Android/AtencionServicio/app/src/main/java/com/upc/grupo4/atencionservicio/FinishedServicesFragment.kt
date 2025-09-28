@@ -46,27 +46,21 @@ class FinishedServicesFragment : Fragment() {
 
         finishedServicesList.forEach { service ->
             val itemView = layoutInflater.inflate(
-                R.layout.activity_item_service,
+                R.layout.finished_item_service,
                 finishedServiceListContainer,
                 false
             )
 
-            val tvServiceID: TextView = itemView.findViewById(R.id.tvServiceID)
-            val tvClientName: TextView = itemView.findViewById(R.id.tvClientName)
-            val tvAddress: TextView = itemView.findViewById(R.id.tvAddress)
-            val tvShift: TextView = itemView.findViewById(R.id.tvShift)
-            val tvSKU: TextView = itemView.findViewById(R.id.tvSKU)
-            val btnServiceInfo: Button = itemView.findViewById(R.id.btnServiceInfo)
-            val btnStartService: Button = itemView.findViewById(R.id.btnStartService)
+            val tvServiceID: TextView = itemView.findViewById(R.id.tv_service_id_finished)
+            val tvAddress: TextView = itemView.findViewById(R.id.tv_address_finished)
+            val tvShift: TextView = itemView.findViewById(R.id.tv_shift_finished)
+            val tvProduct: TextView = itemView.findViewById(R.id.tv_product_finished)
+            val btnServiceInfo: Button = itemView.findViewById(R.id.btn_check_service)
 
             tvServiceID.text = "OS - ${service.id}"
-            tvClientName.text = "Cliente: ${service.clientName}"
-            tvAddress.text = "Dirección: ${service.address}"
-
-            tvShift.visibility = View.GONE
-            tvSKU.visibility = View.GONE
-            btnServiceInfo.visibility = View.GONE
-            btnStartService.visibility = View.GONE
+            tvAddress.text = service.address
+            tvShift.text = service.shift
+            tvProduct.text = service.product
 
             finishedServiceListContainer.addView(itemView)
         }
