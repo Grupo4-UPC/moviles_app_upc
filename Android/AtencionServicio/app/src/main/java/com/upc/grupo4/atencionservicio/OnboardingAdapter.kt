@@ -9,18 +9,18 @@ class OnboardingAdapter(activity: AppCompatActivity) : FragmentStateAdapter(acti
     private val fragments = listOf(
         OnboardingFragment.newInstance(
             R.drawable.ic_intro1,
-            "Bienvenido",
-            "Aquí podrás gestionar tus servicios de manera rápida y sencilla."
+            "Tracking",
+            "Podrás atender y hacer seguimiento en línea de tus servicios asignados."
         ),
         OnboardingFragment.newInstance(
             R.drawable.ic_intro2,
-            "Soporte 24/7",
-            "Nuestro equipo siempre estará disponible para ayudarte."
+            "Registro fotográfico",
+            "Luego de realizar el servicio, toma hasta 6 fotos como evidencia y guardálas en el aplicativo."
         ),
         OnboardingFragment.newInstance(
             R.drawable.ic_intro3,
-            "Notificaciones",
-            "Recibe alertas y recordatorios importantes en tiempo real."
+            "Registro de datos",
+            "Podrás registrar los datos del cliente o usuario designado. Nombres, documentos de identidad y firma."
         )
     )
 

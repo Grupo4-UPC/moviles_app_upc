@@ -55,7 +55,7 @@ class OnboardingActivity : AppCompatActivity() {
     }
 
     private fun goToService() {
-        val intent = Intent(this, ServiceActivity::class.java)
+        val intent = Intent(this, WelcomeActivity::class.java)
         startActivity(intent)
         finish()
     }
