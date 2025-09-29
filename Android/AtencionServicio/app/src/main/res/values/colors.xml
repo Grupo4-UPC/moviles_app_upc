@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="blue_50">#ebf1ff</color>
+    <color name="blue_100">#cddcff</color>"
     <color name="blue_400">#0089f6</color>
     <color name="blue_500">#0072CE</color>
     <color name="blue_700">#004c8d</color>
@@ -9,10 +11,12 @@
     <color name="white">#FFFFFFFF</color>
     <color name="my_app_text_color_filled">#FFFFFFFF</color>
     <color name="transparent">#00000000</color>
-    <color name="mock_avatar_background">#33ADD8E6</color> <!-- Light blue with some transparency -->
+    <color name="mock_avatar_background">#33ADD8E6</color>
     <color name="mock_text_dark">#333333</color>
-    <color name="mock_divider_color">#E0E0E0</color>
+    <color name="divider_color">#E0E0E0</color>
     <color name="grey_text_color">#757575</color>
     <color name="light_grey_stroke">#D3D3D3</color>
     <color name="dark_blue_badge">#1A237E</color>
+    <color name="button_disabled_background_grey">#E0E0E0</color>
+    <color name="button_disabled_text_grey">#A0A0A0</color>
 </resources>

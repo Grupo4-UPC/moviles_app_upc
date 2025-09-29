@@ -17,11 +17,8 @@ class ServiceInformationActivity : AppCompatActivity() {
         setContentView(R.layout.activity_service_information)
 
         toolbar = findViewById(R.id.toolbar_service_info)
-
         setSupportActionBar(toolbar)
-
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back)
 
         serviceInformationContainer = findViewById(R.id.service_info_container)
@@ -30,14 +27,14 @@ class ServiceInformationActivity : AppCompatActivity() {
             intent.getParcelableExtra("service_information")
 
 
-        val finishedServicesFragment = ServiceInformationFragment().apply {
+        val serviceInformationFragment = ServiceInformationFragment().apply {
             arguments = Bundle().apply {
                 putParcelable("service_information", serviceInformation)
             }
         }
 
         supportFragmentManager.beginTransaction()
-            .replace(R.id.service_info_container, finishedServicesFragment)
+            .replace(R.id.service_info_container, serviceInformationFragment)
             .commit()
     }
 
