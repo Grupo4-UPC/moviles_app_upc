@@ -12,6 +12,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AtencionServicio.NoActionBar">
         <activity
+            android:name=".OnboardingFragment"
+            android:exported="false" />
+        <activity
+            android:name=".OnboardingAdapter"
+            android:exported="false" />
+        <activity
+            android:name=".OnboardingActivity"
+            android:exported="false" />
+        <activity
             android:name=".FAQAdapter"
             android:exported="false" />
         <activity

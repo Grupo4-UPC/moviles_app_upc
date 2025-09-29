@@ -33,7 +33,7 @@ class LoginActivity : AppCompatActivity() {
             } else if (email == "admin" && password == "admin") {
 
                 Toast.makeText(this, "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show()
-                startActivity(Intent(this, ServiceActivity::class.java))
+                startActivity(Intent(this, OnboardingActivity::class.java))
                 finish()
             } else {
                 Toast.makeText(this, "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show()
