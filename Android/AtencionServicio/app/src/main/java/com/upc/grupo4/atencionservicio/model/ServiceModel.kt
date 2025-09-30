@@ -2,19 +2,28 @@ package com.upc.grupo4.atencionservicio.model
 
 import android.os.Parcel
 import android.os.Parcelable
+
 data class ServiceModel(
     val id: String,
     val clientName: String,
     val address: String,
     val shift: String,
-    val product: String
+    val product: String,
+    var additionalPhotoUri: String? = null,
+    var rightPhotoUri: String? = null,
+    var leftPhotoUri: String? = null,
+    var frontPhotoUri: String? = null,
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString() ?: "",
         parcel.readString() ?: "",
         parcel.readString() ?: "",
         parcel.readString() ?: "",
-        parcel.readString() ?: ""
+        parcel.readString() ?: "",
+        parcel.readString() ?: "",
+        parcel.readString() ?: "",
+        parcel.readString() ?: "",
+        parcel.readString() ?: "",
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -23,6 +32,11 @@ data class ServiceModel(
         parcel.writeString(address)
         parcel.writeString(shift)
         parcel.writeString(product)
+        parcel.writeString(additionalPhotoUri)
+        parcel.writeString(rightPhotoUri)
+        parcel.writeString(leftPhotoUri)
+        parcel.writeString(frontPhotoUri)
+
     }
 
     override fun describeContents(): Int {

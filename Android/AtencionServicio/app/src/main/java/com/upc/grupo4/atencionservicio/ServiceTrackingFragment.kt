@@ -1,5 +1,6 @@
 package com.upc.grupo4.atencionservicio
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -7,8 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.Spinner
+import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -28,6 +32,7 @@ class ServiceTrackingFragment : Fragment() {
 
     private lateinit var spStatus: Spinner
     private lateinit var spSubStatus: Spinner
+    private lateinit var btnTakePictures: Button
     private var statusValue: Int? = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,6 +51,7 @@ class ServiceTrackingFragment : Fragment() {
 
         spStatus = view.findViewById(R.id.sp_status)
         spSubStatus = view.findViewById(R.id.sp_sub_status)
+        btnTakePictures = view.findViewById(R.id.btn_take_pictures)
 
         return view
     }
@@ -55,17 +61,27 @@ class ServiceTrackingFragment : Fragment() {
 
         setupStatusSpinner()
         loadSubStatusSpinner()
+
+        btnTakePictures.setOnClickListener {
+            val intent = Intent(requireContext(), RegisterPhotosActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun setupStatusSpinner() {
-        ArrayAdapter.createFromResource(
+        val actualStatusOptions = resources.getStringArray(R.array.status_options)
+
+        val adapter = ArrayAdapter(
             requireContext(),
-            R.array.status_options,
-            android.R.layout.simple_spinner_item
-        ).also { adapter ->
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            spStatus.adapter = adapter
-        }
+            R.layout.spinner_item_custom, // Setting custom spinner item layout
+            actualStatusOptions
+        )
+
+        // Setting custom dropdown layout
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item_custom)
+
+        // 3. Apply the adapter to the spinner
+        spStatus.adapter = adapter
 
         spStatus.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
@@ -75,15 +91,24 @@ class ServiceTrackingFragment : Fragment() {
                 id: Long
             ) {
                 val selectedStatus = parent?.getItemAtPosition(position).toString()
-                // TODO: Handle the selected status
-                // For example, update a ViewModel, save the status, filter data, etc.
-                when (selectedStatus) {
-                    "Realizado" -> {
+
+                val selectedTextView = view as? TextView
+
+                when (position) {
+                    0 -> {
+                        updateSpinnerWithDefaultStyles(selectedTextView)
+                        statusValue = 0
+                        loadSubStatusSpinner()
+                    }
+
+                    1 -> {
+                        updateSpinnerWithSelectedStyles(selectedTextView)
                         statusValue = 1
                         loadSubStatusSpinner()
                     }
 
-                    "No Realizado" -> {
+                    2 -> {
+                        updateSpinnerWithSelectedStyles(selectedTextView)
                         statusValue = 2
                         loadSubStatusSpinner()
                     }
@@ -94,24 +119,31 @@ class ServiceTrackingFragment : Fragment() {
                 // Another interface callback
             }
         }
+
+        // Set spinner to show the hint initially
+        spStatus.setSelection(0, false)
     }
 
+
     private fun loadSubStatusSpinner() {
-        val subStatusOptions = when (statusValue) {
+        val subStatusOptionsResource = when (statusValue) {
             1 -> R.array.sub_status_for_done
             2 -> R.array.sub_status_for_not_done
             else -> R.array.sub_status_initial
         }
 
+        val subStatusOptions = resources.getStringArray(subStatusOptionsResource)
 
-        ArrayAdapter.createFromResource(
+        val adapter = ArrayAdapter(
             requireContext(),
-            subStatusOptions,
-            android.R.layout.simple_spinner_item
-        ).also { adapter ->
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            spSubStatus.adapter = adapter
-        }
+            R.layout.spinner_item_custom, // Setting custom spinner item layout
+            subStatusOptions
+        )
+
+        // Setting custom dropdown layout
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item_custom)
+
+        spSubStatus.adapter = adapter
 
         spSubStatus.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
@@ -121,15 +153,16 @@ class ServiceTrackingFragment : Fragment() {
                 id: Long
             ) {
                 val selectedStatus = parent?.getItemAtPosition(position).toString()
-                // TODO: Handle the selected status
-                // For example, update a ViewModel, save the status, filter data, etc.
-                when (selectedStatus) {
-                    "Realizado" -> {
-                        statusValue = 1
+
+                val selectedTextView = view as? TextView
+
+                when (position) {
+                    0 -> {
+                        updateSpinnerWithDefaultStyles(selectedTextView)
                     }
 
-                    "No Realizado" -> {
-                        // Handle "No Realizado"
+                    else -> {
+                        updateSpinnerWithSelectedStyles(selectedTextView)
                     }
                 }
             }
@@ -138,6 +171,21 @@ class ServiceTrackingFragment : Fragment() {
                 // Another interface callback
             }
         }
+    }
+
+    private fun updateSpinnerWithDefaultStyles(selectedTextView: TextView?) {
+        selectedTextView?.setBackgroundResource(R.drawable.spinner_custom_background)
+        selectedTextView?.setTextColor(
+            ContextCompat.getColor(
+                requireContext(),
+                R.color.spinner_hint_text_color
+            )
+        )
+    }
+
+    private fun updateSpinnerWithSelectedStyles(selectedTextView: TextView?) {
+        selectedTextView?.setBackgroundResource(R.drawable.spinner_background_blue)
+        selectedTextView?.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
     }
 
     companion object {

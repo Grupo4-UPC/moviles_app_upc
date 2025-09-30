@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Background Color for the placeholder -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#E0E0E0"/> <!-- Light gray color, you can change this -->
+            <!-- You can add rounded corners if you like -->
+            <!-- <corners android:radius="8dp"/> -->
+        </shape>
+    </item>
+
+    <!-- Optional: An icon in the center (e.g., a generic image icon) -->
+    <!-- Make sure you have an actual vector asset named 'ic_image_placeholder_icon' -->
+    <!-- or use an Android system icon if suitable. -->
+    <item
+        android:drawable="@drawable/ic_upload_photo"
+        android:width="48dp"
+        android:height="48dp"
+        android:gravity="center" />
+
+</layer-list>

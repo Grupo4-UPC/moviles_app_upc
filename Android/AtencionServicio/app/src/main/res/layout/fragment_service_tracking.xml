@@ -102,11 +102,10 @@
                 <Spinner
                     android:id="@+id/sp_status"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:background="@drawable/ic_spinner_background" />
+                    android:spinnerMode="dropdown"
+                    android:background="@null"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -118,8 +117,10 @@
                 <Spinner
                     android:id="@+id/sp_sub_status"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:background="@drawable/ic_spinner_background" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:spinnerMode="dropdown"
+                    android:background="@null"/>
             </LinearLayout>
         </LinearLayout>
 

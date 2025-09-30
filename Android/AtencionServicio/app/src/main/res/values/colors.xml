@@ -19,4 +19,6 @@
     <color name="dark_blue_badge">#1A237E</color>
     <color name="button_disabled_background_grey">#E0E0E0</color>
     <color name="button_disabled_text_grey">#A0A0A0</color>
+    <color name="spinner_border_default_color">#BDBDBD</color>
+    <color name="spinner_hint_text_color">#0072CE</color>
 </resources>

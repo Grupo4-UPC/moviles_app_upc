@@ -38,7 +38,7 @@ class StartServiceActivity : AppCompatActivity() {
         contentContainer = findViewById(R.id.start_service_container)
 
         val orderId: String? =
-            intent.getStringExtra(SERVICE_INFORMATION)
+            intent.getStringExtra(ORDER_ID)
 
         val serviceInformation: ServiceInformationModel? =
             intent.getParcelableExtra(SERVICE_INFORMATION)
