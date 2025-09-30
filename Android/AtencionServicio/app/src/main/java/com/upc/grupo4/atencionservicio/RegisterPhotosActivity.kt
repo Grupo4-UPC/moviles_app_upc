@@ -1,6 +1,8 @@
 package com.upc.grupo4.atencionservicio
 
 import android.Manifest
+import android.app.Activity
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -21,6 +23,7 @@ import androidx.core.content.FileProvider
 import coil.load
 import com.upc.grupo4.atencionservicio.model.PhotoReference
 import com.upc.grupo4.atencionservicio.model.PhotoType
+import com.upc.grupo4.atencionservicio.util.Constants
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -90,11 +93,17 @@ class RegisterPhotosActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back)
 
+        val status: String? =
+            intent.getStringExtra(Constants.STATUS)
+
+        val subStatus: String? =
+            intent.getStringExtra(Constants.SUB_STATUS)
+
         val tvStatusValue: TextView = findViewById(R.id.tv_status)
-        tvStatusValue.text = "Entregado"
+        tvStatusValue.text = status
 
         val tvSubStatusValue: TextView = findViewById(R.id.tv_sub_status)
-        tvSubStatusValue.text = "Todo conforme"
+        tvSubStatusValue.text = subStatus
 
         btnDeleteAllPhotos = findViewById(R.id.btn_delete_all_photos)
         btnSavePhotos = findViewById(R.id.btn_save_photos)
@@ -117,15 +126,24 @@ class RegisterPhotosActivity : AppCompatActivity() {
             // TODO: Implement logic to save/upload the photoReferences
             // For example, iterate through photoReferences and upload URIs
             var allPhotosTaken = true
+            val completedPhotoReferences = mutableListOf<PhotoReference>()
+
             photoReferences.forEach { ref ->
                 if (ref.uri == null) {
                     allPhotosTaken = false
+                } else {
+                    completedPhotoReferences.add(ref)
                 }
             }
             if (allPhotosTaken) {
-                Toast.makeText(this, "Fotos guardadas (simulado).", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this, "Faltan fotos por tomar.", Toast.LENGTH_SHORT).show()
+                val resultIntent = Intent()
+                // Put the ArrayList of Parcelable objects
+                resultIntent.putParcelableArrayListExtra(
+                    Constants.PHOTO_REFERENCES,
+                    ArrayList(completedPhotoReferences) // Pass only the valid references
+                )
+                setResult(Activity.RESULT_OK, resultIntent)
+                finish() // Close RegisterPhotosActivity
             }
         }
 
@@ -157,7 +175,7 @@ class RegisterPhotosActivity : AppCompatActivity() {
             removePhoto(type)
         }
 
-        // Check if there's an existing URI for this type (e.g., on config change)
+        // Check if there's an existing URI for this type
         val existingUri = photoReferences.find { it.type == type }?.uri
         if (existingUri != null) {
             displayPhoto(type, existingUri)

@@ -5,6 +5,7 @@
     <color name="blue_400">#0089f6</color>
     <color name="blue_500">#0072CE</color>
     <color name="blue_700">#004c8d</color>
+    <color name ="blue_dp">#4A90E2</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>

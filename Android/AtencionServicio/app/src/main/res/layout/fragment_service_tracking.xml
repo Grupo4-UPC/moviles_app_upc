@@ -28,18 +28,19 @@
                 android:layout_height="match_parent">
 
                 <ImageView
-                    android:id="@+id/icon1"
+                    android:id="@+id/iv_service_icon"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_alignParentTop="true"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="8dp"
-                    android:src="@drawable/ic_lightbulb" />
+                    android:src="@drawable/ic_service"
+                    app:tint="@color/button_disabled_background_grey" />
 
                 <View
                     android:layout_width="2dp"
                     android:layout_height="match_parent"
-                    android:layout_below="@id/icon1"
+                    android:layout_below="@id/iv_service_icon"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="8dp"
                     android:background="#CCCCCC" />
@@ -104,8 +105,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
-                    android:spinnerMode="dropdown"
-                    android:background="@null"/>
+                    android:background="@null"
+                    android:spinnerMode="dropdown" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -119,8 +120,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
-                    android:spinnerMode="dropdown"
-                    android:background="@null"/>
+                    android:background="@null"
+                    android:spinnerMode="dropdown" />
             </LinearLayout>
         </LinearLayout>
 
@@ -146,18 +147,19 @@
                     android:background="#CCCCCC" />
 
                 <ImageView
-                    android:id="@+id/icon2"
+                    android:id="@+id/iv_photo_icon"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_below="@id/line1"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="8dp"
-                    android:src="@drawable/ic_camera" />
+                    android:src="@drawable/ic_camera"
+                    app:tint="@color/button_disabled_background_grey" />
 
                 <View
                     android:layout_width="2dp"
                     android:layout_height="match_parent"
-                    android:layout_below="@id/icon2"
+                    android:layout_below="@id/iv_photo_icon"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="8dp"
                     android:background="#CCCCCC" />
@@ -217,14 +219,15 @@
                     android:text="Es crucial seguir las indicacion al tomar las fotos"
                     android:textSize="14sp" />
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_take_pictures"
+                    style="@style/MySegmentedButton"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:background="@drawable/ic_button_outline_background"
-                    android:text="Tomar foto"
-                    android:textColor="#FFFF"
-                    android:textSize="16sp" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:backgroundTint="@color/blue_500"
+                    android:text="@string/btn_take_pictures"
+                    android:textColor="@color/white" />
             </LinearLayout>
         </LinearLayout>
 
@@ -255,7 +258,8 @@
                     android:layout_below="@id/line2"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="8dp"
-                    android:src="@drawable/ic_edit" />
+                    android:src="@drawable/ic_edit"
+                    app:tint="@color/button_disabled_background_grey" />
 
                 <View
                     android:layout_width="2dp"

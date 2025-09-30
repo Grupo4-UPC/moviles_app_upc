@@ -1,19 +1,15 @@
 package com.upc.grupo4.atencionservicio
 
-import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
 import android.widget.FrameLayout
-import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import com.google.android.material.button.MaterialButton
 import com.upc.grupo4.atencionservicio.model.ServiceInformationModel
+import com.upc.grupo4.atencionservicio.util.Constants
 
-private const val ORDER_ID = "order_id"
-private const val SERVICE_INFORMATION = "service_information"
 
 class StartServiceActivity : AppCompatActivity() {
 
@@ -38,10 +34,10 @@ class StartServiceActivity : AppCompatActivity() {
         contentContainer = findViewById(R.id.start_service_container)
 
         val orderId: String? =
-            intent.getStringExtra(ORDER_ID)
+            intent.getStringExtra(Constants.ORDER_ID)
 
         val serviceInformation: ServiceInformationModel? =
-            intent.getParcelableExtra(SERVICE_INFORMATION)
+            intent.getParcelableExtra(Constants.SERVICE_INFORMATION)
 
         // Set initial state
         setSelectedButton(1, orderId)
@@ -94,7 +90,7 @@ class StartServiceActivity : AppCompatActivity() {
     private fun showServiceTracking(orderId: String?) {
         val serviceTrackingFragment = ServiceTrackingFragment().apply {
             arguments = Bundle().apply {
-                putString(ORDER_ID, orderId)
+                putString(Constants.ORDER_ID, orderId)
             }
         }
 
@@ -106,7 +102,7 @@ class StartServiceActivity : AppCompatActivity() {
     private fun showServiceInformation(serviceInformation: ServiceInformationModel?) {
         val serviceInformationFragment = ServiceInformationFragment().apply {
             arguments = Bundle().apply {
-                putParcelable(SERVICE_INFORMATION, serviceInformation)
+                putParcelable(Constants.SERVICE_INFORMATION, serviceInformation)
             }
         }
 

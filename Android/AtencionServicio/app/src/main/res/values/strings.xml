@@ -41,6 +41,9 @@
     <string name="register_photos">Registro fotográfico</string>
     <string name="btn_save_photos">Guardar Fotos</string>
     <string name="btn_delete_all_photos">Eliminar fotos</string>
+    <string name="dialog_info_title">Información</string>
+    <string name="btn_dialog_accept_info">Aceptar</string>
+    <string name="btn_take_pictures">Tomar fotos</string>
 
     <string-array name="status_options">
         <item>Seleccionar Estado</item>

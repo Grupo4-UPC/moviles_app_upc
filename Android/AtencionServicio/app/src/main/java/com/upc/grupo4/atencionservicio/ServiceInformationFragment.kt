@@ -18,9 +18,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import com.upc.grupo4.atencionservicio.model.ServiceInformationModel
-
-private const val ARG_SERVICE_INFORMATION = "service_information"
-private const val GOOGLE_MAPS_URL = "http://maps.google.com/maps?q="
+import com.upc.grupo4.atencionservicio.util.Constants
 
 /**
  * A simple [Fragment] subclass.
@@ -61,7 +59,7 @@ class ServiceInformationFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            serviceInformation = it.getParcelable(ARG_SERVICE_INFORMATION)
+            serviceInformation = it.getParcelable(Constants.SERVICE_INFORMATION)
         }
     }
 
@@ -112,7 +110,7 @@ class ServiceInformationFragment : Fragment() {
 
         if (!serviceInformation?.address.isNullOrEmpty()) {
             txtAddress.setOnClickListener {
-                val map = GOOGLE_MAPS_URL + serviceInformation?.address
+                val map = Constants.GOOGLE_MAPS_URL + serviceInformation?.address
                 val i = Intent(Intent.ACTION_VIEW, map.toUri())
                 startActivity(i)
             }
@@ -186,7 +184,7 @@ class ServiceInformationFragment : Fragment() {
         fun newInstance(serviceInformation: ServiceInformationModel) =
             ServiceInformationFragment().apply {
                 arguments = Bundle().apply {
-                    putString(ARG_SERVICE_INFORMATION, serviceInformation.toString())
+                    putString(Constants.SERVICE_INFORMATION, serviceInformation.toString())
                 }
             }
     }

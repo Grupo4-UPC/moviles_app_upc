@@ -1,7 +1,9 @@
 package com.upc.grupo4.atencionservicio
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -9,16 +11,17 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-private const val ORDER_ID = "order_id"
+import com.google.android.material.button.MaterialButton
+import com.upc.grupo4.atencionservicio.dialogs.InfoDialogFragment
+import com.upc.grupo4.atencionservicio.model.PhotoReference
+import com.upc.grupo4.atencionservicio.util.Constants
 
 /**
  * A simple [Fragment] subclass.
@@ -27,19 +30,63 @@ private const val ORDER_ID = "order_id"
  */
 class ServiceTrackingFragment : Fragment() {
     // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
+    private var orderId: String? = null
     private lateinit var spStatus: Spinner
     private lateinit var spSubStatus: Spinner
-    private lateinit var btnTakePictures: Button
+    private lateinit var btnTakePictures: MaterialButton
+    private lateinit var ivServiceIcon: ImageView
+    private lateinit var ivPhotoIcon: ImageView
+    private lateinit var registerPhotosLauncher: ActivityResultLauncher<Intent>
+    private var receivedPhotoReferences: List<PhotoReference>? = null
+
     private var statusValue: Int? = 0
+    private var statusValueStr: String? = ""
+    private var subStatusValueStr: String? = ""
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+            orderId = it.getString(Constants.ORDER_ID)
+        }
+        registerPhotosLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                Log.d("ServiceTrackingFragment", "Photo registration was successful.")
+                val data: Intent? = result.data
+                // Get the ArrayList of Parcelable objects
+                val photoRefs = data?.getParcelableArrayListExtra<PhotoReference>(
+                    Constants.PHOTO_REFERENCES
+                )
+                if (photoRefs != null && photoRefs.isNotEmpty()) {
+                    receivedPhotoReferences = photoRefs
+                    updatePhotoIconColor(R.color.blue_400) // this can be changed to a different color
+                    updateTakePhotoButtonColor(R.color.blue_400)
+
+//                    Log.d("ServiceTrackingFragment", "Received ${photoRefs.size} photo references:")
+//                    photoRefs.forEach { ref ->
+//                        Log.d(
+//                            "ServiceTrackingFragment",
+//                            "Type: ${ref.type}, URI: ${ref.uri}, Path: ${ref.filePath}"
+//                        )
+//                    }
+
+                    Toast.makeText(
+                        requireContext(),
+                        "${photoRefs.size} fotos recibidas",
+                        Toast.LENGTH_LONG
+                    ).show()
+                } else {
+                    Log.d(
+                        "ServiceTrackingFragment",
+                        "No photo references received or list is empty."
+                    )
+                }
+            } else if (result.resultCode == Activity.RESULT_CANCELED) {
+                Log.d("ServiceTrackingFragment", "Photo registration was cancelled.")
+                // Handle cancellation if needed
+            }
         }
     }
 
@@ -52,6 +99,8 @@ class ServiceTrackingFragment : Fragment() {
         spStatus = view.findViewById(R.id.sp_status)
         spSubStatus = view.findViewById(R.id.sp_sub_status)
         btnTakePictures = view.findViewById(R.id.btn_take_pictures)
+        ivServiceIcon = view.findViewById(R.id.iv_service_icon)
+        ivPhotoIcon = view.findViewById(R.id.iv_photo_icon)
 
         return view
     }
@@ -63,8 +112,7 @@ class ServiceTrackingFragment : Fragment() {
         loadSubStatusSpinner()
 
         btnTakePictures.setOnClickListener {
-            val intent = Intent(requireContext(), RegisterPhotosActivity::class.java)
-            startActivity(intent)
+            launchRegisterPhotosActivity()
         }
     }
 
@@ -98,18 +146,14 @@ class ServiceTrackingFragment : Fragment() {
                     0 -> {
                         updateSpinnerWithDefaultStyles(selectedTextView)
                         statusValue = 0
+                        statusValueStr = ""
                         loadSubStatusSpinner()
                     }
 
-                    1 -> {
+                    else -> {
                         updateSpinnerWithSelectedStyles(selectedTextView)
-                        statusValue = 1
-                        loadSubStatusSpinner()
-                    }
-
-                    2 -> {
-                        updateSpinnerWithSelectedStyles(selectedTextView)
-                        statusValue = 2
+                        statusValue = position
+                        statusValueStr = selectedStatus
                         loadSubStatusSpinner()
                     }
                 }
@@ -152,17 +196,21 @@ class ServiceTrackingFragment : Fragment() {
                 position: Int,
                 id: Long
             ) {
-                val selectedStatus = parent?.getItemAtPosition(position).toString()
+                val selectedSubStatus = parent?.getItemAtPosition(position).toString()
 
                 val selectedTextView = view as? TextView
 
                 when (position) {
                     0 -> {
                         updateSpinnerWithDefaultStyles(selectedTextView)
+                        subStatusValueStr = ""
+                        updateServiceIconColor(R.color.button_disabled_background_grey)
                     }
 
                     else -> {
                         updateSpinnerWithSelectedStyles(selectedTextView)
+                        subStatusValueStr = selectedSubStatus
+                        updateServiceIconColor(R.color.blue_400)
                     }
                 }
             }
@@ -172,6 +220,22 @@ class ServiceTrackingFragment : Fragment() {
             }
         }
     }
+
+    private fun launchRegisterPhotosActivity() {
+        if (statusValueStr != "" && subStatusValueStr != "") {
+            val intent = Intent(requireContext(), RegisterPhotosActivity::class.java)
+            intent.putExtra(Constants.STATUS, statusValueStr)
+            intent.putExtra(Constants.SUB_STATUS, subStatusValueStr)
+            registerPhotosLauncher.launch(intent)
+        } else {
+            val dialogMessage =
+                "Para poder continuar con la captura de fotos debes seleccionar un estado y subestado."
+            InfoDialogFragment.newInstance(
+                message = dialogMessage,
+            ).show(parentFragmentManager, "InfoDialogFragmentTag")
+        }
+    }
+
 
     private fun updateSpinnerWithDefaultStyles(selectedTextView: TextView?) {
         selectedTextView?.setBackgroundResource(R.drawable.spinner_custom_background)
@@ -188,22 +252,27 @@ class ServiceTrackingFragment : Fragment() {
         selectedTextView?.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
     }
 
+    private fun updateServiceIconColor(colorResId: Int) {
+        val color = ContextCompat.getColor(requireContext(), colorResId)
+        ivServiceIcon.setColorFilter(color)
+    }
+
+    private fun updatePhotoIconColor(colorResId: Int) {
+        val color = ContextCompat.getColor(requireContext(), colorResId)
+        ivPhotoIcon.setColorFilter(color)
+    }
+
+    private fun updateTakePhotoButtonColor(colorResId: Int) {
+        val color = ContextCompat.getColor(requireContext(), colorResId)
+        btnTakePictures.setBackgroundColor(color)
+    }
+
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ServiceTrackingFragment.
-         */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
+        fun newInstance(orderId: String) =
             ServiceTrackingFragment().apply {
                 arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+                    putString(Constants.ORDER_ID, orderId)
                 }
             }
     }

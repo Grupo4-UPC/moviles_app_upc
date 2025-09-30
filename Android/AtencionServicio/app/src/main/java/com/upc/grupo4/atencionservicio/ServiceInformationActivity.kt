@@ -6,6 +6,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.upc.grupo4.atencionservicio.model.ServiceInformationModel
+import com.upc.grupo4.atencionservicio.util.Constants
 
 class ServiceInformationActivity : AppCompatActivity() {
     lateinit var serviceInformationContainer: FrameLayout
@@ -24,12 +25,12 @@ class ServiceInformationActivity : AppCompatActivity() {
         serviceInformationContainer = findViewById(R.id.service_info_container)
 
         val serviceInformation: ServiceInformationModel? =
-            intent.getParcelableExtra("service_information")
+            intent.getParcelableExtra(Constants.SERVICE_INFORMATION)
 
 
         val serviceInformationFragment = ServiceInformationFragment().apply {
             arguments = Bundle().apply {
-                putParcelable("service_information", serviceInformation)
+                putParcelable(Constants.SERVICE_INFORMATION, serviceInformation)
             }
         }
 
