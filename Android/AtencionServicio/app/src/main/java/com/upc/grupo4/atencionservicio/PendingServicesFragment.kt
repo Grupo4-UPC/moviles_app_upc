@@ -1,21 +1,30 @@
 package com.upc.grupo4.atencionservicio
 
+import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.Button
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.graphics.drawable.toDrawable
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import com.upc.grupo4.atencionservicio.model.ServiceInformationModel
 import com.upc.grupo4.atencionservicio.model.ServiceModel
+import com.upc.grupo4.atencionservicio.util.Constants
+import androidx.fragment.app.setFragmentResult
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.upc.grupo4.atencionservicio.adapter.PendingServiceAdapter
 
 private const val ARG_PENDING_SERVICES_LIST = "pending_services_list"
 
@@ -25,16 +34,43 @@ private const val ARG_PENDING_SERVICES_LIST = "pending_services_list"
  * create an instance of this fragment.
  */
 class PendingServicesFragment : Fragment() {
-    lateinit var pendingServiceListContainer: LinearLayout
+    private lateinit var rvPendingServices: RecyclerView
+    private lateinit var serviceAdapter: PendingServiceAdapter
 
-    private var pendingServicesList: List<ServiceModel> = emptyList()
+    private lateinit var startServiceLauncher: ActivityResultLauncher<Intent>
+
+    private var pendingServicesList: ArrayList<ServiceModel> = ArrayList()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            pendingServicesList =
-                it.getParcelableArrayList<ServiceModel>(ARG_PENDING_SERVICES_LIST)?.toList()
-                    ?: emptyList()
+            pendingServicesList = it.getParcelableArrayList("pending_services_list") ?: ArrayList()
+        }
+
+        startServiceLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                Log.d("PendingServicesFragment", "Finish service was successful.")
+                val data: Intent? = result.data
+
+                val updatedServiceModel = data?.getParcelableExtra<ServiceModel>(
+                    Constants.SERVICE
+                )
+                if (updatedServiceModel != null) {
+                    setFragmentResult(
+                        Constants.SERVICE_STARTED_REQUEST_KEY,
+                        bundleOf(Constants.SERVICE_MODEL_BUNDLE_KEY to updatedServiceModel)
+                    )
+                } else {
+                    Log.d("PendingServicesFragment", "No service information returned.")
+                }
+
+            } else if (result.resultCode == Activity.RESULT_CANCELED) {
+                Log.d("PendingServicesFragment", "Finish service was cancelled.")
+                // Handle cancellation if needed
+            }
         }
     }
 
@@ -42,65 +78,74 @@ class PendingServicesFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_pending_services, container, false)
+        val view = inflater.inflate(R.layout.fragment_pending_services, container, false)
+        rvPendingServices = view.findViewById(R.id.rv_pending_services)
+
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupRecyclerView()
+        // Load initial data into adapter if it came from arguments
+        if (pendingServicesList.isNotEmpty()) {
+            serviceAdapter.updateData(pendingServicesList)
+        }
+    }
 
-        pendingServiceListContainer = view.findViewById(R.id.pendingServiceListContainer)
-
-        pendingServicesList.forEach { service ->
-            val itemView = layoutInflater.inflate(
-                R.layout.item_service,
-                pendingServiceListContainer,
-                false
-            )
-
-            val tvServiceID: TextView = itemView.findViewById(R.id.tvServiceID)
-            val tvAddress: TextView = itemView.findViewById(R.id.tvAddress)
-            val tvShift: TextView = itemView.findViewById(R.id.tvShift)
-            val tvProduct: TextView = itemView.findViewById(R.id.tvProduct)
-            val btnServiceInfo: Button = itemView.findViewById(R.id.btnServiceInfo)
-            val btnStartService: Button = itemView.findViewById(R.id.btnStartService)
-
-            tvServiceID.text = "OS - ${service.id}"
-            tvAddress.text = service.address
-            tvShift.text = service.shift
-            tvProduct.text = service.product
-
-            val serviceInformation = ServiceInformationModel(
-                service.clientName,
-                "+51943585457",
-                service.address,
-                "Instalacion 1",
-                "Ducha",
-                "2025-09-30",
-                "",
-                service.shift,
-                "Alt. Cdra 2 Av. La Paz"
-            )
-
-            btnServiceInfo.setOnClickListener {
-                val intent = Intent(requireContext(), ServiceInformationActivity::class.java)
-                intent.putExtra(
-                    "service_information",
-                    serviceInformation
+    private fun setupRecyclerView() {
+        serviceAdapter = PendingServiceAdapter(
+            ArrayList(pendingServicesList), // Pass a mutable copy initially
+            onServiceInfoClick = { service ->
+                val serviceInformation = ServiceInformationModel( // Construct as needed
+                    service.clientName,
+                    "+51943585457", // Example, get real data
+                    service.address,
+                    "Instalacion 1",
+                    "Ducha",
+                    "2025-09-30",
+                    "",
+                    service.shift,
+                    "Alt. Cdra 2 Av. La Paz"
                 )
+                val intent = Intent(requireContext(), ServiceInformationActivity::class.java)
+                intent.putExtra(Constants.SERVICE_INFORMATION, serviceInformation)
                 startActivity(intent)
+            },
+            onStartServiceClick = { service ->
+                val serviceInformation = ServiceInformationModel( // Construct as needed
+                    service.clientName,
+                    "+51943585457", // Example, get real data
+                    service.address,
+                    "Instalacion 1",
+                    "Ducha",
+                    "2025-09-30",
+                    "",
+                    service.shift,
+                    "Alt. Cdra 2 Av. La Paz"
+                )
+                showConfirmStartServiceDialog(service, serviceInformation)
             }
+        )
+        rvPendingServices.adapter = serviceAdapter
+        rvPendingServices.layoutManager = LinearLayoutManager(requireContext())
+    }
 
-            btnStartService.setOnClickListener {
-                showConfirmStartServiceDialog(service.id, serviceInformation)
-            }
-
-            pendingServiceListContainer.addView(itemView)
+    fun updateServices(newPendingServices: List<ServiceModel>) {
+        pendingServicesList.clear()
+        pendingServicesList.addAll(newPendingServices)
+        if (::serviceAdapter.isInitialized) { // Ensure adapter is initialized
+            serviceAdapter.updateData(newPendingServices)
+        } else {
+            // If adapter isn't initialized yet (e.g. view not created),
+            // setupRecyclerView will use the updated currentPendingServicesList.
+            // Or, if view is already created, you might need to call setupRecyclerView here
+            // if it wasn't called for some reason or the data wasn't ready.
         }
     }
 
     private fun showConfirmStartServiceDialog(
-        orderId: String,
+        service: ServiceModel,
         serviceInformation: ServiceInformationModel?
     ) {
         val dialog = Dialog(requireContext())
@@ -119,7 +164,6 @@ class PendingServicesFragment : Fragment() {
         val btnCancel: Button = dialog.findViewById(R.id.btn_dialog_cancel)
         val btnAccept: Button = dialog.findViewById(R.id.btn_dialog_accept)
 
-
         btnClose.setOnClickListener {
             dialog.dismiss() // Close the dialog
         }
@@ -131,7 +175,7 @@ class PendingServicesFragment : Fragment() {
         btnAccept.setOnClickListener {
             dialog.dismiss() // Close the dialog
             //TODO: Add a loading animation for 6 seconds and start the service
-            startActualServiceProcedure(orderId, serviceInformation)
+            launchStartActualService(service, serviceInformation)
         }
 
         dialog.show()
@@ -144,20 +188,21 @@ class PendingServicesFragment : Fragment() {
         )
     }
 
-    private fun startActualServiceProcedure(
-        orderId: String,
+    private fun launchStartActualService(
+        service: ServiceModel,
         serviceInformation: ServiceInformationModel?
     ) {
         val intent = Intent(requireContext(), StartServiceActivity::class.java)
         intent.putExtra(
-            "order_id",
-            orderId
+            Constants.SERVICE,
+            service
         )
         intent.putExtra(
-            "service_information",
+            Constants.SERVICE_INFORMATION,
             serviceInformation
         )
-        startActivity(intent)
+
+        startServiceLauncher.launch(intent)
     }
 
     companion object {

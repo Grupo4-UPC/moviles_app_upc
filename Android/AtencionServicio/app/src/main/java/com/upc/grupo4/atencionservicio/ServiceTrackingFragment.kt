@@ -21,17 +21,13 @@ import androidx.core.content.ContextCompat
 import com.google.android.material.button.MaterialButton
 import com.upc.grupo4.atencionservicio.dialogs.InfoDialogFragment
 import com.upc.grupo4.atencionservicio.model.PhotoReference
+import com.upc.grupo4.atencionservicio.model.PhotoType
 import com.upc.grupo4.atencionservicio.model.ServiceInformationModel
+import com.upc.grupo4.atencionservicio.model.ServiceModel
 import com.upc.grupo4.atencionservicio.util.Constants
 
-/**
- * A simple [Fragment] subclass.
- * Use the [ServiceTrackingFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class ServiceTrackingFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var orderId: String? = null
+    private var service: ServiceModel? = null
     private var serviceInformation: ServiceInformationModel? = null
     private lateinit var spStatus: Spinner
     private lateinit var spSubStatus: Spinner
@@ -52,7 +48,7 @@ class ServiceTrackingFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            orderId = it.getString(Constants.ORDER_ID)
+            service = it.getParcelable(Constants.SERVICE)
             serviceInformation = it.getParcelable(Constants.SERVICE_INFORMATION)
         }
 
@@ -152,6 +148,10 @@ class ServiceTrackingFragment : Fragment() {
 
         btnEnterRequirements.setOnClickListener {
             launchEnterRequirementsActivity()
+        }
+
+        btnFinishService.setOnClickListener {
+            finishService()
         }
     }
 
@@ -276,19 +276,46 @@ class ServiceTrackingFragment : Fragment() {
     }
 
     private fun launchEnterRequirementsActivity() {
-//        if (statusValueStr != "" && subStatusValueStr != "" && receivedPhotoReferences != null) {
-        val intent = Intent(requireContext(), EnterRequirementsActivity::class.java)
-        intent.putExtra(Constants.SERVICE_INFORMATION, serviceInformation)
-        registerRequirementsLauncher.launch(intent)
-//        } else {
-//            val dialogMessage =
-//                "Para poder continuar con el registro, debes completar los pasos previos."
-//            InfoDialogFragment.newInstance(
-//                message = dialogMessage,
-//            ).show(parentFragmentManager, "InfoDialogFragmentTag")
-//        }
+        if (statusValueStr != "" && subStatusValueStr != "" && receivedPhotoReferences != null) {
+            val intent = Intent(requireContext(), EnterRequirementsActivity::class.java)
+            intent.putExtra(Constants.SERVICE_INFORMATION, serviceInformation)
+            registerRequirementsLauncher.launch(intent)
+        } else {
+            val dialogMessage =
+                "Para poder continuar con el registro, debes completar los pasos previos."
+            InfoDialogFragment.newInstance(
+                message = dialogMessage,
+            ).show(parentFragmentManager, "InfoDialogFragmentTag")
+        }
     }
 
+    private fun finishService() {
+        service?.status = statusValueStr
+        service?.subStatus = subStatusValueStr
+
+        receivedPhotoReferences?.forEach { ref ->
+            when (ref.type) {
+                PhotoType.ADDITIONAL -> service?.additionalPhotoUri = ref.filePath
+                PhotoType.RIGHT -> service?.rightPhotoUri = ref.filePath
+                PhotoType.LEFT -> service?.leftPhotoUri = ref.filePath
+                PhotoType.FRONT -> service?.frontPhotoUri = ref.filePath
+            }
+        }
+
+        service?.serviceReceiverName = serviceInformation?.clientName
+        service?.serviceReceiverDocId = serviceInformation?.clientId
+        service?.newObservations = serviceInformation?.observations
+        service?.additionalInformation = serviceInformation?.extraInformation
+        service?.isSigned = serviceInformation?.isSigned
+
+        val resultIntent = Intent()
+        resultIntent.putExtra(
+            Constants.SERVICE,
+            service
+        )
+        requireActivity().setResult(Activity.RESULT_OK, resultIntent)
+        requireActivity().finish()
+    }
 
     private fun updateSpinnerWithDefaultStyles(selectedTextView: TextView?) {
         selectedTextView?.setBackgroundResource(R.drawable.spinner_custom_background)
@@ -332,10 +359,10 @@ class ServiceTrackingFragment : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance(orderId: String) =
+        fun newInstance(service: ServiceModel) =
             ServiceTrackingFragment().apply {
                 arguments = Bundle().apply {
-                    putString(Constants.ORDER_ID, orderId)
+                    putParcelable(Constants.SERVICE, service)
                 }
             }
     }

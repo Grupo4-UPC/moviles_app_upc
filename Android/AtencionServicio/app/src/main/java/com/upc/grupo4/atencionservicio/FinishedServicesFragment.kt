@@ -1,14 +1,19 @@
 package com.upc.grupo4.atencionservicio
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.LinearLayout
-import android.widget.TextView
+import androidx.activity.result.ActivityResultLauncher
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.upc.grupo4.atencionservicio.adapter.FinishedServiceAdapter
+import com.upc.grupo4.atencionservicio.model.ServiceInformationModel
 import com.upc.grupo4.atencionservicio.model.ServiceModel
+import com.upc.grupo4.atencionservicio.util.Constants
+import kotlin.collections.ArrayList
 
 private const val ARG_FINISHED_SERVICES_LIST = "finished_services_list"
 
@@ -18,51 +23,79 @@ private const val ARG_FINISHED_SERVICES_LIST = "finished_services_list"
  * create an instance of this fragment.
  */
 class FinishedServicesFragment : Fragment() {
-    lateinit var finishedServiceListContainer: LinearLayout
+    private lateinit var rvFinishedServices: RecyclerView
+    private lateinit var finishedServiceAdapter: FinishedServiceAdapter
 
-    private var finishedServicesList: List<ServiceModel> = emptyList()
+//    private lateinit var startServiceLauncher: ActivityResultLauncher<Intent>
+
+    private var finishedServicesList: ArrayList<ServiceModel> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             finishedServicesList =
-                it.getParcelableArrayList<ServiceModel>(ARG_FINISHED_SERVICES_LIST)?.toList()
-                    ?: emptyList()
+                it.getParcelableArrayList<ServiceModel>(ARG_FINISHED_SERVICES_LIST)
+                    ?: ArrayList()
         }
+        //TODO: Implement start service launcher
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_finished_services, container, false)
+        val view = inflater.inflate(R.layout.fragment_finished_services, container, false)
+        rvFinishedServices = view.findViewById(R.id.rv_finished_services)
+
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupRecyclerView()
+        // Load initial data into adapter if it came from arguments
+        if (finishedServicesList.isNotEmpty()) {
+            finishedServiceAdapter.updateData(finishedServicesList)
+        }
 
-        finishedServiceListContainer = view.findViewById(R.id.finishedServiceListContainer)
+    }
 
-        finishedServicesList.forEach { service ->
-            val itemView = layoutInflater.inflate(
-                R.layout.finished_item_service,
-                finishedServiceListContainer,
-                false
-            )
+    private fun setupRecyclerView() {
+        finishedServiceAdapter = FinishedServiceAdapter(
+            ArrayList(finishedServicesList), // Pass a mutable copy initially
+            onReviewServiceClick = { service ->
+                val serviceInformation = ServiceInformationModel( // Construct as needed
+                    service.clientName,
+                    "+51943585457", // Example, get real data
+                    service.address,
+                    "Instalacion 1",
+                    "Ducha",
+                    "2025-09-30",
+                    "",
+                    service.shift,
+                    "Alt. Cdra 2 Av. La Paz"
+                )
+                val intent = Intent(requireContext(), StartServiceActivity::class.java)
+                intent.putExtra(Constants.SERVICE, service)
+                intent.putExtra(Constants.SERVICE_INFORMATION, serviceInformation)
+                //TODO: Replace with startServiceLauncher
+                startActivity(intent)
+            },
+        )
+        rvFinishedServices.adapter = finishedServiceAdapter
+        rvFinishedServices.layoutManager = LinearLayoutManager(requireContext())
+    }
 
-            val tvServiceID: TextView = itemView.findViewById(R.id.tv_service_id_finished)
-            val tvAddress: TextView = itemView.findViewById(R.id.tv_address_finished)
-            val tvShift: TextView = itemView.findViewById(R.id.tv_shift_finished)
-            val tvProduct: TextView = itemView.findViewById(R.id.tv_product_finished)
-            val btnServiceInfo: Button = itemView.findViewById(R.id.btn_check_service)
-
-            tvServiceID.text = "OS - ${service.id}"
-            tvAddress.text = service.address
-            tvShift.text = service.shift
-            tvProduct.text = service.product
-
-            finishedServiceListContainer.addView(itemView)
+    fun updateServices(newPendingServices: List<ServiceModel>) {
+        finishedServicesList.clear()
+        finishedServicesList.addAll(newPendingServices)
+        if (::finishedServiceAdapter.isInitialized) { // Ensure adapter is initialized
+            finishedServiceAdapter.updateData(newPendingServices)
+        } else {
+            // If adapter isn't initialized yet (e.g. view not created),
+            // setupRecyclerView will use the updated currentPendingServicesList.
+            // Or, if view is already created, you might need to call setupRecyclerView here
+            // if it wasn't called for some reason or the data wasn't ready.
         }
     }
 

@@ -8,6 +8,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import com.google.android.material.button.MaterialButton
 import com.upc.grupo4.atencionservicio.model.ServiceInformationModel
+import com.upc.grupo4.atencionservicio.model.ServiceModel
 import com.upc.grupo4.atencionservicio.util.Constants
 
 
@@ -33,17 +34,17 @@ class StartServiceActivity : AppCompatActivity() {
         btnInformation = findViewById(R.id.btn_information)
         contentContainer = findViewById(R.id.start_service_container)
 
-        val orderId: String? =
-            intent.getStringExtra(Constants.ORDER_ID)
+        val service: ServiceModel? =
+            intent.getParcelableExtra(Constants.SERVICE)
 
         val serviceInformation: ServiceInformationModel? =
             intent.getParcelableExtra(Constants.SERVICE_INFORMATION)
 
         // Set initial state
-        setSelectedButton(1, orderId, serviceInformation)
+        setSelectedButton(1, service, serviceInformation)
 
         btnTracking.setOnClickListener {
-            setSelectedButton(1, orderId, serviceInformation)
+            setSelectedButton(1, service, serviceInformation)
         }
 
         btnInformation.setOnClickListener {
@@ -53,14 +54,14 @@ class StartServiceActivity : AppCompatActivity() {
 
     private fun setSelectedButton(
         selected: Int,
-        orderId: String?,
+        service: ServiceModel?,
         serviceInformation: ServiceInformationModel? = null
     ) {
         when (selected) {
             1 -> {
                 styleButtonAsFilled(btnTracking)
                 styleButtonAsOutlined(btnInformation)
-                showServiceTracking(orderId, serviceInformation)
+                showServiceTracking(service, serviceInformation)
             }
 
             2 -> {
@@ -88,12 +89,12 @@ class StartServiceActivity : AppCompatActivity() {
     }
 
     private fun showServiceTracking(
-        orderId: String?,
+        service: ServiceModel?,
         serviceInformation: ServiceInformationModel?
     ) {
         val serviceTrackingFragment = ServiceTrackingFragment().apply {
             arguments = Bundle().apply {
-                putString(Constants.ORDER_ID, orderId)
+                putParcelable(Constants.SERVICE, service)
                 putParcelable(Constants.SERVICE_INFORMATION, serviceInformation)
             }
         }
