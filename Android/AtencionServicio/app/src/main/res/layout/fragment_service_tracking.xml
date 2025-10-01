@@ -252,7 +252,7 @@
                     android:background="#CCCCCC" />
 
                 <ImageView
-                    android:id="@+id/ic_data"
+                    android:id="@+id/iv_register_icon"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_below="@id/line2"
@@ -264,7 +264,7 @@
                 <View
                     android:layout_width="2dp"
                     android:layout_height="match_parent"
-                    android:layout_below="@id/ic_data"
+                    android:layout_below="@id/iv_register_icon"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="8dp"
                     android:background="#CCCCCC" />
@@ -325,19 +325,20 @@
                     android:textColor="#666666"
                     android:textSize="14sp" />
 
-                <Button
-                    android:id="@+id/btn_ingresar_cumplimiento"
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_enter_requirements"
+                    style="@style/MySegmentedButton"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:background="@drawable/ic_button_outline_background"
-                    android:text="Ingresar cumplimiento"
-                    android:textColor="#FFFF"
-                    android:textSize="16sp" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:backgroundTint="@color/blue_500"
+                    android:text="@string/btn_enter_requirements"
+                    android:textColor="@color/white" />
             </LinearLayout>
         </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_end_service"
+            android:id="@+id/btn_finish_service"
             style="@style/MySegmentedButton"
             android:layout_width="match_parent"
             android:layout_marginTop="10dp"

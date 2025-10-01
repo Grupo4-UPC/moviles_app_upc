@@ -13,7 +13,6 @@
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.CAMERA" />
 
-
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -23,6 +22,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AtencionServicio">
+        <activity
+            android:name=".EnterRequirementsActivity"
+            android:exported="false" />
         <activity
             android:name=".RegisterPhotosActivity"
             android:exported="false" />

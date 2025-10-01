@@ -44,6 +44,12 @@
     <string name="dialog_info_title">Información</string>
     <string name="btn_dialog_accept_info">Aceptar</string>
     <string name="btn_take_pictures">Tomar fotos</string>
+    <string name="enter_requirements">Ingresar Requerimientos</string>
+    <string name="btn_next">Siguiente</string>
+    <string name="hint_edittext">Ingresar</string>
+    <string name="hint_name">Nombre<font color='#FF0000'>*</font></string>
+    <string name="btn_end">Finalizar</string>
+    <string name="btn_enter_requirements">Ingresar Requerimientos</string>
 
     <string-array name="status_options">
         <item>Seleccionar Estado</item>

@@ -21,6 +21,7 @@ import androidx.core.content.ContextCompat
 import com.google.android.material.button.MaterialButton
 import com.upc.grupo4.atencionservicio.dialogs.InfoDialogFragment
 import com.upc.grupo4.atencionservicio.model.PhotoReference
+import com.upc.grupo4.atencionservicio.model.ServiceInformationModel
 import com.upc.grupo4.atencionservicio.util.Constants
 
 /**
@@ -31,14 +32,18 @@ import com.upc.grupo4.atencionservicio.util.Constants
 class ServiceTrackingFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var orderId: String? = null
+    private var serviceInformation: ServiceInformationModel? = null
     private lateinit var spStatus: Spinner
     private lateinit var spSubStatus: Spinner
     private lateinit var btnTakePictures: MaterialButton
+    private lateinit var btnEnterRequirements: MaterialButton
+    private lateinit var btnFinishService: MaterialButton
     private lateinit var ivServiceIcon: ImageView
     private lateinit var ivPhotoIcon: ImageView
+    private lateinit var ivRegisterIcon: ImageView
     private lateinit var registerPhotosLauncher: ActivityResultLauncher<Intent>
+    private lateinit var registerRequirementsLauncher: ActivityResultLauncher<Intent>
     private var receivedPhotoReferences: List<PhotoReference>? = null
-
     private var statusValue: Int? = 0
     private var statusValueStr: String? = ""
     private var subStatusValueStr: String? = ""
@@ -48,7 +53,9 @@ class ServiceTrackingFragment : Fragment() {
         super.onCreate(savedInstanceState)
         arguments?.let {
             orderId = it.getString(Constants.ORDER_ID)
+            serviceInformation = it.getParcelable(Constants.SERVICE_INFORMATION)
         }
+
         registerPhotosLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
@@ -88,6 +95,31 @@ class ServiceTrackingFragment : Fragment() {
                 // Handle cancellation if needed
             }
         }
+
+        registerRequirementsLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                Log.d("ServiceTrackingFragment", "Requirements registration was successful.")
+                val data: Intent? = result.data
+
+                val returnedInfo = data?.getParcelableExtra<ServiceInformationModel>(
+                    Constants.SERVICE_INFORMATION // Key used by EnterRequirementsFragment
+                )
+                if (returnedInfo != null) {
+                    serviceInformation = returnedInfo
+                    updateRegisterIconColor(R.color.blue_400)
+                    updateRegisterButtonColor(R.color.blue_400)
+                    btnFinishService.isEnabled = true
+                } else {
+                    Log.d("ServiceTrackingFragment", "No service information returned.")
+                }
+
+            } else if (result.resultCode == Activity.RESULT_CANCELED) {
+                Log.d("ServiceTrackingFragment", "Requirements registration was cancelled.")
+                // Handle cancellation if needed
+            }
+        }
     }
 
     override fun onCreateView(
@@ -99,8 +131,11 @@ class ServiceTrackingFragment : Fragment() {
         spStatus = view.findViewById(R.id.sp_status)
         spSubStatus = view.findViewById(R.id.sp_sub_status)
         btnTakePictures = view.findViewById(R.id.btn_take_pictures)
+        btnEnterRequirements = view.findViewById(R.id.btn_enter_requirements)
+        btnFinishService = view.findViewById(R.id.btn_finish_service)
         ivServiceIcon = view.findViewById(R.id.iv_service_icon)
         ivPhotoIcon = view.findViewById(R.id.iv_photo_icon)
+        ivRegisterIcon = view.findViewById(R.id.iv_register_icon)
 
         return view
     }
@@ -113,6 +148,10 @@ class ServiceTrackingFragment : Fragment() {
 
         btnTakePictures.setOnClickListener {
             launchRegisterPhotosActivity()
+        }
+
+        btnEnterRequirements.setOnClickListener {
+            launchEnterRequirementsActivity()
         }
     }
 
@@ -236,6 +275,20 @@ class ServiceTrackingFragment : Fragment() {
         }
     }
 
+    private fun launchEnterRequirementsActivity() {
+//        if (statusValueStr != "" && subStatusValueStr != "" && receivedPhotoReferences != null) {
+        val intent = Intent(requireContext(), EnterRequirementsActivity::class.java)
+        intent.putExtra(Constants.SERVICE_INFORMATION, serviceInformation)
+        registerRequirementsLauncher.launch(intent)
+//        } else {
+//            val dialogMessage =
+//                "Para poder continuar con el registro, debes completar los pasos previos."
+//            InfoDialogFragment.newInstance(
+//                message = dialogMessage,
+//            ).show(parentFragmentManager, "InfoDialogFragmentTag")
+//        }
+    }
+
 
     private fun updateSpinnerWithDefaultStyles(selectedTextView: TextView?) {
         selectedTextView?.setBackgroundResource(R.drawable.spinner_custom_background)
@@ -265,6 +318,16 @@ class ServiceTrackingFragment : Fragment() {
     private fun updateTakePhotoButtonColor(colorResId: Int) {
         val color = ContextCompat.getColor(requireContext(), colorResId)
         btnTakePictures.setBackgroundColor(color)
+    }
+
+    private fun updateRegisterIconColor(colorResId: Int) {
+        val color = ContextCompat.getColor(requireContext(), colorResId)
+        ivRegisterIcon.setColorFilter(color)
+    }
+
+    private fun updateRegisterButtonColor(colorResId: Int) {
+        val color = ContextCompat.getColor(requireContext(), colorResId)
+        btnEnterRequirements.setBackgroundColor(color)
     }
 
     companion object {

@@ -2,6 +2,7 @@ package com.upc.grupo4.atencionservicio
 
 import android.os.Bundle
 import android.widget.FrameLayout
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -10,62 +11,58 @@ import com.google.android.material.button.MaterialButton
 import com.upc.grupo4.atencionservicio.model.ServiceInformationModel
 import com.upc.grupo4.atencionservicio.util.Constants
 
+class EnterRequirementsActivity : AppCompatActivity() {
 
-class StartServiceActivity : AppCompatActivity() {
-
+    private lateinit var toolbar: Toolbar
     private lateinit var btnTracking: MaterialButton
     private lateinit var btnInformation: MaterialButton
-    private lateinit var contentContainer: FrameLayout
-    private lateinit var toolbar: Toolbar
+    private lateinit var tvLastData: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_start_service)
+        setContentView(R.layout.activity_enter_requirements)
 
-        toolbar = findViewById(R.id.toolbar_start_service)
+        toolbar = findViewById(R.id.toolbar_enter_requirements)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back)
 
-
-        btnTracking = findViewById(R.id.btn_tracking)
-        btnInformation = findViewById(R.id.btn_information)
-        contentContainer = findViewById(R.id.start_service_container)
-
-        val orderId: String? =
-            intent.getStringExtra(Constants.ORDER_ID)
+        btnTracking = findViewById(R.id.btn_tracking_req)
+        btnInformation = findViewById(R.id.btn_information_req)
+        tvLastData = findViewById(R.id.tv_last_information)
 
         val serviceInformation: ServiceInformationModel? =
             intent.getParcelableExtra(Constants.SERVICE_INFORMATION)
 
         // Set initial state
-        setSelectedButton(1, orderId, serviceInformation)
+        setSelectedButton(1, serviceInformation)
 
         btnTracking.setOnClickListener {
-            setSelectedButton(1, orderId, serviceInformation)
+            setSelectedButton(1, serviceInformation)
         }
 
         btnInformation.setOnClickListener {
-            setSelectedButton(2, null, serviceInformation)
+            setSelectedButton(2, serviceInformation)
         }
     }
 
     private fun setSelectedButton(
         selected: Int,
-        orderId: String?,
         serviceInformation: ServiceInformationModel? = null
     ) {
         when (selected) {
             1 -> {
                 styleButtonAsFilled(btnTracking)
                 styleButtonAsOutlined(btnInformation)
-                showServiceTracking(orderId, serviceInformation)
+                tvLastData.visibility = FrameLayout.VISIBLE
+                showEnterRequirements(serviceInformation)
             }
 
             2 -> {
                 styleButtonAsOutlined(btnTracking)
                 styleButtonAsFilled(btnInformation)
+                tvLastData.visibility = FrameLayout.GONE
                 showServiceInformation(serviceInformation)
             }
         }
@@ -87,19 +84,15 @@ class StartServiceActivity : AppCompatActivity() {
         button.setTextColor(ContextCompat.getColor(this, R.color.blue_500))
     }
 
-    private fun showServiceTracking(
-        orderId: String?,
-        serviceInformation: ServiceInformationModel?
-    ) {
-        val serviceTrackingFragment = ServiceTrackingFragment().apply {
+    private fun showEnterRequirements(serviceInformation: ServiceInformationModel?) {
+        val enterRequirementsFragment = EnterRequirementsFragment().apply {
             arguments = Bundle().apply {
-                putString(Constants.ORDER_ID, orderId)
                 putParcelable(Constants.SERVICE_INFORMATION, serviceInformation)
             }
         }
 
         supportFragmentManager.beginTransaction()
-            .replace(R.id.start_service_container, serviceTrackingFragment)
+            .replace(R.id.enter_requirements_container, enterRequirementsFragment)
             .commit()
     }
 
@@ -111,10 +104,9 @@ class StartServiceActivity : AppCompatActivity() {
         }
 
         supportFragmentManager.beginTransaction()
-            .replace(R.id.start_service_container, serviceInformationFragment)
+            .replace(R.id.enter_requirements_container, serviceInformationFragment)
             .commit()
     }
-
 
     override fun onSupportNavigateUp(): Boolean {
         onBackPressedDispatcher.onBackPressed()
