@@ -53,6 +53,8 @@
     <string name="tv_no_service_to_finish">Aún no tienes servicios finalizados</string>
     <string name="btn_enter">Ingresar</string>
     <string name="btn_search_itinerary">Buscar itinerario de servicios</string>
+    <string name="btn_view_pictures">Ver fotos</string>
+    <string name="btn_view_requirements">Ver requerimientos</string>
 
     <string-array name="status_options">
         <item>Seleccionar Estado</item>

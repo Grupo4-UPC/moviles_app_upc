@@ -24,7 +24,18 @@ class StartServiceActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_start_service)
 
+        val service: ServiceModel? =
+            intent.getParcelableExtra(Constants.SERVICE)
+
+        val serviceInformation: ServiceInformationModel? =
+            intent.getParcelableExtra(Constants.SERVICE_INFORMATION)
+
         toolbar = findViewById(R.id.toolbar_start_service)
+
+        if (service != null && service.status == "Realizado") {
+            toolbar.setTitle("Revisar Servicio")
+        }
+
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back)
@@ -33,12 +44,6 @@ class StartServiceActivity : AppCompatActivity() {
         btnTracking = findViewById(R.id.btn_tracking)
         btnInformation = findViewById(R.id.btn_information)
         contentContainer = findViewById(R.id.start_service_container)
-
-        val service: ServiceModel? =
-            intent.getParcelableExtra(Constants.SERVICE)
-
-        val serviceInformation: ServiceInformationModel? =
-            intent.getParcelableExtra(Constants.SERVICE_INFORMATION)
 
         // Set initial state
         setSelectedButton(1, service, serviceInformation)

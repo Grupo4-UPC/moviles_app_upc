@@ -115,7 +115,7 @@ class ServiceListFragment : Fragment() {
         allServicesList = mutableListOf(
             ServiceModel(
                 "354140-1", "Luisa Pérez", "Av. Siempre Viva 147", "Mañana", "Ropero",
-                "Realizado", "Todo conforme", "uri1", "uri2", "uri3", "uri4",
+                "Realizado", "Todo Conforme", "uri1", "uri2", "uri3", "uri4",
                 "Luisa Pérez", "48545121", "-", "", true
             ),
             ServiceModel(
