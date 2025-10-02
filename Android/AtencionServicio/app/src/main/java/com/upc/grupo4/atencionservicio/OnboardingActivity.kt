@@ -44,7 +44,7 @@ class OnboardingActivity : AppCompatActivity() {
             goToService()
         }
 
-        binding.btnNext.setOnClickListener {
+        binding.btnNextOnboarding.setOnClickListener {
             val currentItem = binding.viewPager.currentItem
             if (currentItem < adapter.itemCount - 1) {
                 binding.viewPager.currentItem = currentItem + 1
@@ -56,6 +56,7 @@ class OnboardingActivity : AppCompatActivity() {
 
     private fun goToService() {
         val intent = Intent(this, WelcomeActivity::class.java)
+        intent.putExtra("NOMBRE_USUARIO", "Jorge Perez")
         startActivity(intent)
         finish()
     }

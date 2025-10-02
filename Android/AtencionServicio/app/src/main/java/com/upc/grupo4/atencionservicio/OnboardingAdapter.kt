@@ -15,7 +15,7 @@ class OnboardingAdapter(activity: AppCompatActivity) : FragmentStateAdapter(acti
         OnboardingFragment.newInstance(
             R.drawable.ic_intro2,
             "Registro fotográfico",
-            "Luego de realizar el servicio, toma hasta 6 fotos como evidencia y guardálas en el aplicativo."
+            "Luego de realizar el servicio, toma hasta 4 fotos como evidencia y guardálas en el aplicativo."
         ),
         OnboardingFragment.newInstance(
             R.drawable.ic_intro3,
