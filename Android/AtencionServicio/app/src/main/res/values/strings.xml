@@ -50,6 +50,8 @@
     <string name="hint_name">Nombre<font color='#FF0000'>*</font></string>
     <string name="btn_end">Finalizar</string>
     <string name="btn_enter_requirements">Ingresar Requerimientos</string>
+    <string name="tv_no_service_to_start">Aún no tienes servicios por iniciar</string>
+    <string name="tv_no_service_to_finish">Aún no tienes servicios finalizados</string>
 
     <string-array name="status_options">
         <item>Seleccionar Estado</item>

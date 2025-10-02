@@ -9,5 +9,5 @@ object Constants {
     const val PHOTO_REFERENCES = "photo_references"
     const val SERVICE_STARTED_REQUEST_KEY = "serviceStartedRequestKey"
     const val SERVICE_MODEL_BUNDLE_KEY = "serviceModelBundleKey"
-
+    const val IS_PENDING_SERVICES_EMPTY = "isPendingServicesEmpty"
 }

@@ -26,8 +26,6 @@ class FinishedServicesFragment : Fragment() {
     private lateinit var rvFinishedServices: RecyclerView
     private lateinit var finishedServiceAdapter: FinishedServiceAdapter
 
-//    private lateinit var startServiceLauncher: ActivityResultLauncher<Intent>
-
     private var finishedServicesList: ArrayList<ServiceModel> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +35,6 @@ class FinishedServicesFragment : Fragment() {
                 it.getParcelableArrayList<ServiceModel>(ARG_FINISHED_SERVICES_LIST)
                     ?: ArrayList()
         }
-        //TODO: Implement start service launcher
     }
 
     override fun onCreateView(
@@ -78,7 +75,6 @@ class FinishedServicesFragment : Fragment() {
                 val intent = Intent(requireContext(), StartServiceActivity::class.java)
                 intent.putExtra(Constants.SERVICE, service)
                 intent.putExtra(Constants.SERVICE_INFORMATION, serviceInformation)
-                //TODO: Replace with startServiceLauncher
                 startActivity(intent)
             },
         )
@@ -91,11 +87,6 @@ class FinishedServicesFragment : Fragment() {
         finishedServicesList.addAll(newPendingServices)
         if (::finishedServiceAdapter.isInitialized) { // Ensure adapter is initialized
             finishedServiceAdapter.updateData(newPendingServices)
-        } else {
-            // If adapter isn't initialized yet (e.g. view not created),
-            // setupRecyclerView will use the updated currentPendingServicesList.
-            // Or, if view is already created, you might need to call setupRecyclerView here
-            // if it wasn't called for some reason or the data wasn't ready.
         }
     }
 

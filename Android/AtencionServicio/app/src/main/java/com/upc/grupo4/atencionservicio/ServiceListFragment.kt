@@ -111,7 +111,7 @@ class ServiceListFragment : Fragment() {
     }
 
     private fun initializeServiceLists() {
-        // Your existing logic to populate allServicesList
+        //TODO: Replace this with a real call to the server
         allServicesList = mutableListOf(
             ServiceModel(
                 "354140-1", "Luisa Pérez", "Av. Siempre Viva 147", "Mañana", "Ropero",
@@ -123,12 +123,24 @@ class ServiceListFragment : Fragment() {
                 "Juan Pérez",
                 "Av Surco 659, Santiago de Surco 15049",
                 "Mañana",
-                "Ducha"
+                "Ducha",
             ),
-            ServiceModel("354140-3", "Maria Gómez", "Calle Ficticia 456", "Tarde", "Terma"),
-            ServiceModel("354140-4", "Carlos López2", "Av. La Paz 789", "Noche", "Armario")
+            ServiceModel(
+                "354140-3",
+                "Maria Gómez",
+                "Calle Ficticia 456",
+                "Tarde",
+                "Terma",
+            ),
+            ServiceModel(
+                "354140-4",
+                "Carlos López2",
+                "Av. La Paz 789",
+                "Noche",
+                "Armario",
+            )
         )
-        // Re-filter lists (or do it in handleServiceUpdate more granularly)
+        // Applying filter to the list
         filterServiceLists()
     }
 
@@ -142,31 +154,55 @@ class ServiceListFragment : Fragment() {
     }
 
     fun loadPendingServices() {
-        val pendingServicesFragment = PendingServicesFragment().apply {
-            arguments = Bundle().apply {
-                putParcelableArrayList("pending_services_list", ArrayList(pendingServicesList))
-            }
-        }
-
         val fragmentTransaction = actualFragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.fragment_service_list_container, pendingServicesFragment)
-        fragmentTransaction.commit()
+
+        if (pendingServicesList.isNotEmpty()) {
+            val pendingServicesFragment = PendingServicesFragment().apply {
+                arguments = Bundle().apply {
+                    putParcelableArrayList("pending_services_list", ArrayList(pendingServicesList))
+                }
+            }
+
+            fragmentTransaction.replace(
+                R.id.fragment_service_list_container,
+                pendingServicesFragment
+            )
+            fragmentTransaction.commit()
+        } else {
+            val noServiceFragment = NoServiceFragment.newInstance(true)
+
+            fragmentTransaction.replace(R.id.fragment_service_list_container, noServiceFragment)
+            fragmentTransaction.commit()
+        }
     }
 
     fun loadFinishedServices() {
-        val finishedServicesFragment = FinishedServicesFragment().apply {
-            arguments = Bundle().apply {
-                putParcelableArrayList("finished_services_list", ArrayList(finishedServicesList))
-            }
-        }
         val fragmentTransaction = actualFragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.fragment_service_list_container, finishedServicesFragment)
-        fragmentTransaction.commit()
+
+        if (finishedServicesList.isNotEmpty()) {
+            val finishedServicesFragment = FinishedServicesFragment().apply {
+                arguments = Bundle().apply {
+                    putParcelableArrayList(
+                        "finished_services_list",
+                        ArrayList(finishedServicesList)
+                    )
+                }
+            }
+            fragmentTransaction.replace(
+                R.id.fragment_service_list_container,
+                finishedServicesFragment
+            )
+            fragmentTransaction.commit()
+        } else {
+            val noServiceFragment = NoServiceFragment.newInstance(false)
+            fragmentTransaction.replace(R.id.fragment_service_list_container, noServiceFragment)
+            fragmentTransaction.commit()
+        }
     }
 
 
     private fun handleServiceUpdate(updatedService: ServiceModel) {
-        // 1. Update the master list (allServicesList)
+        // 1. Update the master list
         val indexInAll = allServicesList.indexOfFirst { it.id == updatedService.id }
         if (indexInAll != -1) {
             allServicesList[indexInAll] = updatedService
@@ -191,10 +227,20 @@ class ServiceListFragment : Fragment() {
         // Check which button in toggleButtonGroup is checked to know which fragment is visible
         when (toggleButtonGroup.checkedButtonId) {
             R.id.btnToStart -> {
-                // If PendingServicesFragment is visible, update it or reload it
-                val pendingFragment =
-                    actualFragmentManager.findFragmentById(R.id.fragment_service_list_container) as? PendingServicesFragment
-                pendingFragment?.updateServices(pendingServicesList)
+                if (pendingServicesList.isEmpty()) {
+                    val fragmentTransaction = actualFragmentManager.beginTransaction()
+                    val noServiceFragment = NoServiceFragment.newInstance(true)
+                    fragmentTransaction.replace(
+                        R.id.fragment_service_list_container,
+                        noServiceFragment
+                    )
+                    fragmentTransaction.commit()
+                } else {
+                    // If PendingServicesFragment is visible, update it or reload it
+                    val pendingFragment =
+                        actualFragmentManager.findFragmentById(R.id.fragment_service_list_container) as? PendingServicesFragment
+                    pendingFragment?.updateServices(pendingServicesList)
+                }
             }
 
             R.id.btnEnded -> {
