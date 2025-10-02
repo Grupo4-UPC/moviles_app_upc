@@ -35,6 +35,18 @@
             android:name=".MenuActivity"
             android:exported="false" />
         <activity
+            android:name=".WelcomeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".OnboardingFragment"
+            android:exported="false" />
+        <activity
+            android:name=".OnboardingAdapter"
+            android:exported="false" />
+        <activity
+            android:name=".OnboardingActivity"
+            android:exported="false" />
+        <activity
             android:name=".FAQAdapter"
             android:exported="false"
             tools:ignore="Instantiatable" />
