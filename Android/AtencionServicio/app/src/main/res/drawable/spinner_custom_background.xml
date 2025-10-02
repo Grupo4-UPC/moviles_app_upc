@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Focused/Pressed state: Use primary color for border -->
+    <item android:state_focused="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/blue_500" />
+            <corners android:radius="4dp" />
+            <stroke android:width="2dp" android:color="@color/blue_500" /> <!-- Primary color for focus -->
+        </shape>
+    </item>
+
+    <!-- Enabled, not focused state: Default border -->
+    <item android:state_enabled="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/white" /> <!-- Or a very light grey background -->
+            <corners android:radius="4dp" />
+            <stroke android:width="1dp" android:color="@color/blue_500" /> <!-- Neutral border -->
+        </shape>
+    </item>
+
+    <!-- Disabled state (optional) -->
+    <item android:state_enabled="false">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/button_disabled_background_grey" /> <!-- Light grey background -->
+            <corners android:radius="4dp" />
+            <stroke android:width="1dp" android:color="@color/button_disabled_background_grey" />
+        </shape>
+    </item>
+
+</selector>

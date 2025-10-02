@@ -19,13 +19,8 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Toolbar
-        val toolbar: Toolbar = binding.loginToolbar
-        setSupportActionBar(toolbar)
-        supportActionBar?.title = "Atención de Servicio"
-
-        binding.btnLogin.setOnClickListener {
-            val email = binding.etEmail.text?.toString()?.trim().orEmpty()
+        binding.btnEnter.setOnClickListener {
+            val email = binding.etUser.text?.toString()?.trim().orEmpty()
             val password = binding.etPassword.text?.toString()?.trim().orEmpty()
 
             if (email.isEmpty() || password.isEmpty()) {
@@ -56,6 +51,7 @@ class LoginActivity : AppCompatActivity() {
                 startActivity(Intent(this, FAQActivity::class.java))
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }

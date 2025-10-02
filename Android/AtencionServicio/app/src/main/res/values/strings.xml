@@ -2,13 +2,15 @@
     <string name="app_name">Atención de Servicios</string>
     <string name="login">Iniciar sesión</string>
     <string name="forgot_password">Olvidé mi contraseña</string>
-    <string name="email">Correo electrónico</string>
+    <string name="user">Usuario</string>
     <string name="password">Contraseña</string>
     <string name="send">Enviar</string>
     <string name="back">Volver</string>
     <string name="tracking">Tracking</string>
-    <string name="information">Informacion</string>
+    <string name="information">Información</string>
     <string name="start_service">Iniciar Servicio</string>
+    <string name="service_information">Inf. del Servicio</string>
+    <string name="service_information_all">Información del Servicio</string>
     <string name="client">Cliente</string>
     <string name="cellphone">Celular</string>
     <string name="address">Dirección</string>
@@ -17,4 +19,62 @@
     <string name="product">Producto</string>
     <string name="date_service">Fecha del servicio</string>
     <string name="observation">Observación del servicio</string>
+    <string name="shift">Turno de servicio</string>
+    <string name="shiftSimple">Turno</string>
+    <string name="address_reference">Referencia de domicilio</string>
+    <string name="menu">Menú</string>
+    <string name="my_services">Mis Servicios</string>
+    <string name="get_more_services">Obtener más servicios</string>
+    <string name="logout">Cerrar Sesión</string>
+    <string name="services_to_start">Por iniciar</string>
+    <string name="services_finished">Finalizados</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="end_completed_services">Finalizar servicios completados</string>
+    <string name="btn_call">Llamar</string>
+    <string name="check_service">Revisar\nservicio</string>
+    <string name="btn_cancel">Cancelar</string>
+    <string name="btn_accept">Aceptar</string>
+    <string name="btn_close">Cerrar</string>
+    <string name="dialog_start_service">Al iniciar el servicio se notificará al cliente por correo\n¿Desea continuar?</string>
+    <string name="btn_end_service">Finalizar Servicio</string>
+    <string name="register_photos">Registro fotográfico</string>
+    <string name="btn_save_photos">Guardar Fotos</string>
+    <string name="btn_delete_all_photos">Eliminar fotos</string>
+    <string name="dialog_info_title">Información</string>
+    <string name="btn_dialog_accept_info">Aceptar</string>
+    <string name="btn_take_pictures">Tomar fotos</string>
+    <string name="enter_requirements">Ingresar Requerimientos</string>
+    <string name="btn_next">Siguiente</string>
+    <string name="hint_edittext">Ingresar</string>
+    <string name="hint_name">Nombre<font color='#FF0000'>*</font></string>
+    <string name="btn_end">Finalizar</string>
+    <string name="btn_enter_requirements">Ingresar Requerimientos</string>
+    <string name="tv_no_service_to_start">Aún no tienes servicios por iniciar</string>
+    <string name="tv_no_service_to_finish">Aún no tienes servicios finalizados</string>
+    <string name="btn_enter">Ingresar</string>
+    <string name="btn_search_itinerary">Buscar itinerario de servicios</string>
+
+    <string-array name="status_options">
+        <item>Seleccionar Estado</item>
+        <item>Realizado</item>
+        <item>No Realizado</item>
+    </string-array>
+
+    <string-array name="sub_status_initial">
+        <item>Seleccionar Subestado</item>
+    </string-array>
+
+    <string-array name="sub_status_for_done">
+        <item>Seleccionar Subestado</item>
+        <item>Todo Conforme</item>
+        <item>Realizado en un lugar diferente al indicado</item>
+        <item>Realizado con piezas dañadas</item>
+        <item>Piso desnivelado/Falso piso</item>
+        <item>Producto manipulado por cliente</item>
+    </string-array>
+
+    <string-array name="sub_status_for_not_done">
+        <item>Seleccionar Subestado</item>
+        <item>Faltan piezas</item>
+    </string-array>
 </resources>

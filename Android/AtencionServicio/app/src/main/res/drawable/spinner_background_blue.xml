@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/blue_400" /> <!-- Your primary blue -->
+    <corners android:radius="4dp" />
+    <!-- No stroke needed if it's a solid background, or add a darker/lighter blue stroke if desired -->
+</shape>

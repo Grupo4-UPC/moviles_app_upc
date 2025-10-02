@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/dialog_rounded_background"
+    android:padding="24dp">
+
+    <ImageView
+        android:id="@+id/btn_dialog_close"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:contentDescription="@string/btn_close"
+        android:padding="4dp"
+        android:src="@drawable/ic_close_dialog"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_dialog_message"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center_horizontal"
+        android:lineSpacingMultiplier="1.2"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btn_dialog_close" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_dialog_cancel"
+        style="@style/MySegmentedButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="8dp"
+        android:text="@string/btn_cancel"
+        android:textColor="@color/blue_500"
+        app:strokeColor="@color/blue_500"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btn_dialog_accept"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_dialog_message" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_dialog_accept"
+        style="@style/MySegmentedButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/dialog_button_accept_background"
+        android:text="@string/btn_accept"
+        android:textColor="@color/white"
+        app:backgroundTint="@null"
+        app:layout_constraintBottom_toBottomOf="@id/btn_dialog_cancel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toEndOf="@id/btn_dialog_cancel"
+        app:layout_constraintTop_toTopOf="@id/btn_dialog_cancel" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

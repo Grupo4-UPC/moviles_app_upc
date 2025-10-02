@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_columnWeight="1"
+    android:layout_gravity="center"
+    android:minHeight="150dp">
+
+    <!-- State 1: Button to capture photo -->
+    <LinearLayout
+        android:id="@+id/layout_button_capture"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:background="@drawable/photo_capture_button_background"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:visibility="visible">
+
+        <ImageView
+            android:id="@+id/iv_capture_icon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginBottom="8dp"
+            android:src="@drawable/ic_upload_photo"
+            app:tint="@color/black" />
+
+        <TextView
+            android:id="@+id/tv_capture_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            tools:text="Adicional" />
+    </LinearLayout>
+
+    <!-- State 2: Image Preview with Delete Button -->
+    <FrameLayout
+        android:id="@+id/layout_image_preview"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:visibility="gone"> <!-- Initially hidden -->
+
+        <ImageView
+            android:id="@+id/iv_photo_preview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            tools:srcCompat="@tools:sample/backgrounds/scenic" /> <!-- Placeholder image -->
+
+        <ImageButton
+            android:id="@+id/btn_delete_photo_item"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="top|end"
+            android:layout_margin="8dp"
+            android:background="@drawable/delete_icon_background_circle"
+            android:contentDescription="Eliminar foto"
+            android:padding="4dp"
+            android:src="@drawable/ic_close_circle"
+            app:tint="@color/white" />
+    </FrameLayout>
+</FrameLayout>

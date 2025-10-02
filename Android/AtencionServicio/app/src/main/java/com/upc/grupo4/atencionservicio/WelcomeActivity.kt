@@ -13,7 +13,7 @@ class WelcomeActivity : AppCompatActivity() {
 
         val tvNombre = findViewById<TextView>(R.id.tvNombre)
         val tvCantidadServicios = findViewById<TextView>(R.id.tvCantidadServicios)
-        val btnBuscarItinerario = findViewById<Button>(R.id.btnBuscarItinerario)
+        val btnBuscarItinerario = findViewById<Button>(R.id.btn_search_itinerary)
 
         val nombreUsuario = intent.getStringExtra("NOMBRE_USUARIO") ?: "Usuario"
         tvNombre.text = nombreUsuario
@@ -21,7 +21,7 @@ class WelcomeActivity : AppCompatActivity() {
         tvCantidadServicios.text = "1"
 
         btnBuscarItinerario.setOnClickListener {
-            startActivity(Intent(this, ServiceActivity::class.java))
+            startActivity(Intent(this, MenuActivity::class.java))
             finish()
         }
     }

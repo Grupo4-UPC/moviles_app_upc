@@ -1,15 +1,16 @@
 package com.upc.grupo4.atencionservicio
 
-import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
 import android.widget.FrameLayout
-import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import com.google.android.material.button.MaterialButton
+import com.upc.grupo4.atencionservicio.model.ServiceInformationModel
+import com.upc.grupo4.atencionservicio.model.ServiceModel
+import com.upc.grupo4.atencionservicio.util.Constants
+
 
 class StartServiceActivity : AppCompatActivity() {
 
@@ -17,60 +18,56 @@ class StartServiceActivity : AppCompatActivity() {
     private lateinit var btnInformation: MaterialButton
     private lateinit var contentContainer: FrameLayout
     private lateinit var toolbar: Toolbar
-    private lateinit var btnBack: MaterialButton
-
-    // Information view variables
-    private lateinit var txtClient: TextView
-    private lateinit var txtCellphone: TextView
-    private lateinit var txtAddress: TextView
-    private lateinit var txtTypeService: TextView
-    private lateinit var txtProduct: TextView
-    private lateinit var txtDateService: TextView
-    private lateinit var txtObservation: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_start_service)
 
-        toolbar = findViewById(R.id.toolbarService)
+        toolbar = findViewById(R.id.toolbar_start_service)
         setSupportActionBar(toolbar)
-        supportActionBar?.title = "Atencion de Servicio"
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back)
 
-        btnTracking = findViewById(R.id.btnTracking)
-        btnInformation = findViewById(R.id.btnInformation)
-        contentContainer = findViewById(R.id.contentContainer)
-        btnBack = findViewById(R.id.btnBack)
+
+        btnTracking = findViewById(R.id.btn_tracking)
+        btnInformation = findViewById(R.id.btn_information)
+        contentContainer = findViewById(R.id.start_service_container)
+
+        val service: ServiceModel? =
+            intent.getParcelableExtra(Constants.SERVICE)
+
+        val serviceInformation: ServiceInformationModel? =
+            intent.getParcelableExtra(Constants.SERVICE_INFORMATION)
 
         // Set initial state
-        setSelectedButton(1)
+        setSelectedButton(1, service, serviceInformation)
 
         btnTracking.setOnClickListener {
-            setSelectedButton(1)
+            setSelectedButton(1, service, serviceInformation)
         }
 
         btnInformation.setOnClickListener {
-            setSelectedButton(2)
-        }
-
-        btnBack.setOnClickListener {
-            val intent = Intent(this, ServiceActivity::class.java)
-            startActivity(intent)
+            setSelectedButton(2, null, serviceInformation)
         }
     }
 
-    private fun setSelectedButton(selected: Int) {
+    private fun setSelectedButton(
+        selected: Int,
+        service: ServiceModel?,
+        serviceInformation: ServiceInformationModel? = null
+    ) {
         when (selected) {
             1 -> {
                 styleButtonAsFilled(btnTracking)
                 styleButtonAsOutlined(btnInformation)
-                showContent(R.layout.tracking_content)
+                showServiceTracking(service, serviceInformation)
             }
 
             2 -> {
                 styleButtonAsOutlined(btnTracking)
                 styleButtonAsFilled(btnInformation)
-                showContent(R.layout.information_content)
+                showServiceInformation(serviceInformation)
             }
         }
     }
@@ -91,28 +88,37 @@ class StartServiceActivity : AppCompatActivity() {
         button.setTextColor(ContextCompat.getColor(this, R.color.blue_500))
     }
 
-    private fun showContent(layoutId: Int) {
-        contentContainer.removeAllViews()
-        val view = layoutInflater.inflate(layoutId, contentContainer, false)
-
-        if (layoutId == R.layout.information_content) {
-            txtClient = view.findViewById(R.id.txt_client)
-            txtCellphone = view.findViewById(R.id.txt_cellphone)
-            txtAddress = view.findViewById(R.id.txt_address)
-            txtTypeService = view.findViewById(R.id.txt_type_service)
-            txtProduct = view.findViewById(R.id.txt_product)
-            txtDateService = view.findViewById(R.id.txt_date_service)
-            txtObservation = view.findViewById(R.id.txt_observation)
-
-            txtClient.text = "Jose Lopez Perez"
-            txtCellphone.text = "943562152"
-            txtAddress.text = "Jr Los Sauces 123 - Urb. Sagitario - Surco"
-            txtTypeService.text = "Visita tecnica cabinas / duchas / tinas"
-            txtProduct.text = "10787 - Columna asturias"
-            txtDateService.text = "2025-08-01"
-            txtObservation.text = "Ninguno"
+    private fun showServiceTracking(
+        service: ServiceModel?,
+        serviceInformation: ServiceInformationModel?
+    ) {
+        val serviceTrackingFragment = ServiceTrackingFragment().apply {
+            arguments = Bundle().apply {
+                putParcelable(Constants.SERVICE, service)
+                putParcelable(Constants.SERVICE_INFORMATION, serviceInformation)
+            }
         }
 
-        contentContainer.addView(view)
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.start_service_container, serviceTrackingFragment)
+            .commit()
+    }
+
+    private fun showServiceInformation(serviceInformation: ServiceInformationModel?) {
+        val serviceInformationFragment = ServiceInformationFragment().apply {
+            arguments = Bundle().apply {
+                putParcelable(Constants.SERVICE_INFORMATION, serviceInformation)
+            }
+        }
+
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.start_service_container, serviceInformationFragment)
+            .commit()
+    }
+
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressedDispatcher.onBackPressed()
+        return true
     }
 }
