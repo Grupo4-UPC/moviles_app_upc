@@ -3,6 +3,8 @@ package com.upc.grupo4.atencionservicio
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -24,6 +26,7 @@ import com.upc.grupo4.atencionservicio.model.PhotoType
 import com.upc.grupo4.atencionservicio.model.ServiceInformationModel
 import com.upc.grupo4.atencionservicio.model.ServiceModel
 import com.upc.grupo4.atencionservicio.util.Constants
+import com.upc.grupo4.atencionservicio.util.LoadingDialog
 
 class ServiceTrackingFragment : Fragment() {
     private var service: ServiceModel? = null
@@ -155,12 +158,35 @@ class ServiceTrackingFragment : Fragment() {
             }
 
             btnFinishService.setOnClickListener {
-                finishService()
+                LoadingDialog.show(requireContext(), "Guardando información")
+
+                Handler(Looper.getMainLooper()).postDelayed({
+                    // Once the task is complete, hide the dialog
+                    LoadingDialog.hide()
+
+                    val dialogMessage =
+                        "Se ha guardado el servicio satisfactoriamente"
+
+                    InfoDialogFragment.newInstance(
+                        title = "OS - ${service?.id}",
+                        message = dialogMessage,
+                        iconResId = R.drawable.ic_check_circle
+                    ).setOnAcceptClickListener {
+                        finishService()
+                    }.show(parentFragmentManager, "InfoDialogFragmentTag")
+
+                }, 2000)
             }
         } else {
             loadStatusSpinner(service?.status)
             loadSubStatusSpinner(service?.subStatus)
             updateElementsVisibility()
+
+            btnViewRequirements.setOnClickListener {
+                val intent = Intent(requireContext(), ViewRequirementsActivity::class.java)
+                intent.putExtra(Constants.SERVICE, service)
+                startActivity(intent)
+            }
         }
     }
 

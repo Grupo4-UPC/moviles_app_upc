@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginStart="30dp"
+    android:layout_marginEnd="15dp"
     tools:context=".EnterRequirementsFragment">
 
     <LinearLayout
@@ -50,7 +51,8 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="320dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp">
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="5dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/ti_client_name"
@@ -67,6 +69,7 @@
             android:backgroundTint="@color/blue_500"
             android:text="@string/btn_next"
             android:textColor="@color/white"
+            android:layout_marginStart="5dp"
             app:backgroundTint="@null" />
     </LinearLayout>
 
@@ -177,6 +180,7 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="320dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
             android:layout_marginTop="8dp">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -194,6 +198,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
+            android:layout_marginStart="5dp"
             android:orientation="vertical">
 
             <TextView
@@ -241,72 +246,15 @@
         android:orientation="vertical"
         android:visibility="gone">
 
-        <LinearLayout
-            android:layout_width="200dp"
+        <include
+            android:id="@+id/customer_summary_layout"
+            layout="@layout/layout_customer_summary"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="10dp"
             android:layout_marginBottom="20dp"
-            android:background="@drawable/data_layout_background"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Doc. Identidad:"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tv_client_id"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="1dp"
-                    android:text="45186551" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Nombre:"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tv_client_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="1dp"
-                    android:text="Luis Perez" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Observaciones:"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tv_observations"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="1dp"
-                    android:text="-" />
-            </LinearLayout>
-        </LinearLayout>
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"/>
 
         <LinearLayout
             android:layout_width="match_parent"

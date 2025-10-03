@@ -11,12 +11,16 @@ import androidx.fragment.app.DialogFragment
 import com.google.android.material.button.MaterialButton
 import android.view.Window
 import com.upc.grupo4.atencionservicio.R // Your R file
+import com.upc.grupo4.atencionservicio.model.ServiceModel
 
 class InfoDialogFragment : DialogFragment() {
 
     private var dialogTitle: String? = null
     private var dialogMessage: String? = null
     private var iconResId: Int? = null
+
+    private var acceptCallBackFn: (() -> Unit)? = null
+
 
     companion object {
         private const val ARG_TITLE = "arg_title"
@@ -37,6 +41,11 @@ class InfoDialogFragment : DialogFragment() {
             fragment.arguments = args
             return fragment
         }
+    }
+
+    fun setOnAcceptClickListener(listener: () -> Unit): InfoDialogFragment {
+        this.acceptCallBackFn = listener
+        return this
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,6 +90,7 @@ class InfoDialogFragment : DialogFragment() {
 
         btnAccept.setOnClickListener {
             dismiss()
+            acceptCallBackFn?.invoke()
         }
 
         btnClose.setOnClickListener {
