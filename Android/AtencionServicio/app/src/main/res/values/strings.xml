@@ -61,6 +61,9 @@
     <string name="sign">Firma:</string>
     <string name="view_requirements">Requerimientos Ingresados</string>
     <string name="additional_info_requirement">Información Adicional:</string>
+    <string name="sp_status_default_value">Seleccionar Estado</string>
+    <string name="sp_sub_status_default_value">Seleccionar Subestado</string>
+    <string name="sp_loading_options">Cargando opciones…</string>
 
     <string-array name="status_options">
         <item>Seleccionar Estado</item>

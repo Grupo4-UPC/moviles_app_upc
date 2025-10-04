@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Paint
-import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -17,16 +16,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
-import com.upc.grupo4.atencionservicio.model.ServiceInformationModel
+import com.upc.grupo4.atencionservicio.model.ServiceModel
 import com.upc.grupo4.atencionservicio.util.Constants
 
-/**
- * A simple [Fragment] subclass.
- * Use the [ServiceInformationFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class ServiceInformationFragment : Fragment() {
-    private var serviceInformation: ServiceInformationModel? = null
+    private var service: ServiceModel? = null
 
     private lateinit var txtClient: TextView
     private lateinit var txtCellphone: TextView
@@ -59,7 +53,7 @@ class ServiceInformationFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            serviceInformation = it.getParcelable(Constants.SERVICE_INFORMATION)
+            service = it.getParcelable(Constants.SERVICE)
         }
     }
 
@@ -81,21 +75,21 @@ class ServiceInformationFragment : Fragment() {
         txtAddressReference = view.findViewById(R.id.txt_address_reference)
         btnCall = view.findViewById(R.id.btn_Call)
 
-        txtClient.text = serviceInformation?.clientName
+        txtClient.text = service?.clientName
 
-        if (serviceInformation?.cellphone.isNullOrEmpty()) {
+        if (service?.cellphone.isNullOrEmpty()) {
             btnCall.visibility = View.GONE
         }
 
-        txtCellphone.text = serviceInformation?.cellphone
+        txtCellphone.text = service?.cellphone
         txtAddress.paintFlags = Paint.UNDERLINE_TEXT_FLAG
-        txtAddress.text = serviceInformation?.address
-        txtTypeService.text = serviceInformation?.typeService
-        txtProduct.text = serviceInformation?.product
-        txtDateService.text = serviceInformation?.dateService
-        txtObservation.text = serviceInformation?.observation
-        txtServiceShift.text = serviceInformation?.serviceShift
-        txtAddressReference.text = serviceInformation?.addressReference
+        "${service?.address}, ${service?.district} ${service?.postalCode}".also { txtAddress.text = it }
+        txtTypeService.text = service?.serviceDescription
+        txtProduct.text = service?.product
+        txtDateService.text = service?.serviceDate
+        txtObservation.text = service?.observation
+        txtServiceShift.text = service?.shift
+        txtAddressReference.text = service?.addressReference
 
         return view
     }
@@ -108,9 +102,9 @@ class ServiceInformationFragment : Fragment() {
             checkCallPermissionAndMakeCall(phoneNumberToCall!!)
         }
 
-        if (!serviceInformation?.address.isNullOrEmpty()) {
+        if (!service?.address.isNullOrEmpty()) {
             txtAddress.setOnClickListener {
-                val map = Constants.GOOGLE_MAPS_URL + serviceInformation?.address
+                val map = Constants.GOOGLE_MAPS_URL + service?.address
                 val i = Intent(Intent.ACTION_VIEW, map.toUri())
                 startActivity(i)
             }
@@ -181,10 +175,10 @@ class ServiceInformationFragment : Fragment() {
          * @return A new instance of fragment ServiceInformationFragment.
          */
         @JvmStatic
-        fun newInstance(serviceInformation: ServiceInformationModel) =
+        fun newInstance(service: ServiceModel) =
             ServiceInformationFragment().apply {
                 arguments = Bundle().apply {
-                    putString(Constants.SERVICE_INFORMATION, serviceInformation.toString())
+                    putParcelable(Constants.SERVICE, service)
                 }
             }
     }

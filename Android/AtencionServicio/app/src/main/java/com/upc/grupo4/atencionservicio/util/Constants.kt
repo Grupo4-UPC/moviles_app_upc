@@ -10,4 +10,6 @@ object Constants {
     const val SERVICE_STARTED_REQUEST_KEY = "serviceStartedRequestKey"
     const val SERVICE_MODEL_BUNDLE_KEY = "serviceModelBundleKey"
     const val IS_PENDING_SERVICES_EMPTY = "isPendingServicesEmpty"
+    const val STATUS_LIST = "status_list"
+    const val SUB_STATUS_LIST = "status_list"
 }
