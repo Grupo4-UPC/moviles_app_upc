@@ -207,14 +207,14 @@
                 android:text="Describe si hay piezas faltantes, dañadas, etc\n(Opcional)" />
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/til_pieces"
+                android:id="@+id/til_additional_info"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="320dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/ti_pieces"
+                    android:id="@+id/ti_additional_info"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="top"

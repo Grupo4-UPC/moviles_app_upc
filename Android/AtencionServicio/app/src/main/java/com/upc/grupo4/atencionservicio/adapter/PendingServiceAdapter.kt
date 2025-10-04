@@ -43,7 +43,7 @@ class PendingServiceAdapter(
         private val btnStartService: Button = itemView.findViewById(R.id.btnStartService)
 
         fun bind(service: ServiceModel) {
-            tvServiceID.text = "OS - ${service.id}" // Assuming 'id' is what you used before
+            "OS - ${service.rootId} - ${service.serviceId}".also { tvServiceID.text = it }
             tvAddress.text = service.address
             tvShift.text = service.shift
             tvProduct.text = service.product

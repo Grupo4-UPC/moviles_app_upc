@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import com.google.android.material.button.MaterialButton
-import com.upc.grupo4.atencionservicio.model.ServiceInformationModel
+import com.upc.grupo4.atencionservicio.model.ServiceModel
 import com.upc.grupo4.atencionservicio.util.Constants
 
 class EnterRequirementsActivity : AppCompatActivity() {
@@ -16,7 +16,7 @@ class EnterRequirementsActivity : AppCompatActivity() {
     private lateinit var toolbar: Toolbar
     private lateinit var btnTracking: MaterialButton
     private lateinit var btnInformation: MaterialButton
-    private lateinit var tvLastData: TextView
+    private lateinit var tvLastInformationTitle: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,40 +30,40 @@ class EnterRequirementsActivity : AppCompatActivity() {
 
         btnTracking = findViewById(R.id.btn_tracking_req)
         btnInformation = findViewById(R.id.btn_information_req)
-        tvLastData = findViewById(R.id.tv_last_information)
+        tvLastInformationTitle = findViewById(R.id.tv_last_information)
 
-        val serviceInformation: ServiceInformationModel? =
-            intent.getParcelableExtra(Constants.SERVICE_INFORMATION)
+        val service: ServiceModel? =
+            intent.getParcelableExtra(Constants.SERVICE)
 
         // Set initial state
-        setSelectedButton(1, serviceInformation)
+        setSelectedButton(1, service)
 
         btnTracking.setOnClickListener {
-            setSelectedButton(1, serviceInformation)
+            setSelectedButton(1, service)
         }
 
         btnInformation.setOnClickListener {
-            setSelectedButton(2, serviceInformation)
+            setSelectedButton(2, service)
         }
     }
 
     private fun setSelectedButton(
         selected: Int,
-        serviceInformation: ServiceInformationModel? = null
+        service: ServiceModel? = null
     ) {
         when (selected) {
             1 -> {
                 styleButtonAsFilled(btnTracking)
                 styleButtonAsOutlined(btnInformation)
-                tvLastData.visibility = FrameLayout.VISIBLE
-                showEnterRequirements(serviceInformation)
+                tvLastInformationTitle.visibility = FrameLayout.VISIBLE
+                showEnterRequirements(service)
             }
 
             2 -> {
                 styleButtonAsOutlined(btnTracking)
                 styleButtonAsFilled(btnInformation)
-                tvLastData.visibility = FrameLayout.GONE
-                showServiceInformation(serviceInformation)
+                tvLastInformationTitle.visibility = FrameLayout.GONE
+                showServiceInformation(service)
             }
         }
     }
@@ -84,10 +84,10 @@ class EnterRequirementsActivity : AppCompatActivity() {
         button.setTextColor(ContextCompat.getColor(this, R.color.blue_500))
     }
 
-    private fun showEnterRequirements(serviceInformation: ServiceInformationModel?) {
+    private fun showEnterRequirements(service: ServiceModel?) {
         val enterRequirementsFragment = EnterRequirementsFragment().apply {
             arguments = Bundle().apply {
-                putParcelable(Constants.SERVICE_INFORMATION, serviceInformation)
+                putParcelable(Constants.SERVICE, service)
             }
         }
 
@@ -96,10 +96,10 @@ class EnterRequirementsActivity : AppCompatActivity() {
             .commit()
     }
 
-    private fun showServiceInformation(serviceInformation: ServiceInformationModel?) {
+    private fun showServiceInformation(service: ServiceModel?) {
         val serviceInformationFragment = ServiceInformationFragment().apply {
             arguments = Bundle().apply {
-                putParcelable(Constants.SERVICE_INFORMATION, serviceInformation)
+                putParcelable(Constants.SERVICE, service)
             }
         }
 

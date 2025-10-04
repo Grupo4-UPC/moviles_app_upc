@@ -2,11 +2,10 @@ package com.upc.grupo4.atencionservicio
 
 import android.app.Activity
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -20,14 +19,19 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import com.upc.grupo4.atencionservicio.model.ServiceInformationModel
 import com.upc.grupo4.atencionservicio.model.ServiceModel
 import com.upc.grupo4.atencionservicio.util.Constants
 import androidx.fragment.app.setFragmentResult
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.android.volley.Request
+import com.android.volley.toolbox.JsonArrayRequest
+import com.android.volley.toolbox.Volley
 import com.upc.grupo4.atencionservicio.adapter.PendingServiceAdapter
+import com.upc.grupo4.atencionservicio.model.StatusModel
 import com.upc.grupo4.atencionservicio.util.LoadingDialog
+import com.upc.grupo4.atencionservicio.util.StatusLoadHelper
+import org.json.JSONArray
 
 private const val ARG_PENDING_SERVICES_LIST = "pending_services_list"
 
@@ -105,34 +109,12 @@ class PendingServicesFragment : Fragment() {
         serviceAdapter = PendingServiceAdapter(
             ArrayList(pendingServicesList), // Pass a mutable copy initially
             onServiceInfoClick = { service ->
-                val serviceInformation = ServiceInformationModel( // Construct as needed
-                    service.clientName,
-                    "+51943585457", // Example, get real data
-                    service.address,
-                    "Instalacion 1",
-                    "Ducha",
-                    "2025-09-30",
-                    "",
-                    service.shift,
-                    "Alt. Cdra 2 Av. La Paz"
-                )
                 val intent = Intent(requireContext(), ServiceInformationActivity::class.java)
-                intent.putExtra(Constants.SERVICE_INFORMATION, serviceInformation)
+                intent.putExtra(Constants.SERVICE, service)
                 startActivity(intent)
             },
             onStartServiceClick = { service ->
-                val serviceInformation = ServiceInformationModel( // Construct as needed
-                    service.clientName,
-                    "+51943585457", // Example, get real data
-                    service.address,
-                    "Instalacion 1",
-                    "Ducha",
-                    "2025-09-30",
-                    "",
-                    service.shift,
-                    "Alt. Cdra 2 Av. La Paz"
-                )
-                showConfirmStartServiceDialog(service, serviceInformation)
+                showConfirmStartServiceDialog(service)
             }
         )
         rvPendingServices.adapter = serviceAdapter
@@ -154,7 +136,6 @@ class PendingServicesFragment : Fragment() {
 
     private fun showConfirmStartServiceDialog(
         service: ServiceModel,
-        serviceInformation: ServiceInformationModel?
     ) {
         val dialog = Dialog(requireContext())
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE) // Remove default title bar
@@ -183,18 +164,26 @@ class PendingServicesFragment : Fragment() {
         btnAccept.setOnClickListener {
             dialog.dismiss() // Close the dialog
 
-            LoadingDialog.show(requireContext(), "Iniciando ruta")
+            LoadingDialog.show(requireContext(), "Iniciando ruta...")
 
-            // This will simulate a 4 second delay
-            // TODO: This needs to be replace by an actual API call
-            Handler(Looper.getMainLooper()).postDelayed({
-                // Once the task is complete, hide the dialog
-                LoadingDialog.hide()
+            val statusLoadHelper = StatusLoadHelper()
 
-                // ...and then proceed with the next action (e.g., navigating to another screen)
-                launchStartActualService(service, serviceInformation)
+            statusLoadHelper.fetchStatusList(
+                context = requireContext(),
+                onResult = { statusList ->
+                    // Success! You have your ArrayList<StatusModel> here.
+                    // You can now use this list to populate your spinner or any other UI component.
+                    Log.d("PendingServicesFragment", "Successfully fetched ${statusList.size} statuses.")
 
-            }, 4000)
+                    LoadingDialog.hide()
+
+                    launchStartActualService(service, statusList)
+                },
+                onError = { errorMessage ->
+                    Log.e("PendingServicesFragment", "Failed to fetch statuses: $errorMessage")
+                    // Toast.makeText(requireContext(), "Error: $errorMessage", Toast.LENGTH_SHORT).show()
+                }
+            )
         }
 
         dialog.show()
@@ -209,7 +198,7 @@ class PendingServicesFragment : Fragment() {
 
     private fun launchStartActualService(
         service: ServiceModel,
-        serviceInformation: ServiceInformationModel?
+        statusList: ArrayList<StatusModel>
     ) {
         val intent = Intent(requireContext(), StartServiceActivity::class.java)
         intent.putExtra(
@@ -217,8 +206,8 @@ class PendingServicesFragment : Fragment() {
             service
         )
         intent.putExtra(
-            Constants.SERVICE_INFORMATION,
-            serviceInformation
+            Constants.STATUS_LIST,
+            statusList
         )
 
         startServiceLauncher.launch(intent)

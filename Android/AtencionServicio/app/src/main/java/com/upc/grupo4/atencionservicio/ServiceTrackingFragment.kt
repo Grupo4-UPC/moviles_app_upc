@@ -1,6 +1,7 @@
 package com.upc.grupo4.atencionservicio
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -15,22 +16,27 @@ import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import com.android.volley.Request
+import com.android.volley.toolbox.JsonArrayRequest
+import com.android.volley.toolbox.Volley
 import com.google.android.material.button.MaterialButton
 import com.upc.grupo4.atencionservicio.dialogs.InfoDialogFragment
 import com.upc.grupo4.atencionservicio.model.PhotoReference
 import com.upc.grupo4.atencionservicio.model.PhotoType
-import com.upc.grupo4.atencionservicio.model.ServiceInformationModel
 import com.upc.grupo4.atencionservicio.model.ServiceModel
+import com.upc.grupo4.atencionservicio.model.StatusModel
+import com.upc.grupo4.atencionservicio.model.SubStatusModel
 import com.upc.grupo4.atencionservicio.util.Constants
 import com.upc.grupo4.atencionservicio.util.LoadingDialog
+import org.json.JSONArray
 
 class ServiceTrackingFragment : Fragment() {
     private var service: ServiceModel? = null
-    private var serviceInformation: ServiceInformationModel? = null
+    private var statusList: ArrayList<StatusModel>? = null
+
     private lateinit var spStatus: Spinner
     private lateinit var spSubStatus: Spinner
     private lateinit var btnTakePictures: MaterialButton
@@ -52,8 +58,9 @@ class ServiceTrackingFragment : Fragment() {
     private lateinit var registerPhotosLauncher: ActivityResultLauncher<Intent>
     private lateinit var registerRequirementsLauncher: ActivityResultLauncher<Intent>
     private var receivedPhotoReferences: List<PhotoReference>? = null
-    private var statusValue: Int? = 0
+    private var statusIdValue: Long? = 0L
     private var statusValueStr: String? = ""
+    private var subStatusIdValue: Long? = 0L
     private var subStatusValueStr: String? = ""
 
 
@@ -61,7 +68,7 @@ class ServiceTrackingFragment : Fragment() {
         super.onCreate(savedInstanceState)
         arguments?.let {
             service = it.getParcelable(Constants.SERVICE)
-            serviceInformation = it.getParcelable(Constants.SERVICE_INFORMATION)
+            statusList = it.getParcelableArrayList(Constants.STATUS_LIST)
         }
 
         registerPhotosLauncher = registerForActivityResult(
@@ -96,11 +103,11 @@ class ServiceTrackingFragment : Fragment() {
                 Log.d("ServiceTrackingFragment", "Requirements registration was successful.")
                 val data: Intent? = result.data
 
-                val returnedInfo = data?.getParcelableExtra<ServiceInformationModel>(
-                    Constants.SERVICE_INFORMATION // Key used by EnterRequirementsFragment
+                val returnedInfo = data?.getParcelableExtra<ServiceModel>(
+                    Constants.SERVICE // Key used by EnterRequirementsFragment
                 )
                 if (returnedInfo != null) {
-                    serviceInformation = returnedInfo
+                    service = returnedInfo
                     updateRegisterIconColor(R.color.blue_400)
                     updateRegisterButtonColor(R.color.blue_400)
                     btnFinishService.isEnabled = true
@@ -168,7 +175,7 @@ class ServiceTrackingFragment : Fragment() {
                         "Se ha guardado el servicio satisfactoriamente"
 
                     InfoDialogFragment.newInstance(
-                        title = "OS - ${service?.id}",
+                        title = "OS - ${service?.rootId} - ${service?.serviceId}",
                         message = dialogMessage,
                         iconResId = R.drawable.ic_check_circle
                     ).setOnAcceptClickListener {
@@ -178,8 +185,7 @@ class ServiceTrackingFragment : Fragment() {
                 }, 2000)
             }
         } else {
-            loadStatusSpinner(service?.status)
-            loadSubStatusSpinner(service?.subStatus)
+            loadStatusSpinner(service?.status, service?.subStatus)
             updateElementsVisibility()
 
             btnViewRequirements.setOnClickListener {
@@ -209,8 +215,13 @@ class ServiceTrackingFragment : Fragment() {
         updateRegisterIconColor(R.color.blue_400)
     }
 
-    private fun loadStatusSpinner(serviceStatus: String? = null) {
-        val actualStatusOptions = resources.getStringArray(R.array.status_options)
+    private fun loadStatusSpinner(serviceStatus: String? = null, subStatusValue: String? = null) {
+        val actualStatusOptions: ArrayList<String> = ArrayList();
+        actualStatusOptions.add(getString(R.string.sp_status_default_value))
+
+        statusList?.forEach { status ->
+            actualStatusOptions.add(status.statusDescription)
+        }
 
         val adapter = ArrayAdapter(
             requireContext(),
@@ -232,10 +243,15 @@ class ServiceTrackingFragment : Fragment() {
                 spStatus.setSelection(position, false)
                 val selectedTextView = spStatus.selectedView as? TextView
 
-                // Optionally update styles/state immediately if needed
-                statusValue = position
+                val selectedStatusObj: StatusModel? =
+                    statusList?.find { status -> status.statusDescription == serviceStatus }
+
+                statusIdValue = selectedStatusObj?.id
                 statusValueStr = serviceStatus
-                loadSubStatusSpinner() // Ensure sub-status spinner updates based on this pre-selected status
+                loadSubStatusSpinner(
+                    subStatusValue,
+                    statusIdValue
+                ) // Ensure sub-status spinner updates based on this pre-selected status
 
                 updateSpinnerWithSelectedStyles(selectedTextView)
 
@@ -251,22 +267,24 @@ class ServiceTrackingFragment : Fragment() {
                 id: Long
             ) {
                 val selectedStatus = parent?.getItemAtPosition(position).toString()
+                val selectedStatusObj: StatusModel? =
+                    statusList?.find { status -> status.statusDescription == selectedStatus }
 
                 val selectedTextView = view as? TextView
 
                 when (position) {
                     0 -> {
                         updateSpinnerWithDefaultStyles(selectedTextView)
-                        statusValue = 0
+                        statusIdValue = 0
                         statusValueStr = ""
                         loadSubStatusSpinner()
                     }
 
                     else -> {
                         updateSpinnerWithSelectedStyles(selectedTextView)
-                        statusValue = position
+                        statusIdValue = selectedStatusObj?.id
                         statusValueStr = selectedStatus
-                        loadSubStatusSpinner()
+                        loadSubStatusSpinner("", statusIdValue)
                     }
                 }
             }
@@ -283,41 +301,63 @@ class ServiceTrackingFragment : Fragment() {
     }
 
 
-    private fun loadSubStatusSpinner(serviceSubStatus: String? = null) {
-        val subStatusOptionsResource = when (statusValue) {
-            1 -> R.array.sub_status_for_done
-            2 -> R.array.sub_status_for_not_done
-            else -> R.array.sub_status_initial
+    private fun loadSubStatusSpinner(serviceSubStatus: String? = null, statusIdValue: Long? = 0L) {
+        if (statusIdValue == 0L) {
+            setupSubStatusSpinnerWithDefault()
+            return
         }
 
-        val subStatusOptions = resources.getStringArray(subStatusOptionsResource)
+        val loadingAdapter = ArrayAdapter(
+            requireContext(),
+            R.layout.spinner_item_custom,
+            listOf(getString(R.string.sp_loading_options))
+        )
+        spSubStatus.adapter = loadingAdapter
+
+        fetchSubStatusList(
+            context = requireContext(),
+            statusId = statusIdValue,
+            onResult = { subStatusListReturned ->
+                Log.i("ServiceTrackingFragment", "subStatusListReturned: $subStatusListReturned")
+                setupSubStatusSpinner(subStatusListReturned, serviceSubStatus)
+            },
+            onError = { errorMessage ->
+                Log.e("StatusFragment", "Failed to fetch statuses: $errorMessage")
+            }
+        )
+    }
+
+    private fun setupSubStatusSpinner(
+        subStatusList: List<SubStatusModel>,
+        serviceSubStatus: String?
+    ) {
+        // Create the list of strings for the adapter, including the default hint.
+        val subStatusOptions = ArrayList<String>()
+        subStatusOptions.add(getString(R.string.sp_sub_status_default_value))
+        subStatusList.forEach { subStatus ->
+            subStatusOptions.add(subStatus.subStatusDescription)
+        }
 
         val adapter = ArrayAdapter(
             requireContext(),
-            R.layout.spinner_item_custom, // Setting custom spinner item layout
+            R.layout.spinner_item_custom,
             subStatusOptions
         )
-
-        // Setting custom dropdown layout
         adapter.setDropDownViewResource(R.layout.spinner_dropdown_item_custom)
-
         spSubStatus.adapter = adapter
 
+        // Now that the adapter has the full data, try to set the pre-selected value.
         if (serviceSubStatus != null) {
             val position = adapter.getPosition(serviceSubStatus)
-
-            // 2. Set the selection only if the status was found in the adapter (position > -1)
             if (position >= 0) {
                 spSubStatus.setSelection(position, false)
-                val selectedTextView = spSubStatus.selectedView as? TextView
-
-                updateSpinnerWithSelectedStyles(selectedTextView)
+                updateSpinnerWithSelectedStyles(spSubStatus.selectedView as? TextView)
                 updateServiceIconColor(R.color.blue_400)
-
                 spSubStatus.isEnabled = false
             }
         }
 
+        // Set the listener to handle user interactions.
         spSubStatus.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
@@ -325,29 +365,87 @@ class ServiceTrackingFragment : Fragment() {
                 position: Int,
                 id: Long
             ) {
-                val selectedSubStatus = parent?.getItemAtPosition(position).toString()
-
                 val selectedTextView = view as? TextView
-
-                when (position) {
-                    0 -> {
-                        updateSpinnerWithDefaultStyles(selectedTextView)
-                        subStatusValueStr = ""
-                        updateServiceIconColor(R.color.button_disabled_background_grey)
-                    }
-
-                    else -> {
-                        updateSpinnerWithSelectedStyles(selectedTextView)
-                        subStatusValueStr = selectedSubStatus
-                        updateServiceIconColor(R.color.blue_400)
-                    }
+                if (position == 0) {
+                    // Hint "Seleccione sub-estado" is selected
+                    updateSpinnerWithDefaultStyles(selectedTextView)
+                    subStatusIdValue = null
+                    subStatusValueStr = ""
+                    updateServiceIconColor(R.color.button_disabled_background_grey)
+                } else {
+                    updateSpinnerWithSelectedStyles(selectedTextView)
+                    subStatusValueStr = parent?.getItemAtPosition(position).toString()
+                    subStatusIdValue =
+                        subStatusList.find { it.subStatusDescription == subStatusValueStr }?.id
+                    updateServiceIconColor(R.color.blue_400)
                 }
             }
 
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                // Another interface callback
-            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
+    }
+
+    private fun setupSubStatusSpinnerWithDefault() {
+        val adapter = ArrayAdapter(
+            requireContext(),
+            R.layout.spinner_item_custom,
+            resources.getStringArray(R.array.sub_status_initial)
+        )
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item_custom)
+        spSubStatus.adapter = adapter
+        spSubStatus.setSelection(0, false)
+    }
+
+    fun fetchSubStatusList(
+        context: Context,
+        statusId: Long?,
+        onResult: (ArrayList<SubStatusModel>) -> Unit,
+        onError: (String) -> Unit
+    ) {
+        val url =
+            "http://10.0.2.2:3000/rutas/estados/${statusId}/subestados" //TODO: Change this with final URL
+        val queue = Volley.newRequestQueue(context)
+
+        val jsonArrayRequest = JsonArrayRequest(
+            Request.Method.GET, url, null,
+            { response ->
+                try {
+                    // The API call was successful, now parse the response
+                    val statusList = parseStatusResponse(response)
+                    onResult(statusList) // Pass the parsed list to the success callback
+                } catch (e: Exception) {
+                    Log.e("SubStatusParser", "Error parsing JSON", e)
+                    onError("Error parsing response.")
+                }
+            },
+            { error ->
+                // The API call failed
+                Log.e("SubStatusApi", "Volley error: ${error.message}", error)
+                onError(error.message ?: "Unknown Volley error")
+            }
+        )
+
+        // Add the request to the RequestQueue.
+        queue.add(jsonArrayRequest)
+    }
+
+    private fun parseStatusResponse(response: JSONArray): ArrayList<SubStatusModel> {
+        val subStatusList = ArrayList<SubStatusModel>()
+
+        for (i in 0 until response.length()) {
+            val statusObject = response.getJSONObject(i)
+
+            // Create a SubStatusModel object from the JSONObject
+            val subStatusModel = SubStatusModel(
+                id = statusObject.getLong("idSubestado"),
+                subStatusDescription = statusObject.getString("subestadoDesc")
+            )
+
+            // Add the new object to our list
+            subStatusList.add(subStatusModel)
+        }
+
+        return subStatusList
     }
 
     private fun launchRegisterPhotosActivity() {
@@ -368,7 +466,7 @@ class ServiceTrackingFragment : Fragment() {
     private fun launchEnterRequirementsActivity() {
         if (statusValueStr != "" && subStatusValueStr != "" && receivedPhotoReferences != null) {
             val intent = Intent(requireContext(), EnterRequirementsActivity::class.java)
-            intent.putExtra(Constants.SERVICE_INFORMATION, serviceInformation)
+            intent.putExtra(Constants.SERVICE, service)
             registerRequirementsLauncher.launch(intent)
         } else {
             val dialogMessage =
@@ -391,12 +489,6 @@ class ServiceTrackingFragment : Fragment() {
                 PhotoType.FRONT -> service?.frontPhotoUri = ref.filePath
             }
         }
-
-        service?.serviceReceiverName = serviceInformation?.clientName
-        service?.serviceReceiverDocId = serviceInformation?.clientId
-        service?.newObservations = serviceInformation?.observations
-        service?.additionalInformation = serviceInformation?.extraInformation
-        service?.isSigned = serviceInformation?.isSigned
 
         val resultIntent = Intent()
         resultIntent.putExtra(

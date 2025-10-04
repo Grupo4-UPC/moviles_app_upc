@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment
 import com.github.gcacace.signaturepad.views.SignaturePad
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
-import com.upc.grupo4.atencionservicio.model.ServiceInformationModel
+import com.upc.grupo4.atencionservicio.model.ServiceModel
 import com.upc.grupo4.atencionservicio.util.Constants
 
 class EnterRequirementsFragment : Fragment() {
@@ -32,7 +32,7 @@ class EnterRequirementsFragment : Fragment() {
 
     // Elements from step 3
     private lateinit var tiObservations: TextInputEditText
-    private lateinit var tiPieces: TextInputEditText
+    private lateinit var tiAdditionalInformation: TextInputEditText
     private lateinit var btnNextObservations: MaterialButton
 
     // Elements from step 4
@@ -44,12 +44,12 @@ class EnterRequirementsFragment : Fragment() {
     private lateinit var signaturePad: SignaturePad
     private lateinit var btnFinish: MaterialButton
 
-    private var serviceInformation: ServiceInformationModel? = null
+    private var service: ServiceModel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            serviceInformation = it.getParcelable(Constants.SERVICE_INFORMATION)
+            service = it.getParcelable(Constants.SERVICE)
         }
     }
 
@@ -71,7 +71,7 @@ class EnterRequirementsFragment : Fragment() {
         btnNextClientId = view.findViewById(R.id.btn_next_client_id)
 
         tiObservations = view.findViewById(R.id.ti_observations)
-        tiPieces = view.findViewById(R.id.ti_pieces)
+        tiAdditionalInformation = view.findViewById(R.id.ti_additional_info)
         btnNextObservations = view.findViewById(R.id.btn_next_observation)
 
         customerSummaryLayout = view.findViewById(R.id.customer_summary_layout)
@@ -86,16 +86,16 @@ class EnterRequirementsFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        tiClientName.setText(serviceInformation?.clientName)
+        tiClientName.setText(service?.clientName)
         tiClientName.requestFocus()
 
-        tiClientId.setText(serviceInformation?.clientId)
+        tiClientId.setText(service?.clientDocId)
 
         btnNextClientName.setOnClickListener {
             val clientName = tiClientName.text.toString()
 
             if (clientName != "") {
-                serviceInformation?.clientName = clientName
+                service?.serviceReceiverName = clientName
                 layoutStep1.visibility = View.GONE
                 layoutStep2.visibility = View.VISIBLE
                 tiClientId.requestFocus()
@@ -108,11 +108,8 @@ class EnterRequirementsFragment : Fragment() {
             val clientId = tiClientId.text.toString()
 
             if (clientId != "") {
-                serviceInformation?.clientId = clientId
+                service?.serviceReceiverDocId = clientId
                 layoutStep2.visibility = View.GONE
-
-                tiObservations.setText(serviceInformation?.observations)
-                tiPieces.setText(serviceInformation?.extraInformation)
 
                 layoutStep3.visibility = View.VISIBLE
                 tiObservations.requestFocus()
@@ -123,19 +120,19 @@ class EnterRequirementsFragment : Fragment() {
 
         btnNextObservations.setOnClickListener {
             val observations = tiObservations.text.toString()
-            val pieces = tiPieces.text.toString()
+            val additionalInfo = tiAdditionalInformation.text.toString()
 
             if (observations.isNotEmpty()) {
-                serviceInformation?.observations = observations
+                service?.newObservations = observations
             }
 
-            if (pieces.isNotEmpty()) {
-                serviceInformation?.extraInformation = pieces
+            if (additionalInfo.isNotEmpty()) {
+                service?.additionalInformation = additionalInfo
             }
 
-            tvClientId.text = serviceInformation?.clientId
-            tvClientName.text = serviceInformation?.clientName
-            tvClientObservation.text = serviceInformation?.observations
+            tvClientId.text = service?.serviceReceiverDocId
+            tvClientName.text = service?.serviceReceiverName
+            tvClientObservation.text = service?.newObservations
 
             layoutStep3.visibility = View.GONE
             layoutStep4.visibility = View.VISIBLE
@@ -162,23 +159,22 @@ class EnterRequirementsFragment : Fragment() {
 //                val file = requireActivity().getFileStreamPath("signature.png")
 //                serviceInformation?.signature = file.absolutePath
 
-                serviceInformation?.isSigned = true
+                service?.isSigned = true
                 btnFinish.isEnabled = true
             }
 
             override fun onClear() {
-                serviceInformation?.isSigned = false
+                service?.isSigned = false
                 btnFinish.isEnabled = false
             }
         })
 
         btnFinish.setOnClickListener {
-            if (serviceInformation?.isSigned == true) {
+            if (service?.isSigned == true) {
                 val resultIntent = Intent()
-                // Put the ArrayList of Parcelable objects
                 resultIntent.putExtra(
-                    Constants.SERVICE_INFORMATION,
-                    serviceInformation
+                    Constants.SERVICE,
+                    service
                 )
                 requireActivity().setResult(Activity.RESULT_OK, resultIntent)
                 requireActivity().finish()
@@ -188,10 +184,10 @@ class EnterRequirementsFragment : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance(serviceInformation: ServiceInformationModel) =
+        fun newInstance(service: ServiceModel) =
             EnterRequirementsFragment().apply {
                 arguments = Bundle().apply {
-                    putParcelable(Constants.SERVICE_INFORMATION, serviceInformation)
+                    putParcelable(Constants.SERVICE, service)
                 }
             }
     }

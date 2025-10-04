@@ -6,13 +6,24 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class ServiceModel(
-    val id: String,
+    val rootId: Long,
+    val serviceId: Long,
     val clientName: String,
     val address: String,
     val shift: String,
     val product: String,
+    var serviceDate: String,
+    var statusId: Long? = null,
     var status: String? = null,
+    var subStatusId: Long? = null,
     var subStatus: String? = null,
+    var clientDocId: String? = null,
+    var district: String? = null,
+    var postalCode: String? = null,
+    var cellphone: String? = null,
+    var addressReference: String? = null,
+    var serviceDescription: String? = null,
+    var observation: String? = null,
     var additionalPhotoUri: String? = null,
     var rightPhotoUri: String? = null,
     var leftPhotoUri: String? = null,
@@ -22,4 +33,5 @@ data class ServiceModel(
     var newObservations: String? = null,
     var additionalInformation: String? = null,
     var isSigned: Boolean? = null,
+    var signImg: String? = null
 ) : Parcelable

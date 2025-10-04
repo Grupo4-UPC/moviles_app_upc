@@ -7,8 +7,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import com.google.android.material.button.MaterialButton
-import com.upc.grupo4.atencionservicio.model.ServiceInformationModel
 import com.upc.grupo4.atencionservicio.model.ServiceModel
+import com.upc.grupo4.atencionservicio.model.StatusModel
 import com.upc.grupo4.atencionservicio.util.Constants
 
 
@@ -27,8 +27,8 @@ class StartServiceActivity : AppCompatActivity() {
         val service: ServiceModel? =
             intent.getParcelableExtra(Constants.SERVICE)
 
-        val serviceInformation: ServiceInformationModel? =
-            intent.getParcelableExtra(Constants.SERVICE_INFORMATION)
+        val statusList: ArrayList<StatusModel>? =
+            intent.getParcelableArrayListExtra(Constants.STATUS_LIST)
 
         toolbar = findViewById(R.id.toolbar_start_service)
 
@@ -46,33 +46,33 @@ class StartServiceActivity : AppCompatActivity() {
         contentContainer = findViewById(R.id.start_service_container)
 
         // Set initial state
-        setSelectedButton(1, service, serviceInformation)
+        setSelectedButton(1, service, statusList)
 
         btnTracking.setOnClickListener {
-            setSelectedButton(1, service, serviceInformation)
+            setSelectedButton(1, service, statusList)
         }
 
         btnInformation.setOnClickListener {
-            setSelectedButton(2, null, serviceInformation)
+            setSelectedButton(2, service, null)
         }
     }
 
     private fun setSelectedButton(
         selected: Int,
         service: ServiceModel?,
-        serviceInformation: ServiceInformationModel? = null
+        statusList: ArrayList<StatusModel>?
     ) {
         when (selected) {
             1 -> {
                 styleButtonAsFilled(btnTracking)
                 styleButtonAsOutlined(btnInformation)
-                showServiceTracking(service, serviceInformation)
+                displayServiceTrackingFragment(service, statusList)
             }
 
             2 -> {
                 styleButtonAsOutlined(btnTracking)
                 styleButtonAsFilled(btnInformation)
-                showServiceInformation(serviceInformation)
+                displayServiceInformationFragment(service)
             }
         }
     }
@@ -93,14 +93,14 @@ class StartServiceActivity : AppCompatActivity() {
         button.setTextColor(ContextCompat.getColor(this, R.color.blue_500))
     }
 
-    private fun showServiceTracking(
+    private fun displayServiceTrackingFragment(
         service: ServiceModel?,
-        serviceInformation: ServiceInformationModel?
+        statusList: ArrayList<StatusModel>?
     ) {
         val serviceTrackingFragment = ServiceTrackingFragment().apply {
             arguments = Bundle().apply {
                 putParcelable(Constants.SERVICE, service)
-                putParcelable(Constants.SERVICE_INFORMATION, serviceInformation)
+                putParcelableArrayList(Constants.STATUS_LIST, statusList)
             }
         }
 
@@ -109,10 +109,10 @@ class StartServiceActivity : AppCompatActivity() {
             .commit()
     }
 
-    private fun showServiceInformation(serviceInformation: ServiceInformationModel?) {
+    private fun displayServiceInformationFragment( service: ServiceModel?,) {
         val serviceInformationFragment = ServiceInformationFragment().apply {
             arguments = Bundle().apply {
-                putParcelable(Constants.SERVICE_INFORMATION, serviceInformation)
+                putParcelable(Constants.SERVICE, service)
             }
         }
 

@@ -1,19 +1,12 @@
 package com.upc.grupo4.atencionservicio
 
 import android.os.Bundle
-import android.text.Spannable
-import android.text.SpannableString
-import android.text.style.BackgroundColorSpan
-import android.text.style.ForegroundColorSpan
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import android.widget.Toast
-import androidx.core.content.ContextCompat
-import androidx.core.text.HtmlCompat
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.setFragmentResultListener
 import com.google.android.material.button.MaterialButton
@@ -60,7 +53,7 @@ class ServiceListFragment : Fragment() {
                 if (updatedServiceModel != null) {
                     Log.d(
                         "ServiceListFragment",
-                        "Received result from pending: ${updatedServiceModel.id}"
+                        "Received result from pending: ${updatedServiceModel.serviceId}"
                     )
                     handleServiceUpdate(updatedServiceModel)
                 }
@@ -114,30 +107,29 @@ class ServiceListFragment : Fragment() {
         //TODO: Replace this with a real call to the server
         allServicesList = mutableListOf(
             ServiceModel(
-                "354140-1", "Luisa Pérez", "Av. Siempre Viva 147", "Mañana", "Ropero",
-                "Realizado", "Todo Conforme", "uri1", "uri2", "uri3", "uri4",
+                354140, 1, "Luisa Pérez", "Calle Berlín 519", "Mañana", "Ropero",
+                "2025-10-01", 1, "Realizado", 1, "Todo Conforme", "48642154", "Miraflores", "15074",
+                "+51946878542", "-", "Instalacion", "",
+                "uri1", "uri2", "uri3", "uri4",
                 "Luisa Pérez", "48545121", "-", "", true
             ),
             ServiceModel(
-                "354140-2",
+                354140, 2,
                 "Juan Pérez",
-                "Av Surco 659, Santiago de Surco 15049",
+                "Av Surco 659",
                 "Mañana",
                 "Ducha",
+                "2025-10-01", 0, "", 0, "", "45878484", "Santiago de Surco", "15049",
+                "+51946878543"
             ),
             ServiceModel(
-                "354140-3",
+                354140, 3,
                 "Maria Gómez",
                 "Calle Ficticia 456",
                 "Tarde",
                 "Terma",
-            ),
-            ServiceModel(
-                "354140-4",
-                "Carlos López2",
-                "Av. La Paz 789",
-                "Noche",
-                "Armario",
+                "2025-10-01", 0, "", 0, "", "","Santiago de Surco", "15049",
+                "+51946878543"
             )
         )
         // Applying filter to the list
@@ -203,7 +195,7 @@ class ServiceListFragment : Fragment() {
 
     private fun handleServiceUpdate(updatedService: ServiceModel) {
         // 1. Update the master list
-        val indexInAll = allServicesList.indexOfFirst { it.id == updatedService.id }
+        val indexInAll = allServicesList.indexOfFirst { it.serviceId == updatedService.serviceId }
         if (indexInAll != -1) {
             allServicesList[indexInAll] = updatedService
         }

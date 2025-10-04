@@ -41,7 +41,7 @@ class FinishedServiceAdapter(
 
         private val btnReviewFinishedService: Button = itemView.findViewById(R.id.btn_review_finish_service)
         fun bind(service: ServiceModel) {
-            tvServiceID.text = "OS - ${service.id}" // Assuming 'id' is what you used before
+            "OS - ${service.rootId} - ${service.serviceId}".also { tvServiceID.text = it } // Assuming 'id' is what you used before
             tvAddress.text = service.address
             tvProduct.text = service.product
             tvShift.text = service.shift

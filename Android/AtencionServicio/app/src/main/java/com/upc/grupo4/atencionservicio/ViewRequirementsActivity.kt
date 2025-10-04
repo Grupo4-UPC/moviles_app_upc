@@ -6,9 +6,6 @@ import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import com.upc.grupo4.atencionservicio.model.ServiceInformationModel
 import com.upc.grupo4.atencionservicio.model.ServiceModel
 import com.upc.grupo4.atencionservicio.util.Constants
 
