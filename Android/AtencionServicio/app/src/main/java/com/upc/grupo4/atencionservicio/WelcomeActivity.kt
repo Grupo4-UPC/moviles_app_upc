@@ -2,9 +2,13 @@ package com.upc.grupo4.atencionservicio
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.upc.grupo4.atencionservicio.dialogs.InfoDialogFragment
+import com.upc.grupo4.atencionservicio.util.LoadingDialog
 
 class WelcomeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,8 +25,14 @@ class WelcomeActivity : AppCompatActivity() {
         tvCantidadServicios.text = "1"
 
         btnBuscarItinerario.setOnClickListener {
-            startActivity(Intent(this, MenuActivity::class.java))
-            finish()
+            LoadingDialog.show(this )
+
+            Handler(Looper.getMainLooper()).postDelayed({
+                LoadingDialog.hide()
+
+                startActivity(Intent(this, MenuActivity::class.java))
+                finish()
+            }, 2000)
         }
     }
 }

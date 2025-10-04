@@ -75,6 +75,7 @@
                         android:textSize="12sp" />
 
                     <TextView
+                        android:id="@+id/tv_step_1_required_label"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@color/blue_500"
@@ -194,6 +195,7 @@
                         android:textSize="12sp" />
 
                     <TextView
+                        android:id="@+id/tv_step_2_required_label"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@color/blue_500"
@@ -213,11 +215,21 @@
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/tv_photo_hint"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="4dp"
                     android:text="Es crucial seguir las indicacion al tomar las fotos"
                     android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tv_view_photo_hint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:text="Acá podrá visualizar las fotos"
+                    android:textSize="14sp"
+                    android:visibility="gone" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_take_pictures"
@@ -228,6 +240,17 @@
                     android:backgroundTint="@color/blue_500"
                     android:text="@string/btn_take_pictures"
                     android:textColor="@color/white" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_view_pictures"
+                    style="@style/MySegmentedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:backgroundTint="@color/blue_400"
+                    android:text="@string/btn_view_pictures"
+                    android:textColor="@color/white"
+                    android:visibility="gone" />
             </LinearLayout>
         </LinearLayout>
 
@@ -298,6 +321,7 @@
                         android:textSize="12sp" />
 
                     <TextView
+                        android:id="@+id/tv_step_3_required_label"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@color/blue_500"
@@ -318,12 +342,23 @@
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/tv_client_info_hint"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
                     android:text="Se agregan los datos del cliente o persona asignada, nombre, documento de identidad y firma."
                     android:textColor="#666666"
                     android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tv_view_client_info_hint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:text="Acá podrá ver los datos del cliente y observaciones del servicio"
+                    android:textColor="#666666"
+                    android:textSize="14sp"
+                    android:visibility="gone" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_enter_requirements"
@@ -334,6 +369,17 @@
                     android:backgroundTint="@color/blue_500"
                     android:text="@string/btn_enter_requirements"
                     android:textColor="@color/white" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_view_requirements"
+                    style="@style/MySegmentedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:backgroundTint="@color/blue_400"
+                    android:text="@string/btn_view_requirements"
+                    android:textColor="@color/white"
+                    android:visibility="gone" />
             </LinearLayout>
         </LinearLayout>
 

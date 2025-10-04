@@ -5,6 +5,8 @@ import android.app.Dialog
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -25,6 +27,7 @@ import androidx.fragment.app.setFragmentResult
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.upc.grupo4.atencionservicio.adapter.PendingServiceAdapter
+import com.upc.grupo4.atencionservicio.util.LoadingDialog
 
 private const val ARG_PENDING_SERVICES_LIST = "pending_services_list"
 
@@ -91,6 +94,11 @@ class PendingServicesFragment : Fragment() {
         if (pendingServicesList.isNotEmpty()) {
             serviceAdapter.updateData(pendingServicesList)
         }
+    }
+
+    override fun onDestroyView() {
+        LoadingDialog.hide()
+        super.onDestroyView()
     }
 
     private fun setupRecyclerView() {
@@ -174,8 +182,19 @@ class PendingServicesFragment : Fragment() {
 
         btnAccept.setOnClickListener {
             dialog.dismiss() // Close the dialog
-            //TODO: Add a loading animation for 6 seconds and start the service
-            launchStartActualService(service, serviceInformation)
+
+            LoadingDialog.show(requireContext(), "Iniciando ruta")
+
+            // This will simulate a 4 second delay
+            // TODO: This needs to be replace by an actual API call
+            Handler(Looper.getMainLooper()).postDelayed({
+                // Once the task is complete, hide the dialog
+                LoadingDialog.hide()
+
+                // ...and then proceed with the next action (e.g., navigating to another screen)
+                launchStartActualService(service, serviceInformation)
+
+            }, 4000)
         }
 
         dialog.show()

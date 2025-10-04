@@ -46,13 +46,21 @@
     <string name="enter_requirements">Ingresar Requerimientos</string>
     <string name="btn_next">Siguiente</string>
     <string name="hint_edittext">Ingresar</string>
-    <string name="hint_name">Nombre<font color='#FF0000'>*</font></string>
+    <string name="client_name">Nombre:</string>
     <string name="btn_end">Finalizar</string>
     <string name="btn_enter_requirements">Ingresar Requerimientos</string>
     <string name="tv_no_service_to_start">Aún no tienes servicios por iniciar</string>
     <string name="tv_no_service_to_finish">Aún no tienes servicios finalizados</string>
     <string name="btn_enter">Ingresar</string>
     <string name="btn_search_itinerary">Buscar itinerario de servicios</string>
+    <string name="btn_view_pictures">Ver fotos</string>
+    <string name="btn_view_requirements">Ver requerimientos</string>
+    <string name="loading_default_message">Cargando...</string>
+    <string name="client_doc_id">Doc. Identidad:</string>
+    <string name="observations">Observaciones:</string>
+    <string name="sign">Firma:</string>
+    <string name="view_requirements">Requerimientos Ingresados</string>
+    <string name="additional_info_requirement">Información Adicional:</string>
 
     <string-array name="status_options">
         <item>Seleccionar Estado</item>

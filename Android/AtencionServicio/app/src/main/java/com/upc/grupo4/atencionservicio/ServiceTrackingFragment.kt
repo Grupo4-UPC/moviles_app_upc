@@ -3,6 +3,8 @@ package com.upc.grupo4.atencionservicio
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -10,7 +12,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.TextView
@@ -25,6 +26,7 @@ import com.upc.grupo4.atencionservicio.model.PhotoType
 import com.upc.grupo4.atencionservicio.model.ServiceInformationModel
 import com.upc.grupo4.atencionservicio.model.ServiceModel
 import com.upc.grupo4.atencionservicio.util.Constants
+import com.upc.grupo4.atencionservicio.util.LoadingDialog
 
 class ServiceTrackingFragment : Fragment() {
     private var service: ServiceModel? = null
@@ -32,11 +34,21 @@ class ServiceTrackingFragment : Fragment() {
     private lateinit var spStatus: Spinner
     private lateinit var spSubStatus: Spinner
     private lateinit var btnTakePictures: MaterialButton
+    private lateinit var btnViewPhotos: MaterialButton
     private lateinit var btnEnterRequirements: MaterialButton
+    private lateinit var btnViewRequirements: MaterialButton
     private lateinit var btnFinishService: MaterialButton
     private lateinit var ivServiceIcon: ImageView
     private lateinit var ivPhotoIcon: ImageView
     private lateinit var ivRegisterIcon: ImageView
+    private lateinit var tvPhotoHint: TextView
+    private lateinit var tvViewPhotoHint: TextView
+    private lateinit var tvClientInfoHint: TextView
+    private lateinit var tvViewClientInfoHint: TextView
+
+    private lateinit var tvStep1RequiredLabel: TextView
+    private lateinit var tvStep2RequiredLabel: TextView
+    private lateinit var tvStep3RequiredLabel: TextView
     private lateinit var registerPhotosLauncher: ActivityResultLauncher<Intent>
     private lateinit var registerRequirementsLauncher: ActivityResultLauncher<Intent>
     private var receivedPhotoReferences: List<PhotoReference>? = null
@@ -64,22 +76,8 @@ class ServiceTrackingFragment : Fragment() {
                 )
                 if (photoRefs != null && photoRefs.isNotEmpty()) {
                     receivedPhotoReferences = photoRefs
-                    updatePhotoIconColor(R.color.blue_400) // this can be changed to a different color
+                    updatePhotoIconColor(R.color.blue_400)
                     updateTakePhotoButtonColor(R.color.blue_400)
-
-//                    Log.d("ServiceTrackingFragment", "Received ${photoRefs.size} photo references:")
-//                    photoRefs.forEach { ref ->
-//                        Log.d(
-//                            "ServiceTrackingFragment",
-//                            "Type: ${ref.type}, URI: ${ref.uri}, Path: ${ref.filePath}"
-//                        )
-//                    }
-
-                    Toast.makeText(
-                        requireContext(),
-                        "${photoRefs.size} fotos recibidas",
-                        Toast.LENGTH_LONG
-                    ).show()
                 } else {
                     Log.d(
                         "ServiceTrackingFragment",
@@ -88,7 +86,6 @@ class ServiceTrackingFragment : Fragment() {
                 }
             } else if (result.resultCode == Activity.RESULT_CANCELED) {
                 Log.d("ServiceTrackingFragment", "Photo registration was cancelled.")
-                // Handle cancellation if needed
             }
         }
 
@@ -127,11 +124,20 @@ class ServiceTrackingFragment : Fragment() {
         spStatus = view.findViewById(R.id.sp_status)
         spSubStatus = view.findViewById(R.id.sp_sub_status)
         btnTakePictures = view.findViewById(R.id.btn_take_pictures)
+        btnViewPhotos = view.findViewById(R.id.btn_view_pictures)
         btnEnterRequirements = view.findViewById(R.id.btn_enter_requirements)
+        btnViewRequirements = view.findViewById(R.id.btn_view_requirements)
         btnFinishService = view.findViewById(R.id.btn_finish_service)
         ivServiceIcon = view.findViewById(R.id.iv_service_icon)
         ivPhotoIcon = view.findViewById(R.id.iv_photo_icon)
         ivRegisterIcon = view.findViewById(R.id.iv_register_icon)
+        tvPhotoHint = view.findViewById(R.id.tv_photo_hint)
+        tvViewPhotoHint = view.findViewById(R.id.tv_view_photo_hint)
+        tvClientInfoHint = view.findViewById(R.id.tv_client_info_hint)
+        tvViewClientInfoHint = view.findViewById(R.id.tv_view_client_info_hint)
+        tvStep1RequiredLabel = view.findViewById(R.id.tv_step_1_required_label)
+        tvStep2RequiredLabel = view.findViewById(R.id.tv_step_2_required_label)
+        tvStep3RequiredLabel = view.findViewById(R.id.tv_step_3_required_label)
 
         return view
     }
@@ -139,23 +145,71 @@ class ServiceTrackingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupStatusSpinner()
-        loadSubStatusSpinner()
+        if (service?.status != "Realizado") {
+            loadStatusSpinner()
+            loadSubStatusSpinner()
 
-        btnTakePictures.setOnClickListener {
-            launchRegisterPhotosActivity()
-        }
+            btnTakePictures.setOnClickListener {
+                launchRegisterPhotosActivity()
+            }
 
-        btnEnterRequirements.setOnClickListener {
-            launchEnterRequirementsActivity()
-        }
+            btnEnterRequirements.setOnClickListener {
+                launchEnterRequirementsActivity()
+            }
 
-        btnFinishService.setOnClickListener {
-            finishService()
+            btnFinishService.setOnClickListener {
+                LoadingDialog.show(requireContext(), "Guardando información")
+
+                Handler(Looper.getMainLooper()).postDelayed({
+                    // Once the task is complete, hide the dialog
+                    LoadingDialog.hide()
+
+                    val dialogMessage =
+                        "Se ha guardado el servicio satisfactoriamente"
+
+                    InfoDialogFragment.newInstance(
+                        title = "OS - ${service?.id}",
+                        message = dialogMessage,
+                        iconResId = R.drawable.ic_check_circle
+                    ).setOnAcceptClickListener {
+                        finishService()
+                    }.show(parentFragmentManager, "InfoDialogFragmentTag")
+
+                }, 2000)
+            }
+        } else {
+            loadStatusSpinner(service?.status)
+            loadSubStatusSpinner(service?.subStatus)
+            updateElementsVisibility()
+
+            btnViewRequirements.setOnClickListener {
+                val intent = Intent(requireContext(), ViewRequirementsActivity::class.java)
+                intent.putExtra(Constants.SERVICE, service)
+                startActivity(intent)
+            }
         }
     }
 
-    private fun setupStatusSpinner() {
+    private fun updateElementsVisibility() {
+        tvPhotoHint.visibility = View.GONE
+        tvClientInfoHint.visibility = View.GONE
+        btnTakePictures.visibility = View.GONE
+        btnEnterRequirements.visibility = View.GONE
+        btnFinishService.visibility = View.GONE
+        tvStep1RequiredLabel.visibility = View.GONE
+        tvStep2RequiredLabel.visibility = View.GONE
+        tvStep3RequiredLabel.visibility = View.GONE
+
+        tvViewPhotoHint.visibility = View.VISIBLE
+        tvViewClientInfoHint.visibility = View.VISIBLE
+        btnViewPhotos.visibility = View.VISIBLE
+        btnViewRequirements.visibility = View.VISIBLE
+
+        updatePhotoIconColor(R.color.blue_400)
+        updateRegisterIconColor(R.color.blue_400)
+    }
+
+    private fun loadStatusSpinner(serviceStatus: String? = null) {
         val actualStatusOptions = resources.getStringArray(R.array.status_options)
 
         val adapter = ArrayAdapter(
@@ -169,6 +223,25 @@ class ServiceTrackingFragment : Fragment() {
 
         // 3. Apply the adapter to the spinner
         spStatus.adapter = adapter
+
+        if (serviceStatus != null) {
+            val position = adapter.getPosition(serviceStatus)
+
+            // 2. Set the selection only if the status was found in the adapter (position > -1)
+            if (position >= 0) {
+                spStatus.setSelection(position, false)
+                val selectedTextView = spStatus.selectedView as? TextView
+
+                // Optionally update styles/state immediately if needed
+                statusValue = position
+                statusValueStr = serviceStatus
+                loadSubStatusSpinner() // Ensure sub-status spinner updates based on this pre-selected status
+
+                updateSpinnerWithSelectedStyles(selectedTextView)
+
+                spStatus.isEnabled = false
+            }
+        }
 
         spStatus.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
@@ -203,12 +276,14 @@ class ServiceTrackingFragment : Fragment() {
             }
         }
 
-        // Set spinner to show the hint initially
-        spStatus.setSelection(0, false)
+        if (serviceStatus == null) {
+            // Set spinner to show the hint initially
+            spStatus.setSelection(0, false)
+        }
     }
 
 
-    private fun loadSubStatusSpinner() {
+    private fun loadSubStatusSpinner(serviceSubStatus: String? = null) {
         val subStatusOptionsResource = when (statusValue) {
             1 -> R.array.sub_status_for_done
             2 -> R.array.sub_status_for_not_done
@@ -227,6 +302,21 @@ class ServiceTrackingFragment : Fragment() {
         adapter.setDropDownViewResource(R.layout.spinner_dropdown_item_custom)
 
         spSubStatus.adapter = adapter
+
+        if (serviceSubStatus != null) {
+            val position = adapter.getPosition(serviceSubStatus)
+
+            // 2. Set the selection only if the status was found in the adapter (position > -1)
+            if (position >= 0) {
+                spSubStatus.setSelection(position, false)
+                val selectedTextView = spSubStatus.selectedView as? TextView
+
+                updateSpinnerWithSelectedStyles(selectedTextView)
+                updateServiceIconColor(R.color.blue_400)
+
+                spSubStatus.isEnabled = false
+            }
+        }
 
         spSubStatus.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(

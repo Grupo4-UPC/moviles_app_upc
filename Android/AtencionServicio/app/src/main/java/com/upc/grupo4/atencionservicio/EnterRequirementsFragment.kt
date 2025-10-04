@@ -36,9 +36,11 @@ class EnterRequirementsFragment : Fragment() {
     private lateinit var btnNextObservations: MaterialButton
 
     // Elements from step 4
+    private lateinit var customerSummaryLayout: View
     private lateinit var tvClientId: TextView
     private lateinit var tvClientName: TextView
     private lateinit var tvClientObservation: TextView
+
     private lateinit var signaturePad: SignaturePad
     private lateinit var btnFinish: MaterialButton
 
@@ -72,9 +74,11 @@ class EnterRequirementsFragment : Fragment() {
         tiPieces = view.findViewById(R.id.ti_pieces)
         btnNextObservations = view.findViewById(R.id.btn_next_observation)
 
-        tvClientId = view.findViewById(R.id.tv_client_id)
-        tvClientName = view.findViewById(R.id.tv_client_name)
-        tvClientObservation = view.findViewById(R.id.tv_observations)
+        customerSummaryLayout = view.findViewById(R.id.customer_summary_layout)
+        tvClientId = customerSummaryLayout.findViewById(R.id.tv_client_doc_id_value)
+        tvClientName = customerSummaryLayout.findViewById(R.id.tv_client_name_value)
+        tvClientObservation = customerSummaryLayout.findViewById(R.id.tv_observations_value)
+
         signaturePad = view.findViewById(R.id.signature_pad)
         btnFinish = view.findViewById(R.id.btn_finish)
 
