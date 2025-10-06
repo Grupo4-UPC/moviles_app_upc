@@ -64,6 +64,7 @@
     <string name="sp_status_default_value">Seleccionar Estado</string>
     <string name="sp_sub_status_default_value">Seleccionar Subestado</string>
     <string name="sp_loading_options">Cargando opciones…</string>
+    <string name="view_photos">Visualizar Fotos</string>
 
     <string-array name="status_options">
         <item>Seleccionar Estado</item>

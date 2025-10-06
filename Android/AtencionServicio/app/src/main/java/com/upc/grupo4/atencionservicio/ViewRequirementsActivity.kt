@@ -1,11 +1,16 @@
 package com.upc.grupo4.atencionservicio
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.net.toUri
+import coil.load
+import com.upc.grupo4.atencionservicio.model.PhotoType
 import com.upc.grupo4.atencionservicio.model.ServiceModel
 import com.upc.grupo4.atencionservicio.util.Constants
 
@@ -19,6 +24,7 @@ class ViewRequirementsActivity : AppCompatActivity() {
     private lateinit var tvAdditionalInfoValue: TextView
     private lateinit var tvSignLabel: TextView
     private lateinit var tvSignValue: TextView
+    private lateinit var signPhotoView: View
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,6 +50,7 @@ class ViewRequirementsActivity : AppCompatActivity() {
             customerSummaryReviewLayout.findViewById(R.id.tv_additional_info_value)
         tvSignLabel = customerSummaryReviewLayout.findViewById(R.id.tv_sign_label)
         tvSignValue = customerSummaryReviewLayout.findViewById(R.id.tv_sign_value)
+        signPhotoView = findViewById(R.id.photo_sign_view)
 
         tvAdditionalInfoLabel.visibility = View.VISIBLE
         tvAdditionalInfoValue.visibility = View.VISIBLE
@@ -54,6 +61,18 @@ class ViewRequirementsActivity : AppCompatActivity() {
         tvClientName.text = service?.serviceReceiverName
         tvClientObservation.text = service?.newObservations
         tvAdditionalInfoValue.text = service?.additionalInformation
+
+        displayPhoto(service?.signImg!!.toUri())
+    }
+
+    private fun displayPhoto(uri: Uri) {
+        val ivPhotoPreview: ImageView = signPhotoView.findViewById(R.id.iv_sign_photo_view)
+
+        ivPhotoPreview.load(uri) {
+            size(300, 300)
+            crossfade(true)
+            placeholder(R.drawable.ic_placeholder_image)
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {

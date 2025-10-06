@@ -3,6 +3,7 @@ package com.upc.grupo4.atencionservicio
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -32,6 +33,11 @@ import com.upc.grupo4.atencionservicio.model.SubStatusModel
 import com.upc.grupo4.atencionservicio.util.Constants
 import com.upc.grupo4.atencionservicio.util.LoadingDialog
 import org.json.JSONArray
+import androidx.core.net.toUri
+import com.android.volley.DefaultRetryPolicy
+import com.android.volley.TimeoutError
+import com.upc.grupo4.atencionservicio.util.SubStatusLoadHelper
+import com.upc.grupo4.atencionservicio.util.VolleySingleton
 
 class ServiceTrackingFragment : Fragment() {
     private var service: ServiceModel? = null
@@ -62,7 +68,6 @@ class ServiceTrackingFragment : Fragment() {
     private var statusValueStr: String? = ""
     private var subStatusIdValue: Long? = 0L
     private var subStatusValueStr: String? = ""
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -152,7 +157,7 @@ class ServiceTrackingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (service?.status != "Realizado") {
+        if (service?.status == "" || service?.status == null) {
             loadStatusSpinner()
             loadSubStatusSpinner()
 
@@ -187,6 +192,31 @@ class ServiceTrackingFragment : Fragment() {
         } else {
             loadStatusSpinner(service?.status, service?.subStatus)
             updateElementsVisibility()
+
+            if (service?.additionalPhotoUri != null) {
+                receivedPhotoReferences = listOf(
+                    PhotoReference(
+                        type = PhotoType.ADDITIONAL,
+                        uri = service?.additionalPhotoUri!!.toUri()
+                    ),
+                    PhotoReference(
+                        type = PhotoType.RIGHT,
+                        uri = service?.rightPhotoUri!!.toUri()
+                    ),
+                    PhotoReference(
+                        type = PhotoType.LEFT,
+                        uri = service?.leftPhotoUri!!.toUri()
+                    ),
+                    PhotoReference(
+                        type = PhotoType.FRONT,
+                        uri = service?.frontPhotoUri!!.toUri()
+                    )
+                )
+            }
+
+            btnViewPhotos.setOnClickListener {
+                launchViewPhotosActivity()
+            }
 
             btnViewRequirements.setOnClickListener {
                 val intent = Intent(requireContext(), ViewRequirementsActivity::class.java)
@@ -314,15 +344,26 @@ class ServiceTrackingFragment : Fragment() {
         )
         spSubStatus.adapter = loadingAdapter
 
-        fetchSubStatusList(
+        val subStatusLoadHelper = SubStatusLoadHelper()
+
+        subStatusLoadHelper.fetchSubStatusList(
             context = requireContext(),
             statusId = statusIdValue,
+            tag = Constants.VOLLEY_TAG,
             onResult = { subStatusListReturned ->
                 Log.i("ServiceTrackingFragment", "subStatusListReturned: $subStatusListReturned")
                 setupSubStatusSpinner(subStatusListReturned, serviceSubStatus)
             },
             onError = { errorMessage ->
-                Log.e("StatusFragment", "Failed to fetch statuses: $errorMessage")
+                LoadingDialog.hide()
+
+                Log.e("ServiceTrackingFragment", "Failed to fetch statuses: $errorMessage")
+
+                val dialogMessage =
+                    "Ocurió un error al intentar iniciar la ruta. Intente de nuevo."
+                InfoDialogFragment.newInstance(
+                    message = dialogMessage,
+                ).show(parentFragmentManager, "InfoDialogFragmentTag")
             }
         )
     }
@@ -350,6 +391,7 @@ class ServiceTrackingFragment : Fragment() {
         if (serviceSubStatus != null) {
             val position = adapter.getPosition(serviceSubStatus)
             if (position >= 0) {
+                subStatusValueStr = serviceSubStatus
                 spSubStatus.setSelection(position, false)
                 updateSpinnerWithSelectedStyles(spSubStatus.selectedView as? TextView)
                 updateServiceIconColor(R.color.blue_400)
@@ -396,64 +438,55 @@ class ServiceTrackingFragment : Fragment() {
         spSubStatus.setSelection(0, false)
     }
 
-    fun fetchSubStatusList(
-        context: Context,
-        statusId: Long?,
-        onResult: (ArrayList<SubStatusModel>) -> Unit,
-        onError: (String) -> Unit
-    ) {
-        val url =
-            "http://10.0.2.2:3000/rutas/estados/${statusId}/subestados" //TODO: Change this with final URL
-        val queue = Volley.newRequestQueue(context)
-
-        val jsonArrayRequest = JsonArrayRequest(
-            Request.Method.GET, url, null,
-            { response ->
-                try {
-                    // The API call was successful, now parse the response
-                    val statusList = parseStatusResponse(response)
-                    onResult(statusList) // Pass the parsed list to the success callback
-                } catch (e: Exception) {
-                    Log.e("SubStatusParser", "Error parsing JSON", e)
-                    onError("Error parsing response.")
-                }
-            },
-            { error ->
-                // The API call failed
-                Log.e("SubStatusApi", "Volley error: ${error.message}", error)
-                onError(error.message ?: "Unknown Volley error")
-            }
-        )
-
-        // Add the request to the RequestQueue.
-        queue.add(jsonArrayRequest)
-    }
-
-    private fun parseStatusResponse(response: JSONArray): ArrayList<SubStatusModel> {
-        val subStatusList = ArrayList<SubStatusModel>()
-
-        for (i in 0 until response.length()) {
-            val statusObject = response.getJSONObject(i)
-
-            // Create a SubStatusModel object from the JSONObject
-            val subStatusModel = SubStatusModel(
-                id = statusObject.getLong("idSubestado"),
-                subStatusDescription = statusObject.getString("subestadoDesc")
-            )
-
-            // Add the new object to our list
-            subStatusList.add(subStatusModel)
-        }
-
-        return subStatusList
-    }
-
     private fun launchRegisterPhotosActivity() {
         if (statusValueStr != "" && subStatusValueStr != "") {
             val intent = Intent(requireContext(), RegisterPhotosActivity::class.java)
             intent.putExtra(Constants.STATUS, statusValueStr)
             intent.putExtra(Constants.SUB_STATUS, subStatusValueStr)
+            intent.putExtra(Constants.SERVICE_DESCRIPTION, service?.serviceDescription)
+
+            if (receivedPhotoReferences != null) {
+                val completedPhotoReferences = mutableListOf<PhotoReference>()
+                (receivedPhotoReferences as Iterable<Any?>).forEach {
+                    completedPhotoReferences.add(it as PhotoReference)
+                }
+
+                intent.putParcelableArrayListExtra(
+                    Constants.PHOTO_REFERENCES,
+                    ArrayList(completedPhotoReferences)
+                )
+            }
+
             registerPhotosLauncher.launch(intent)
+        } else {
+            val dialogMessage =
+                "Para poder continuar con la captura de fotos debes seleccionar un estado y subestado."
+            InfoDialogFragment.newInstance(
+                message = dialogMessage,
+            ).show(parentFragmentManager, "InfoDialogFragmentTag")
+        }
+    }
+
+    private fun launchViewPhotosActivity() {
+        if (statusValueStr != "" && subStatusValueStr != "") {
+            val intent = Intent(requireContext(), ViewPhotosActivity::class.java)
+            intent.putExtra(Constants.STATUS, statusValueStr)
+            intent.putExtra(Constants.SUB_STATUS, subStatusValueStr)
+            intent.putExtra(Constants.SERVICE_DESCRIPTION, service?.serviceDescription)
+
+            if (receivedPhotoReferences != null) {
+                val completedPhotoReferences = mutableListOf<PhotoReference>()
+                (receivedPhotoReferences as Iterable<Any?>).forEach {
+                    completedPhotoReferences.add(it as PhotoReference)
+                }
+
+                intent.putParcelableArrayListExtra(
+                    Constants.PHOTO_REFERENCES,
+                    ArrayList(completedPhotoReferences)
+                )
+            }
+
+            startActivity(intent)
         } else {
             val dialogMessage =
                 "Para poder continuar con la captura de fotos debes seleccionar un estado y subestado."
@@ -537,6 +570,11 @@ class ServiceTrackingFragment : Fragment() {
     private fun updateRegisterButtonColor(colorResId: Int) {
         val color = ContextCompat.getColor(requireContext(), colorResId)
         btnEnterRequirements.setBackgroundColor(color)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        VolleySingleton.getInstance(requireContext()).requestQueue.cancelAll(Constants.VOLLEY_TAG)
     }
 
     companion object {

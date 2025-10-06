@@ -10,10 +10,12 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.upc.grupo4.atencionservicio.adapter.FinishedServiceAdapter
+import com.upc.grupo4.atencionservicio.dialogs.InfoDialogFragment
 import com.upc.grupo4.atencionservicio.model.ServiceModel
 import com.upc.grupo4.atencionservicio.util.Constants
 import com.upc.grupo4.atencionservicio.util.LoadingDialog
 import com.upc.grupo4.atencionservicio.util.StatusLoadHelper
+import com.upc.grupo4.atencionservicio.util.VolleySingleton
 import kotlin.collections.ArrayList
 
 private const val ARG_FINISHED_SERVICES_LIST = "finished_services_list"
@@ -76,6 +78,7 @@ class FinishedServicesFragment : Fragment() {
 
         statusLoadHelper.fetchStatusList(
             context = requireContext(),
+            tag = Constants.VOLLEY_TAG,
             onResult = { statusList ->
                 Log.d(
                     "FinishedServicesFragment",
@@ -93,8 +96,15 @@ class FinishedServicesFragment : Fragment() {
                 startActivity(intent)
             },
             onError = { errorMessage ->
-                Log.e("PendingServicesFragment", "Failed to fetch statuses: $errorMessage")
-                // Toast.makeText(requireContext(), "Error: $errorMessage", Toast.LENGTH_SHORT).show()
+                LoadingDialog.hide()
+
+                Log.e("FinishedServicesFragment", "Failed to fetch statuses: $errorMessage")
+
+                val dialogMessage =
+                    "Ocurió un error al intentar iniciar la ruta. Intente de nuevo."
+                InfoDialogFragment.newInstance(
+                    message = dialogMessage,
+                ).show(parentFragmentManager, "InfoDialogFragmentTag")
             }
         )
     }
@@ -105,6 +115,11 @@ class FinishedServicesFragment : Fragment() {
         if (::finishedServiceAdapter.isInitialized) { // Ensure adapter is initialized
             finishedServiceAdapter.updateData(newPendingServices)
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        VolleySingleton.getInstance(requireContext()).requestQueue.cancelAll(Constants.VOLLEY_TAG)
     }
 
     companion object {

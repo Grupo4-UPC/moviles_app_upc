@@ -32,7 +32,7 @@ class StartServiceActivity : AppCompatActivity() {
 
         toolbar = findViewById(R.id.toolbar_start_service)
 
-        if (service != null && service.status == "Realizado") {
+        if (service != null && (service.status == "Realizado" || service.status == "No Realizado")) {
             toolbar.setTitle("Revisar Servicio")
         }
 

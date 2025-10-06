@@ -25,6 +25,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AtencionServicio">
         <activity
+            android:name=".ViewPhotosActivity"
+            android:exported="false" />
+        <activity
             android:name=".ViewRequirementsActivity"
             android:exported="false" />
         <activity

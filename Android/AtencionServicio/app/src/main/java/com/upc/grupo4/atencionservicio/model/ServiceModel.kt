@@ -24,6 +24,7 @@ data class ServiceModel(
     var addressReference: String? = null,
     var serviceDescription: String? = null,
     var observation: String? = null,
+    //TODO: Temp fields for images
     var additionalPhotoUri: String? = null,
     var rightPhotoUri: String? = null,
     var leftPhotoUri: String? = null,

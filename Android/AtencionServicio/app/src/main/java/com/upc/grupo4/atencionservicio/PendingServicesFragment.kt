@@ -14,6 +14,7 @@ import android.view.Window
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.graphics.drawable.toDrawable
@@ -28,9 +29,11 @@ import com.android.volley.Request
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.Volley
 import com.upc.grupo4.atencionservicio.adapter.PendingServiceAdapter
+import com.upc.grupo4.atencionservicio.dialogs.InfoDialogFragment
 import com.upc.grupo4.atencionservicio.model.StatusModel
 import com.upc.grupo4.atencionservicio.util.LoadingDialog
 import com.upc.grupo4.atencionservicio.util.StatusLoadHelper
+import com.upc.grupo4.atencionservicio.util.VolleySingleton
 import org.json.JSONArray
 
 private const val ARG_PENDING_SERVICES_LIST = "pending_services_list"
@@ -170,7 +173,9 @@ class PendingServicesFragment : Fragment() {
 
             statusLoadHelper.fetchStatusList(
                 context = requireContext(),
+                tag = Constants.VOLLEY_TAG,
                 onResult = { statusList ->
+                    if (!isAdded) return@fetchStatusList
                     // Success! You have your ArrayList<StatusModel> here.
                     // You can now use this list to populate your spinner or any other UI component.
                     Log.d("PendingServicesFragment", "Successfully fetched ${statusList.size} statuses.")
@@ -180,8 +185,17 @@ class PendingServicesFragment : Fragment() {
                     launchStartActualService(service, statusList)
                 },
                 onError = { errorMessage ->
+                    if (!isAdded) return@fetchStatusList
+                    
+                    LoadingDialog.hide()
+
                     Log.e("PendingServicesFragment", "Failed to fetch statuses: $errorMessage")
-                    // Toast.makeText(requireContext(), "Error: $errorMessage", Toast.LENGTH_SHORT).show()
+
+                    val dialogMessage =
+                        "Ocurió un error al intentar ver el servicio. Intente de nuevo."
+                    InfoDialogFragment.newInstance(
+                        message = dialogMessage,
+                    ).show(parentFragmentManager, "InfoDialogFragmentTag")
                 }
             )
         }
@@ -211,6 +225,11 @@ class PendingServicesFragment : Fragment() {
         )
 
         startServiceLauncher.launch(intent)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        VolleySingleton.getInstance(requireContext()).requestQueue.cancelAll(Constants.VOLLEY_TAG)
     }
 
     companion object {
