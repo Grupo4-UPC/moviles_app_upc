@@ -10,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.net.toUri
 import coil.load
-import com.upc.grupo4.atencionservicio.model.PhotoType
 import com.upc.grupo4.atencionservicio.model.ServiceModel
 import com.upc.grupo4.atencionservicio.util.Constants
 
@@ -62,7 +61,11 @@ class ViewRequirementsActivity : AppCompatActivity() {
         tvClientObservation.text = service?.newObservations
         tvAdditionalInfoValue.text = service?.additionalInformation
 
-        displayPhoto(service?.signImg!!.toUri())
+        if (service?.signatureUrl != null) {
+            displayPhoto(service.signatureUrl!!.toUri())
+        } else if (service?.signatureUri != null) {
+            displayPhoto(service.signatureUri!!)
+        }
     }
 
     private fun displayPhoto(uri: Uri) {

@@ -2,18 +2,22 @@ package com.upc.grupo4.atencionservicio
 
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import com.github.gcacace.signaturepad.views.SignaturePad
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.upc.grupo4.atencionservicio.model.ServiceModel
 import com.upc.grupo4.atencionservicio.util.Constants
+import java.io.File
+import java.io.FileOutputStream
 
 class EnterRequirementsFragment : Fragment() {
 
@@ -146,31 +150,22 @@ class EnterRequirementsFragment : Fragment() {
             }
 
             override fun onSigned() {
-//                val signatureBitmap = signaturePad.getTransparentSignatureBitmap()
-//                val outputStream: FileOutputStream =
-//                    requireActivity().openFileOutput("signature.png", Activity.MODE_PRIVATE)
-//                signatureBitmap.compress(
-//                    android.graphics.Bitmap.CompressFormat.PNG,
-//                    100,
-//                    outputStream
-//                )
-//                outputStream.close()
-//
-//                val file = requireActivity().getFileStreamPath("signature.png")
-//                serviceInformation?.signature = file.absolutePath
-
                 service?.isSigned = true
                 btnFinish.isEnabled = true
             }
 
             override fun onClear() {
                 service?.isSigned = false
+                service?.signatureUrl = null
                 btnFinish.isEnabled = false
             }
         })
 
         btnFinish.setOnClickListener {
             if (service?.isSigned == true) {
+                val photoUri = getPhotoUri()
+                service?.signatureUri = photoUri
+
                 val resultIntent = Intent()
                 resultIntent.putExtra(
                     Constants.SERVICE,
@@ -179,6 +174,45 @@ class EnterRequirementsFragment : Fragment() {
                 requireActivity().setResult(Activity.RESULT_OK, resultIntent)
                 requireActivity().finish()
             }
+        }
+    }
+
+    private fun getPhotoUri(): Uri {
+        val imageDir = File(requireContext().filesDir, "Pictures/images")
+
+        // Create the directories if they don't exist.
+        if (!imageDir.exists()) {
+            imageDir.mkdirs()
+        }
+
+        // Create the final file object.
+        val signatureFile = File(imageDir, "signature.png")
+
+        try {
+            val signatureBitmap = signaturePad.getTransparentSignatureBitmap()
+            val outputStream = FileOutputStream(signatureFile)
+
+            signatureBitmap.compress(
+                android.graphics.Bitmap.CompressFormat.PNG,
+                100,
+                outputStream
+            )
+            outputStream.flush()
+            outputStream.close()
+
+            val photoURI: Uri = FileProvider.getUriForFile(
+                requireContext(),
+                "${requireContext().packageName}.fileprovider",
+                signatureFile
+            )
+
+            return photoURI
+        } catch (e: Exception) {
+            // Handle potential errors (e.g., IOException)
+            e.printStackTrace()
+
+            return Uri.EMPTY
+            // Toast.makeText(requireContext(), "Error al guardar la firma", Toast.LENGTH_SHORT).show()
         }
     }
 

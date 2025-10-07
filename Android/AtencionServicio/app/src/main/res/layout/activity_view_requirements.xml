@@ -40,6 +40,13 @@
         android:layout_marginEnd="15dp"
         android:layout_marginBottom="20dp" />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/client_signature"
+        android:textStyle="bold" />
+
     <include
         android:id="@+id/photo_sign_view"
         layout="@layout/sign_photo_view" />

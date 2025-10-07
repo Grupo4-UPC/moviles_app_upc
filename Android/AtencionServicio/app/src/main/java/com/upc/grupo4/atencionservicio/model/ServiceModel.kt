@@ -1,6 +1,6 @@
 package com.upc.grupo4.atencionservicio.model
 
-import android.os.Parcel
+import android.net.Uri
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
@@ -34,5 +34,6 @@ data class ServiceModel(
     var newObservations: String? = null,
     var additionalInformation: String? = null,
     var isSigned: Boolean? = null,
-    var signImg: String? = null
+    var signatureUrl: String? = null,
+    var signatureUri: Uri? = null
 ) : Parcelable
