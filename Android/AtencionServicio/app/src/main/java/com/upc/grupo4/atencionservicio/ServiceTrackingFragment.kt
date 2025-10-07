@@ -36,6 +36,7 @@ import org.json.JSONArray
 import androidx.core.net.toUri
 import com.android.volley.DefaultRetryPolicy
 import com.android.volley.TimeoutError
+import com.upc.grupo4.atencionservicio.dialogs.ConfirmationDialogFragment
 import com.upc.grupo4.atencionservicio.util.SubStatusLoadHelper
 import com.upc.grupo4.atencionservicio.util.VolleySingleton
 
@@ -46,17 +47,13 @@ class ServiceTrackingFragment : Fragment() {
     private lateinit var spStatus: Spinner
     private lateinit var spSubStatus: Spinner
     private lateinit var btnTakePictures: MaterialButton
-    private lateinit var btnViewPhotos: MaterialButton
     private lateinit var btnEnterRequirements: MaterialButton
-    private lateinit var btnViewRequirements: MaterialButton
     private lateinit var btnFinishService: MaterialButton
     private lateinit var ivServiceIcon: ImageView
     private lateinit var ivPhotoIcon: ImageView
     private lateinit var ivRegisterIcon: ImageView
     private lateinit var tvPhotoHint: TextView
-    private lateinit var tvViewPhotoHint: TextView
     private lateinit var tvClientInfoHint: TextView
-    private lateinit var tvViewClientInfoHint: TextView
 
     private lateinit var tvStep1RequiredLabel: TextView
     private lateinit var tvStep2RequiredLabel: TextView
@@ -136,17 +133,13 @@ class ServiceTrackingFragment : Fragment() {
         spStatus = view.findViewById(R.id.sp_status)
         spSubStatus = view.findViewById(R.id.sp_sub_status)
         btnTakePictures = view.findViewById(R.id.btn_take_pictures)
-        btnViewPhotos = view.findViewById(R.id.btn_view_pictures)
         btnEnterRequirements = view.findViewById(R.id.btn_enter_requirements)
-        btnViewRequirements = view.findViewById(R.id.btn_view_requirements)
         btnFinishService = view.findViewById(R.id.btn_finish_service)
         ivServiceIcon = view.findViewById(R.id.iv_service_icon)
         ivPhotoIcon = view.findViewById(R.id.iv_photo_icon)
         ivRegisterIcon = view.findViewById(R.id.iv_register_icon)
         tvPhotoHint = view.findViewById(R.id.tv_photo_hint)
-        tvViewPhotoHint = view.findViewById(R.id.tv_view_photo_hint)
         tvClientInfoHint = view.findViewById(R.id.tv_client_info_hint)
-        tvViewClientInfoHint = view.findViewById(R.id.tv_view_client_info_hint)
         tvStep1RequiredLabel = view.findViewById(R.id.tv_step_1_required_label)
         tvStep2RequiredLabel = view.findViewById(R.id.tv_step_2_required_label)
         tvStep3RequiredLabel = view.findViewById(R.id.tv_step_3_required_label)
@@ -157,7 +150,6 @@ class ServiceTrackingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (service?.status == "" || service?.status == null) {
             loadStatusSpinner()
             loadSubStatusSpinner()
 
@@ -170,79 +162,8 @@ class ServiceTrackingFragment : Fragment() {
             }
 
             btnFinishService.setOnClickListener {
-                LoadingDialog.show(requireContext(), "Guardando información")
-
-                Handler(Looper.getMainLooper()).postDelayed({
-                    // Once the task is complete, hide the dialog
-                    LoadingDialog.hide()
-
-                    val dialogMessage =
-                        "Se ha guardado el servicio satisfactoriamente"
-
-                    InfoDialogFragment.newInstance(
-                        title = "OS - ${service?.rootId} - ${service?.serviceId}",
-                        message = dialogMessage,
-                        iconResId = R.drawable.ic_check_circle
-                    ).setOnAcceptClickListener {
-                        finishService()
-                    }.show(parentFragmentManager, "InfoDialogFragmentTag")
-
-                }, 2000)
+                showConfirmSaveServiceDialog()
             }
-        } else {
-            loadStatusSpinner(service?.status, service?.subStatus)
-            updateElementsVisibility()
-
-            if (service?.additionalPhotoUri != null) {
-                receivedPhotoReferences = listOf(
-                    PhotoReference(
-                        type = PhotoType.ADDITIONAL,
-                        uri = service?.additionalPhotoUri!!.toUri()
-                    ),
-                    PhotoReference(
-                        type = PhotoType.RIGHT,
-                        uri = service?.rightPhotoUri!!.toUri()
-                    ),
-                    PhotoReference(
-                        type = PhotoType.LEFT,
-                        uri = service?.leftPhotoUri!!.toUri()
-                    ),
-                    PhotoReference(
-                        type = PhotoType.FRONT,
-                        uri = service?.frontPhotoUri!!.toUri()
-                    )
-                )
-            }
-
-            btnViewPhotos.setOnClickListener {
-                launchViewPhotosActivity()
-            }
-
-            btnViewRequirements.setOnClickListener {
-                val intent = Intent(requireContext(), ViewRequirementsActivity::class.java)
-                intent.putExtra(Constants.SERVICE, service)
-                startActivity(intent)
-            }
-        }
-    }
-
-    private fun updateElementsVisibility() {
-        tvPhotoHint.visibility = View.GONE
-        tvClientInfoHint.visibility = View.GONE
-        btnTakePictures.visibility = View.GONE
-        btnEnterRequirements.visibility = View.GONE
-        btnFinishService.visibility = View.GONE
-        tvStep1RequiredLabel.visibility = View.GONE
-        tvStep2RequiredLabel.visibility = View.GONE
-        tvStep3RequiredLabel.visibility = View.GONE
-
-        tvViewPhotoHint.visibility = View.VISIBLE
-        tvViewClientInfoHint.visibility = View.VISIBLE
-        btnViewPhotos.visibility = View.VISIBLE
-        btnViewRequirements.visibility = View.VISIBLE
-
-        updatePhotoIconColor(R.color.blue_400)
-        updateRegisterIconColor(R.color.blue_400)
     }
 
     private fun loadStatusSpinner(serviceStatus: String? = null, subStatusValue: String? = null) {
@@ -467,35 +388,6 @@ class ServiceTrackingFragment : Fragment() {
         }
     }
 
-    private fun launchViewPhotosActivity() {
-        if (statusValueStr != "" && subStatusValueStr != "") {
-            val intent = Intent(requireContext(), ViewPhotosActivity::class.java)
-            intent.putExtra(Constants.STATUS, statusValueStr)
-            intent.putExtra(Constants.SUB_STATUS, subStatusValueStr)
-            intent.putExtra(Constants.SERVICE_DESCRIPTION, service?.serviceDescription)
-
-            if (receivedPhotoReferences != null) {
-                val completedPhotoReferences = mutableListOf<PhotoReference>()
-                (receivedPhotoReferences as Iterable<Any?>).forEach {
-                    completedPhotoReferences.add(it as PhotoReference)
-                }
-
-                intent.putParcelableArrayListExtra(
-                    Constants.PHOTO_REFERENCES,
-                    ArrayList(completedPhotoReferences)
-                )
-            }
-
-            startActivity(intent)
-        } else {
-            val dialogMessage =
-                "Para poder continuar con la captura de fotos debes seleccionar un estado y subestado."
-            InfoDialogFragment.newInstance(
-                message = dialogMessage,
-            ).show(parentFragmentManager, "InfoDialogFragmentTag")
-        }
-    }
-
     private fun launchEnterRequirementsActivity() {
         if (statusValueStr != "" && subStatusValueStr != "" && receivedPhotoReferences != null) {
             val intent = Intent(requireContext(), EnterRequirementsActivity::class.java)
@@ -510,7 +402,37 @@ class ServiceTrackingFragment : Fragment() {
         }
     }
 
-    private fun finishService() {
+    private fun showConfirmSaveServiceDialog() {
+        ConfirmationDialogFragment.newInstance(message = getString(R.string.dialog_save_service))
+            .setOnAcceptClickListener { saveService() }
+            .show(parentFragmentManager, "ConfirmationDialogFragmentTag")
+    }
+
+    private fun saveService() {
+        LoadingDialog.show(requireContext(), "Guardando información")
+
+        //TODO: Call API to save service
+        gatheringServiceData()
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            // Once the task is complete, hide the dialog
+            LoadingDialog.hide()
+
+            val dialogMessage =
+                "Se ha guardado el servicio satisfactoriamente"
+
+            InfoDialogFragment.newInstance(
+                title = "OS - ${service?.rootId} - ${service?.serviceId}",
+                message = dialogMessage,
+                iconResId = R.drawable.ic_check_circle
+            ).setOnAcceptClickListener {
+                returnToPendingServices()
+            }.show(parentFragmentManager, "InfoDialogFragmentTag")
+
+        }, 2000)
+    }
+
+    private fun gatheringServiceData() {
         service?.status = statusValueStr
         service?.subStatus = subStatusValueStr
 
@@ -522,7 +444,9 @@ class ServiceTrackingFragment : Fragment() {
                 PhotoType.FRONT -> service?.frontPhotoUri = ref.filePath
             }
         }
+    }
 
+    private fun returnToPendingServices() {
         val resultIntent = Intent()
         resultIntent.putExtra(
             Constants.SERVICE,

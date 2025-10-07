@@ -56,7 +56,7 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/tv_status_view"
+                    android:id="@+id/tv_status_photo_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@color/blue_500"
@@ -88,7 +88,7 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/tv_sub_status_view"
+                    android:id="@+id/tv_sub_status_photo_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Todo conforme"

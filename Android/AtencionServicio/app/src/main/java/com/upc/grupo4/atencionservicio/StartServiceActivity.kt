@@ -97,19 +97,31 @@ class StartServiceActivity : AppCompatActivity() {
         service: ServiceModel?,
         statusList: ArrayList<StatusModel>?
     ) {
-        val serviceTrackingFragment = ServiceTrackingFragment().apply {
-            arguments = Bundle().apply {
-                putParcelable(Constants.SERVICE, service)
-                putParcelableArrayList(Constants.STATUS_LIST, statusList)
+        if (service?.status == "" || service?.status == null) {
+            val serviceTrackingFragment = ServiceTrackingFragment().apply {
+                arguments = Bundle().apply {
+                    putParcelable(Constants.SERVICE, service)
+                    putParcelableArrayList(Constants.STATUS_LIST, statusList)
+                }
             }
-        }
 
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.start_service_container, serviceTrackingFragment)
-            .commit()
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.start_service_container, serviceTrackingFragment)
+                .commit()
+        } else {
+            val serviceTrackingViewFragment = ServiceTrackingViewFragment().apply {
+                arguments = Bundle().apply {
+                    putParcelable(Constants.SERVICE, service)
+                }
+            }
+
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.start_service_container, serviceTrackingViewFragment)
+                .commit()
+        }
     }
 
-    private fun displayServiceInformationFragment( service: ServiceModel?,) {
+    private fun displayServiceInformationFragment(service: ServiceModel?) {
         val serviceInformationFragment = ServiceInformationFragment().apply {
             arguments = Bundle().apply {
                 putParcelable(Constants.SERVICE, service)

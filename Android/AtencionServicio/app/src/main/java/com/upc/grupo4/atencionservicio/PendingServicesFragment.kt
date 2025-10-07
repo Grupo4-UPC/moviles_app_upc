@@ -29,6 +29,7 @@ import com.android.volley.Request
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.Volley
 import com.upc.grupo4.atencionservicio.adapter.PendingServiceAdapter
+import com.upc.grupo4.atencionservicio.dialogs.ConfirmationDialogFragment
 import com.upc.grupo4.atencionservicio.dialogs.InfoDialogFragment
 import com.upc.grupo4.atencionservicio.model.StatusModel
 import com.upc.grupo4.atencionservicio.util.LoadingDialog
@@ -38,11 +39,6 @@ import org.json.JSONArray
 
 private const val ARG_PENDING_SERVICES_LIST = "pending_services_list"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [PendingServicesFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class PendingServicesFragment : Fragment() {
     private lateinit var rvPendingServices: RecyclerView
     private lateinit var serviceAdapter: PendingServiceAdapter
@@ -129,84 +125,51 @@ class PendingServicesFragment : Fragment() {
         pendingServicesList.addAll(newPendingServices)
         if (::serviceAdapter.isInitialized) { // Ensure adapter is initialized
             serviceAdapter.updateData(newPendingServices)
-        } else {
-            // If adapter isn't initialized yet (e.g. view not created),
-            // setupRecyclerView will use the updated currentPendingServicesList.
-            // Or, if view is already created, you might need to call setupRecyclerView here
-            // if it wasn't called for some reason or the data wasn't ready.
         }
     }
 
     private fun showConfirmStartServiceDialog(
         service: ServiceModel,
     ) {
-        val dialog = Dialog(requireContext())
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE) // Remove default title bar
-        dialog.setCancelable(false) // To avoid dismissing by tapping outside or back button
-        dialog.setContentView(R.layout.dialog_confirm_start_service)
+        ConfirmationDialogFragment.newInstance(message = getString(R.string.dialog_start_service))
+            .setOnAcceptClickListener { startingService(service) }
+            .show(parentFragmentManager, "ConfirmationDialogFragmentTag")
+    }
 
-        // Make the dialog background transparent to show our rounded background
-        dialog.window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
+    private fun startingService(service: ServiceModel) {
+        LoadingDialog.show(requireContext(), "Iniciando ruta...")
 
-        val tvMessage: TextView = dialog.findViewById(R.id.tv_dialog_message)
-        // Setting text into dialog.
-        tvMessage.text = getString(R.string.dialog_start_service)
+        val statusLoadHelper = StatusLoadHelper()
 
-        val btnClose: ImageView = dialog.findViewById(R.id.btn_dialog_close)
-        val btnCancel: Button = dialog.findViewById(R.id.btn_dialog_cancel)
-        val btnAccept: Button = dialog.findViewById(R.id.btn_dialog_accept)
+        statusLoadHelper.fetchStatusList(
+            context = requireContext(),
+            tag = Constants.VOLLEY_TAG,
+            onResult = { statusList ->
+                if (!isAdded) return@fetchStatusList
+                // Success! You have your ArrayList<StatusModel> here.
+                // You can now use this list to populate your spinner or any other UI component.
+                Log.d(
+                    "PendingServicesFragment",
+                    "Successfully fetched ${statusList.size} statuses."
+                )
 
-        btnClose.setOnClickListener {
-            dialog.dismiss() // Close the dialog
-        }
+                LoadingDialog.hide()
 
-        btnCancel.setOnClickListener {
-            dialog.dismiss() // Close the dialog
-        }
+                launchStartActualService(service, statusList)
+            },
+            onError = { errorMessage ->
+                if (!isAdded) return@fetchStatusList
 
-        btnAccept.setOnClickListener {
-            dialog.dismiss() // Close the dialog
+                LoadingDialog.hide()
 
-            LoadingDialog.show(requireContext(), "Iniciando ruta...")
+                Log.e("PendingServicesFragment", "Failed to fetch statuses: $errorMessage")
 
-            val statusLoadHelper = StatusLoadHelper()
-
-            statusLoadHelper.fetchStatusList(
-                context = requireContext(),
-                tag = Constants.VOLLEY_TAG,
-                onResult = { statusList ->
-                    if (!isAdded) return@fetchStatusList
-                    // Success! You have your ArrayList<StatusModel> here.
-                    // You can now use this list to populate your spinner or any other UI component.
-                    Log.d("PendingServicesFragment", "Successfully fetched ${statusList.size} statuses.")
-
-                    LoadingDialog.hide()
-
-                    launchStartActualService(service, statusList)
-                },
-                onError = { errorMessage ->
-                    if (!isAdded) return@fetchStatusList
-                    
-                    LoadingDialog.hide()
-
-                    Log.e("PendingServicesFragment", "Failed to fetch statuses: $errorMessage")
-
-                    val dialogMessage =
-                        "Ocurió un error al intentar ver el servicio. Intente de nuevo."
-                    InfoDialogFragment.newInstance(
-                        message = dialogMessage,
-                    ).show(parentFragmentManager, "InfoDialogFragmentTag")
-                }
-            )
-        }
-
-        dialog.show()
-
-        // Optional: Adjust dialog width if needed (e.g., to 80% of screen width)
-        val window = dialog.window
-        window?.setLayout(
-            (resources.displayMetrics.widthPixels * 0.85).toInt(),
-            ViewGroup.LayoutParams.WRAP_CONTENT
+                val dialogMessage =
+                    "Ocurió un error al intentar ver el servicio. Intente de nuevo."
+                InfoDialogFragment.newInstance(
+                    message = dialogMessage,
+                ).show(parentFragmentManager, "InfoDialogFragmentTag")
+            }
         )
     }
 

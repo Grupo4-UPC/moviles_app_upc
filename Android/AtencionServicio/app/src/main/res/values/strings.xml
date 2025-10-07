@@ -35,7 +35,8 @@
     <string name="btn_cancel">Cancelar</string>
     <string name="btn_accept">Aceptar</string>
     <string name="btn_close">Cerrar</string>
-    <string name="dialog_start_service">Al iniciar el servicio se notificará al cliente por correo\n¿Desea continuar?</string>
+    <string name="dialog_start_service">Al iniciar el servicio se notificará al cliente por correo.\n¿Desea continuar?</string>
+    <string name="dialog_save_service">Una vez finalizado el servicio no se podrá editar.\n¿Desea continuar?</string>
     <string name="btn_end_service">Finalizar Servicio</string>
     <string name="register_photos">Registro fotográfico</string>
     <string name="btn_save_photos">Guardar Fotos</string>

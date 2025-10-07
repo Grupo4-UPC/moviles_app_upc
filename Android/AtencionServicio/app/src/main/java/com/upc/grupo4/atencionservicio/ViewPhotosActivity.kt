@@ -67,10 +67,10 @@ class ViewPhotosActivity : AppCompatActivity() {
         val serviceDescription: String? =
             intent.getStringExtra(Constants.SERVICE_DESCRIPTION)
 
-        val tvStatusValue: TextView = findViewById(R.id.tv_status_view)
+        val tvStatusValue: TextView = findViewById(R.id.tv_status_photo_view)
         tvStatusValue.text = status
 
-        val tvSubStatusValue: TextView = findViewById(R.id.tv_sub_status_view)
+        val tvSubStatusValue: TextView = findViewById(R.id.tv_sub_status_photo_view)
         tvSubStatusValue.text = subStatus
 
         val tvServiceDesc: TextView = findViewById(R.id.tv_service_view)
