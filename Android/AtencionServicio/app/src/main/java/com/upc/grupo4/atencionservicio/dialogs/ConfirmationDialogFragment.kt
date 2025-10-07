@@ -1,48 +1,40 @@
 package com.upc.grupo4.atencionservicio.dialogs
 
 import android.os.Bundle
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.button.MaterialButton
-import android.view.Window
 import com.upc.grupo4.atencionservicio.R
 
-class InfoDialogFragment : DialogFragment() {
-
-    private var dialogTitle: String? = null
+class ConfirmationDialogFragment : DialogFragment() {
     private var dialogMessage: String? = null
-    private var iconResId: Int? = null
 
     private var acceptCallBackFn: (() -> Unit)? = null
 
 
     companion object {
-        private const val ARG_TITLE = "arg_title"
         private const val ARG_MESSAGE = "arg_message"
-        private const val ARG_ICON_RES_ID = "arg_icon_res_id"
 
         fun newInstance(
-            title: String = "Información",
             message: String,
-            iconResId: Int? = R.drawable.ic_warning_themed, // Default icon
-        ): InfoDialogFragment {
-            val fragment = InfoDialogFragment()
+        ): ConfirmationDialogFragment {
+            val fragment = ConfirmationDialogFragment()
             val args = Bundle().apply {
-                putString(ARG_TITLE, title)
                 putString(ARG_MESSAGE, message)
-                iconResId?.let { putInt(ARG_ICON_RES_ID, it) }
             }
             fragment.arguments = args
             return fragment
         }
     }
 
-    fun setOnAcceptClickListener(listener: () -> Unit): InfoDialogFragment {
+    fun setOnAcceptClickListener(listener: () -> Unit): ConfirmationDialogFragment {
         this.acceptCallBackFn = listener
         return this
     }
@@ -50,11 +42,7 @@ class InfoDialogFragment : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            dialogTitle = it.getString(ARG_TITLE)
             dialogMessage = it.getString(ARG_MESSAGE)
-            if (it.containsKey(ARG_ICON_RES_ID)) {
-                iconResId = it.getInt(ARG_ICON_RES_ID)
-            }
         }
         isCancelable = false
     }
@@ -66,26 +54,18 @@ class InfoDialogFragment : DialogFragment() {
     ): View? {
         // Remove default dialog title bar
         dialog?.window?.requestFeature(Window.FEATURE_NO_TITLE)
-        return inflater.inflate(R.layout.fragment_info_dialog, container, false)
+        return inflater.inflate(R.layout.fragment_confirmation_dialog, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val tvTitle: TextView = view.findViewById(R.id.tv_dialog_title)
-        val tvMessage: TextView = view.findViewById(R.id.tv_dialog_message)
-        val ivIcon: ImageView = view.findViewById(R.id.iv_dialog_icon)
-        val btnAccept: MaterialButton = view.findViewById(R.id.btn_dialog_accept_info)
-        val btnClose: ImageButton = view.findViewById(R.id.btn_close_dialog_info)
+        val tvMessage: TextView = view.findViewById(R.id.tv_dialog_confirm_message)
+        val btnAccept: MaterialButton = view.findViewById(R.id.btn_dialog_accept_confirm)
+        val btnClose: ImageButton = view.findViewById(R.id.btn_dialog_close_confirm)
+        val btnCancel: MaterialButton = view.findViewById(R.id.btn_dialog_cancel_confirm)
 
-        tvTitle.text = dialogTitle
         tvMessage.text = dialogMessage
-
-        iconResId?.let {
-            ivIcon.setImageResource(it)
-        } ?: run {
-            ivIcon.visibility = View.GONE // Hide icon if not provided
-        }
 
         btnAccept.setOnClickListener {
             dismiss()
@@ -93,6 +73,10 @@ class InfoDialogFragment : DialogFragment() {
         }
 
         btnClose.setOnClickListener {
+            dismiss()
+        }
+
+        btnCancel.setOnClickListener {
             dismiss()
         }
     }

@@ -35,7 +35,8 @@
     <string name="btn_cancel">Cancelar</string>
     <string name="btn_accept">Aceptar</string>
     <string name="btn_close">Cerrar</string>
-    <string name="dialog_start_service">Al iniciar el servicio se notificará al cliente por correo\n¿Desea continuar?</string>
+    <string name="dialog_start_service">Al iniciar el servicio se notificará al cliente por correo.\n¿Desea continuar?</string>
+    <string name="dialog_save_service">Una vez finalizado el servicio no se podrá editar.\n¿Desea continuar?</string>
     <string name="btn_end_service">Finalizar Servicio</string>
     <string name="register_photos">Registro fotográfico</string>
     <string name="btn_save_photos">Guardar Fotos</string>
@@ -64,6 +65,8 @@
     <string name="sp_status_default_value">Seleccionar Estado</string>
     <string name="sp_sub_status_default_value">Seleccionar Subestado</string>
     <string name="sp_loading_options">Cargando opciones…</string>
+    <string name="view_photos">Visualizar Fotos</string>
+    <string name="client_signature">Firma capturada</string>
 
     <string-array name="status_options">
         <item>Seleccionar Estado</item>

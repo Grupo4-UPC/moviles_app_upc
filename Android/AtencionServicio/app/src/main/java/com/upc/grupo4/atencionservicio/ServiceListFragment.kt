@@ -13,6 +13,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.upc.grupo4.atencionservicio.model.ServiceModel
 import com.upc.grupo4.atencionservicio.util.Constants
+import com.upc.grupo4.atencionservicio.util.VolleySingleton
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -110,8 +111,12 @@ class ServiceListFragment : Fragment() {
                 354140, 1, "Luisa Pérez", "Calle Berlín 519", "Mañana", "Ropero",
                 "2025-10-01", 1, "Realizado", 1, "Todo Conforme", "48642154", "Miraflores", "15074",
                 "+51946878542", "-", "Instalacion", "",
-                "uri1", "uri2", "uri3", "uri4",
-                "Luisa Pérez", "48545121", "-", "", true
+                "https://comofuncionaexplicado.com/wp-content/uploads/2024/02/como-funciona-una-ducha-electrica.jpg",
+                "https://comofuncionaexplicado.com/wp-content/uploads/2024/02/como-funciona-una-ducha-electrica.jpg",
+                "https://comofuncionaexplicado.com/wp-content/uploads/2024/02/como-funciona-una-ducha-electrica.jpg",
+                "https://comofuncionaexplicado.com/wp-content/uploads/2024/02/como-funciona-una-ducha-electrica.jpg",
+                "Luisa Pérez", "48545121", "-", "", true,
+                "https://www.consumer.es/app/uploads/fly-images/110784/img_firma-3-1200x550-cc.jpg"
             ),
             ServiceModel(
                 354140, 2,
@@ -242,6 +247,11 @@ class ServiceListFragment : Fragment() {
                 finishedFragment?.updateServices(finishedServicesList) // Assuming FinishedServicesFragment has a similar updateServices method
             }
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        VolleySingleton.getInstance(requireContext()).requestQueue.cancelAll(Constants.VOLLEY_TAG)
     }
 
     companion object {

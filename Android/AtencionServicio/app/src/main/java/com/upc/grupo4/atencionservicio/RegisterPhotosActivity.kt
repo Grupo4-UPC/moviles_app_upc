@@ -23,6 +23,7 @@ import androidx.core.content.FileProvider
 import coil.load
 import com.upc.grupo4.atencionservicio.model.PhotoReference
 import com.upc.grupo4.atencionservicio.model.PhotoType
+import com.upc.grupo4.atencionservicio.model.ServiceModel
 import com.upc.grupo4.atencionservicio.util.Constants
 import java.io.File
 import java.io.IOException
@@ -113,6 +114,17 @@ class RegisterPhotosActivity : AppCompatActivity() {
         leftPhotoViewView = findViewById(R.id.photo_item_lateral_izquierdo)
         frontPhotoView = findViewById(R.id.photo_item_parte_frontal)
 
+        val photoReferencesFromIntent: ArrayList<PhotoReference>? =
+            intent.getParcelableArrayListExtra(
+                Constants.PHOTO_REFERENCES
+            )
+
+        if (photoReferencesFromIntent != null) {
+            photoReferences.clear()
+            photoReferences.addAll(photoReferencesFromIntent)
+            updateSavePhotosButtonState()
+        }
+
         setupPhotoItem(additionalPhotoView, "Adicional", PhotoType.ADDITIONAL)
         setupPhotoItem(rightPhotoView, "Lateral derecho", PhotoType.RIGHT)
         setupPhotoItem(leftPhotoViewView, "Lateral izq.", PhotoType.LEFT)
@@ -123,8 +135,6 @@ class RegisterPhotosActivity : AppCompatActivity() {
         }
 
         btnSavePhotos.setOnClickListener {
-            // TODO: Implement logic to save/upload the photoReferences
-            // For example, iterate through photoReferences and upload URIs
             var allPhotosTaken = true
             val completedPhotoReferences = mutableListOf<PhotoReference>()
 

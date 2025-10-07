@@ -3,6 +3,7 @@ package com.upc.grupo4.atencionservicio
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -32,6 +33,12 @@ import com.upc.grupo4.atencionservicio.model.SubStatusModel
 import com.upc.grupo4.atencionservicio.util.Constants
 import com.upc.grupo4.atencionservicio.util.LoadingDialog
 import org.json.JSONArray
+import androidx.core.net.toUri
+import com.android.volley.DefaultRetryPolicy
+import com.android.volley.TimeoutError
+import com.upc.grupo4.atencionservicio.dialogs.ConfirmationDialogFragment
+import com.upc.grupo4.atencionservicio.util.SubStatusLoadHelper
+import com.upc.grupo4.atencionservicio.util.VolleySingleton
 
 class ServiceTrackingFragment : Fragment() {
     private var service: ServiceModel? = null
@@ -40,17 +47,13 @@ class ServiceTrackingFragment : Fragment() {
     private lateinit var spStatus: Spinner
     private lateinit var spSubStatus: Spinner
     private lateinit var btnTakePictures: MaterialButton
-    private lateinit var btnViewPhotos: MaterialButton
     private lateinit var btnEnterRequirements: MaterialButton
-    private lateinit var btnViewRequirements: MaterialButton
     private lateinit var btnFinishService: MaterialButton
     private lateinit var ivServiceIcon: ImageView
     private lateinit var ivPhotoIcon: ImageView
     private lateinit var ivRegisterIcon: ImageView
     private lateinit var tvPhotoHint: TextView
-    private lateinit var tvViewPhotoHint: TextView
     private lateinit var tvClientInfoHint: TextView
-    private lateinit var tvViewClientInfoHint: TextView
 
     private lateinit var tvStep1RequiredLabel: TextView
     private lateinit var tvStep2RequiredLabel: TextView
@@ -62,7 +65,6 @@ class ServiceTrackingFragment : Fragment() {
     private var statusValueStr: String? = ""
     private var subStatusIdValue: Long? = 0L
     private var subStatusValueStr: String? = ""
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -131,17 +133,13 @@ class ServiceTrackingFragment : Fragment() {
         spStatus = view.findViewById(R.id.sp_status)
         spSubStatus = view.findViewById(R.id.sp_sub_status)
         btnTakePictures = view.findViewById(R.id.btn_take_pictures)
-        btnViewPhotos = view.findViewById(R.id.btn_view_pictures)
         btnEnterRequirements = view.findViewById(R.id.btn_enter_requirements)
-        btnViewRequirements = view.findViewById(R.id.btn_view_requirements)
         btnFinishService = view.findViewById(R.id.btn_finish_service)
         ivServiceIcon = view.findViewById(R.id.iv_service_icon)
         ivPhotoIcon = view.findViewById(R.id.iv_photo_icon)
         ivRegisterIcon = view.findViewById(R.id.iv_register_icon)
         tvPhotoHint = view.findViewById(R.id.tv_photo_hint)
-        tvViewPhotoHint = view.findViewById(R.id.tv_view_photo_hint)
         tvClientInfoHint = view.findViewById(R.id.tv_client_info_hint)
-        tvViewClientInfoHint = view.findViewById(R.id.tv_view_client_info_hint)
         tvStep1RequiredLabel = view.findViewById(R.id.tv_step_1_required_label)
         tvStep2RequiredLabel = view.findViewById(R.id.tv_step_2_required_label)
         tvStep3RequiredLabel = view.findViewById(R.id.tv_step_3_required_label)
@@ -152,7 +150,6 @@ class ServiceTrackingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (service?.status != "Realizado") {
             loadStatusSpinner()
             loadSubStatusSpinner()
 
@@ -165,54 +162,8 @@ class ServiceTrackingFragment : Fragment() {
             }
 
             btnFinishService.setOnClickListener {
-                LoadingDialog.show(requireContext(), "Guardando información")
-
-                Handler(Looper.getMainLooper()).postDelayed({
-                    // Once the task is complete, hide the dialog
-                    LoadingDialog.hide()
-
-                    val dialogMessage =
-                        "Se ha guardado el servicio satisfactoriamente"
-
-                    InfoDialogFragment.newInstance(
-                        title = "OS - ${service?.rootId} - ${service?.serviceId}",
-                        message = dialogMessage,
-                        iconResId = R.drawable.ic_check_circle
-                    ).setOnAcceptClickListener {
-                        finishService()
-                    }.show(parentFragmentManager, "InfoDialogFragmentTag")
-
-                }, 2000)
+                showConfirmSaveServiceDialog()
             }
-        } else {
-            loadStatusSpinner(service?.status, service?.subStatus)
-            updateElementsVisibility()
-
-            btnViewRequirements.setOnClickListener {
-                val intent = Intent(requireContext(), ViewRequirementsActivity::class.java)
-                intent.putExtra(Constants.SERVICE, service)
-                startActivity(intent)
-            }
-        }
-    }
-
-    private fun updateElementsVisibility() {
-        tvPhotoHint.visibility = View.GONE
-        tvClientInfoHint.visibility = View.GONE
-        btnTakePictures.visibility = View.GONE
-        btnEnterRequirements.visibility = View.GONE
-        btnFinishService.visibility = View.GONE
-        tvStep1RequiredLabel.visibility = View.GONE
-        tvStep2RequiredLabel.visibility = View.GONE
-        tvStep3RequiredLabel.visibility = View.GONE
-
-        tvViewPhotoHint.visibility = View.VISIBLE
-        tvViewClientInfoHint.visibility = View.VISIBLE
-        btnViewPhotos.visibility = View.VISIBLE
-        btnViewRequirements.visibility = View.VISIBLE
-
-        updatePhotoIconColor(R.color.blue_400)
-        updateRegisterIconColor(R.color.blue_400)
     }
 
     private fun loadStatusSpinner(serviceStatus: String? = null, subStatusValue: String? = null) {
@@ -314,15 +265,26 @@ class ServiceTrackingFragment : Fragment() {
         )
         spSubStatus.adapter = loadingAdapter
 
-        fetchSubStatusList(
+        val subStatusLoadHelper = SubStatusLoadHelper()
+
+        subStatusLoadHelper.fetchSubStatusList(
             context = requireContext(),
             statusId = statusIdValue,
+            tag = Constants.VOLLEY_TAG,
             onResult = { subStatusListReturned ->
                 Log.i("ServiceTrackingFragment", "subStatusListReturned: $subStatusListReturned")
                 setupSubStatusSpinner(subStatusListReturned, serviceSubStatus)
             },
             onError = { errorMessage ->
-                Log.e("StatusFragment", "Failed to fetch statuses: $errorMessage")
+                LoadingDialog.hide()
+
+                Log.e("ServiceTrackingFragment", "Failed to fetch statuses: $errorMessage")
+
+                val dialogMessage =
+                    "Ocurió un error al intentar iniciar la ruta. Intente de nuevo."
+                InfoDialogFragment.newInstance(
+                    message = dialogMessage,
+                ).show(parentFragmentManager, "InfoDialogFragmentTag")
             }
         )
     }
@@ -350,6 +312,7 @@ class ServiceTrackingFragment : Fragment() {
         if (serviceSubStatus != null) {
             val position = adapter.getPosition(serviceSubStatus)
             if (position >= 0) {
+                subStatusValueStr = serviceSubStatus
                 spSubStatus.setSelection(position, false)
                 updateSpinnerWithSelectedStyles(spSubStatus.selectedView as? TextView)
                 updateServiceIconColor(R.color.blue_400)
@@ -396,63 +359,25 @@ class ServiceTrackingFragment : Fragment() {
         spSubStatus.setSelection(0, false)
     }
 
-    fun fetchSubStatusList(
-        context: Context,
-        statusId: Long?,
-        onResult: (ArrayList<SubStatusModel>) -> Unit,
-        onError: (String) -> Unit
-    ) {
-        val url =
-            "http://10.0.2.2:3000/rutas/estados/${statusId}/subestados" //TODO: Change this with final URL
-        val queue = Volley.newRequestQueue(context)
-
-        val jsonArrayRequest = JsonArrayRequest(
-            Request.Method.GET, url, null,
-            { response ->
-                try {
-                    // The API call was successful, now parse the response
-                    val statusList = parseStatusResponse(response)
-                    onResult(statusList) // Pass the parsed list to the success callback
-                } catch (e: Exception) {
-                    Log.e("SubStatusParser", "Error parsing JSON", e)
-                    onError("Error parsing response.")
-                }
-            },
-            { error ->
-                // The API call failed
-                Log.e("SubStatusApi", "Volley error: ${error.message}", error)
-                onError(error.message ?: "Unknown Volley error")
-            }
-        )
-
-        // Add the request to the RequestQueue.
-        queue.add(jsonArrayRequest)
-    }
-
-    private fun parseStatusResponse(response: JSONArray): ArrayList<SubStatusModel> {
-        val subStatusList = ArrayList<SubStatusModel>()
-
-        for (i in 0 until response.length()) {
-            val statusObject = response.getJSONObject(i)
-
-            // Create a SubStatusModel object from the JSONObject
-            val subStatusModel = SubStatusModel(
-                id = statusObject.getLong("idSubestado"),
-                subStatusDescription = statusObject.getString("subestadoDesc")
-            )
-
-            // Add the new object to our list
-            subStatusList.add(subStatusModel)
-        }
-
-        return subStatusList
-    }
-
     private fun launchRegisterPhotosActivity() {
         if (statusValueStr != "" && subStatusValueStr != "") {
             val intent = Intent(requireContext(), RegisterPhotosActivity::class.java)
             intent.putExtra(Constants.STATUS, statusValueStr)
             intent.putExtra(Constants.SUB_STATUS, subStatusValueStr)
+            intent.putExtra(Constants.SERVICE_DESCRIPTION, service?.serviceDescription)
+
+            if (receivedPhotoReferences != null) {
+                val completedPhotoReferences = mutableListOf<PhotoReference>()
+                (receivedPhotoReferences as Iterable<Any?>).forEach {
+                    completedPhotoReferences.add(it as PhotoReference)
+                }
+
+                intent.putParcelableArrayListExtra(
+                    Constants.PHOTO_REFERENCES,
+                    ArrayList(completedPhotoReferences)
+                )
+            }
+
             registerPhotosLauncher.launch(intent)
         } else {
             val dialogMessage =
@@ -477,7 +402,37 @@ class ServiceTrackingFragment : Fragment() {
         }
     }
 
-    private fun finishService() {
+    private fun showConfirmSaveServiceDialog() {
+        ConfirmationDialogFragment.newInstance(message = getString(R.string.dialog_save_service))
+            .setOnAcceptClickListener { saveService() }
+            .show(parentFragmentManager, "ConfirmationDialogFragmentTag")
+    }
+
+    private fun saveService() {
+        LoadingDialog.show(requireContext(), "Guardando información")
+
+        //TODO: Call API to save service
+        gatheringServiceData()
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            // Once the task is complete, hide the dialog
+            LoadingDialog.hide()
+
+            val dialogMessage =
+                "Se ha guardado el servicio satisfactoriamente"
+
+            InfoDialogFragment.newInstance(
+                title = "OS - ${service?.rootId} - ${service?.serviceId}",
+                message = dialogMessage,
+                iconResId = R.drawable.ic_check_circle
+            ).setOnAcceptClickListener {
+                returnToPendingServices()
+            }.show(parentFragmentManager, "InfoDialogFragmentTag")
+
+        }, 2000)
+    }
+
+    private fun gatheringServiceData() {
         service?.status = statusValueStr
         service?.subStatus = subStatusValueStr
 
@@ -489,7 +444,9 @@ class ServiceTrackingFragment : Fragment() {
                 PhotoType.FRONT -> service?.frontPhotoUri = ref.filePath
             }
         }
+    }
 
+    private fun returnToPendingServices() {
         val resultIntent = Intent()
         resultIntent.putExtra(
             Constants.SERVICE,
@@ -537,6 +494,11 @@ class ServiceTrackingFragment : Fragment() {
     private fun updateRegisterButtonColor(colorResId: Int) {
         val color = ContextCompat.getColor(requireContext(), colorResId)
         btnEnterRequirements.setBackgroundColor(color)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        VolleySingleton.getInstance(requireContext()).requestQueue.cancelAll(Constants.VOLLEY_TAG)
     }
 
     companion object {
