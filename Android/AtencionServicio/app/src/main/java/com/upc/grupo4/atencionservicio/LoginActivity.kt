@@ -25,15 +25,53 @@ class LoginActivity : AppCompatActivity() {
 
             if (email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "Ingrese usuario y contraseña", Toast.LENGTH_SHORT).show()
-            } else if (email == "admin" && password == "admin") {
-
-                Toast.makeText(this, "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show()
-                startActivity(Intent(this, OnboardingActivity::class.java))
-                finish()
-            } else {
-                Toast.makeText(this, "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
+
+            val url = "http://10.0.2.2:3000/api/v1/solicitudes-tributarias/auth" // tu backend
+            val params = org.json.JSONObject().apply {
+                put("user", email)
+                put("password", password)
+            }
+
+            val request = com.android.volley.toolbox.JsonObjectRequest(
+                com.android.volley.Request.Method.POST,
+                url,
+                params,
+                { response ->
+                    try {
+                        val success = response.getBoolean("success")
+                        if (success) {
+                            val data = response.getJSONObject("data")
+                            val token = data.getString("token")  // ajusta si tu backend devuelve distinto
+                            Toast.makeText(this, "Login exitoso ✅", Toast.LENGTH_SHORT).show()
+
+                            // 👉 Guarda el token (opcional con SharedPreferences)
+                            val prefs = getSharedPreferences("auth", MODE_PRIVATE)
+                            prefs.edit().putString("jwt", token).apply()
+
+                            // Pasa a la siguiente pantalla
+                            startActivity(Intent(this, OnboardingActivity::class.java))
+                            finish()
+                        } else {
+                            val message = response.optString("message", "Error de autenticación")
+                            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+                        }
+                    } catch (e: Exception) {
+                        Toast.makeText(this, "Error al procesar respuesta", Toast.LENGTH_SHORT).show()
+                        e.printStackTrace()
+                    }
+                },
+                { error ->
+                    Toast.makeText(this, "Error de conexión: ${error.message}", Toast.LENGTH_SHORT).show()
+                    error.printStackTrace()
+                }
+            )
+
+            val queue = com.android.volley.toolbox.Volley.newRequestQueue(this)
+            queue.add(request)
         }
+
 
         binding.btnForgot.setOnClickListener {
             startActivity(Intent(this, ForgotPasswordActivity::class.java))
