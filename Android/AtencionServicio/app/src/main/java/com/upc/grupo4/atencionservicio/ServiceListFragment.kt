@@ -1,6 +1,9 @@
 package com.upc.grupo4.atencionservicio
 
+import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -11,8 +14,11 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.setFragmentResultListener
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.button.MaterialButtonToggleGroup
+import com.upc.grupo4.atencionservicio.dialogs.InfoDialogFragment
 import com.upc.grupo4.atencionservicio.model.ServiceModel
 import com.upc.grupo4.atencionservicio.util.Constants
+import com.upc.grupo4.atencionservicio.util.LoadingDialog
+import com.upc.grupo4.atencionservicio.util.ServiceLoaderHelper
 import com.upc.grupo4.atencionservicio.util.VolleySingleton
 
 // TODO: Rename parameter arguments, choose names that match
@@ -43,8 +49,6 @@ class ServiceListFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
-
-        initializeServiceLists()
 
         // Set up the listener for results from PendingServicesFragment
         setFragmentResultListener(Constants.SERVICE_STARTED_REQUEST_KEY) { requestKey, bundle ->
@@ -78,16 +82,45 @@ class ServiceListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // Set initial counts
-        updateButtonText(
-            btnToStart,
-            getString(R.string.services_to_start),
-            pendingServicesList.size
-        )
-        updateButtonText(btnEnded, getString(R.string.services_finished), finishedServicesList.size)
+        LoadingDialog.show(requireContext())
 
         actualFragmentManager = requireActivity().supportFragmentManager
-        loadPendingServices()
+
+        /*        Handler(Looper.getMainLooper()).postDelayed({
+        //            LoadingDialog.hide()
+        //
+        //            initializeServiceLists()
+        //
+        //            // Set initial counts
+        //            updateButtonText(
+        //                btnToStart,
+        //                getString(R.string.services_to_start),
+        //                pendingServicesList.size
+        //            )
+        //            updateButtonText(
+        //                btnEnded,
+        //                getString(R.string.services_finished),
+        //                finishedServicesList.size
+        //            )
+        //
+        //            loadPendingServices()
+        //
+        //            toggleButtonGroup.addOnButtonCheckedListener { group, checkedId, isChecked ->
+        //                if (isChecked) { // Only react to the button that is being checked
+        //                    when (checkedId) {
+        //                        R.id.btnToStart -> {
+        //                            loadPendingServices()
+        //                        }
+        //
+        //                        R.id.btnEnded -> {
+        //                            loadFinishedServices()
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }, 2000)*/
+
+        fetchServicesFromServer()
 
         toggleButtonGroup.addOnButtonCheckedListener { group, checkedId, isChecked ->
             if (isChecked) { // Only react to the button that is being checked
@@ -104,19 +137,66 @@ class ServiceListFragment : Fragment() {
         }
     }
 
+    private fun fetchServicesFromServer() {
+        // Show a loading indicator
+        LoadingDialog.show(requireContext())
+
+        val serviceLoadHelper = ServiceLoaderHelper() // Your new helper
+
+        serviceLoadHelper.fetchAllServices(
+            context = requireContext(),
+            tag = Constants.VOLLEY_TAG,
+            userId = "3",
+            date = "2025-10-07",
+            onResult = { services ->
+                // Hide the loading indicator
+                LoadingDialog.hide()
+
+                // Save the fetched list
+                allServicesList = services
+
+                filterServiceLists()
+
+                updateButtonText(
+                    btnToStart,
+                    getString(R.string.services_to_start),
+                    pendingServicesList.size
+                )
+                updateButtonText(
+                    btnEnded,
+                    getString(R.string.services_finished),
+                    finishedServicesList.size
+                )
+
+                loadPendingServices()
+            },
+            onError = { errorMessage ->
+                // Hide the loading indicator
+                LoadingDialog.hide()
+
+                // Show an error message to the user
+                Log.e("ServiceListFragment", "Failed to fetch services: $errorMessage")
+                // You could show an error dialog or a "retry" button here
+                val dialog = InfoDialogFragment.newInstance(message = errorMessage)
+                dialog.show(parentFragmentManager, "ErrorDialog")
+            }
+        )
+    }
+
+    // TODO: Remove this
     private fun initializeServiceLists() {
-        //TODO: Replace this with a real call to the server
         allServicesList = mutableListOf(
             ServiceModel(
                 354140, 1, "Luisa Pérez", "Calle Berlín 519", "Mañana", "Ropero",
                 "2025-10-01", 1, "Realizado", 1, "Todo Conforme", "48642154", "Miraflores", "15074",
                 "+51946878542", "-", "Instalacion", "",
-                "https://comofuncionaexplicado.com/wp-content/uploads/2024/02/como-funciona-una-ducha-electrica.jpg",
-                "https://comofuncionaexplicado.com/wp-content/uploads/2024/02/como-funciona-una-ducha-electrica.jpg",
-                "https://comofuncionaexplicado.com/wp-content/uploads/2024/02/como-funciona-una-ducha-electrica.jpg",
-                "https://comofuncionaexplicado.com/wp-content/uploads/2024/02/como-funciona-una-ducha-electrica.jpg",
                 "Luisa Pérez", "48545121", "-", "", true,
-                "https://www.consumer.es/app/uploads/fly-images/110784/img_firma-3-1200x550-cc.jpg"
+                "https://www.consumer.es/app/uploads/fly-images/110784/img_firma-3-1200x550-cc.jpg",
+                null,
+                "https://comofuncionaexplicado.com/wp-content/uploads/2024/02/como-funciona-una-ducha-electrica.jpg",
+                "https://comofuncionaexplicado.com/wp-content/uploads/2024/02/como-funciona-una-ducha-electrica.jpg",
+                "https://comofuncionaexplicado.com/wp-content/uploads/2024/02/como-funciona-una-ducha-electrica.jpg",
+                "https://comofuncionaexplicado.com/wp-content/uploads/2024/02/como-funciona-una-ducha-electrica.jpg",
             ),
             ServiceModel(
                 354140, 2,
@@ -133,7 +213,7 @@ class ServiceListFragment : Fragment() {
                 "Calle Ficticia 456",
                 "Tarde",
                 "Terma",
-                "2025-10-01", 0, "", 0, "", "","Santiago de Surco", "15049",
+                "2025-10-01", 0, "", 0, "", "", "Santiago de Surco", "15049",
                 "+51946878543"
             )
         )
