@@ -24,16 +24,16 @@ data class ServiceModel(
     var addressReference: String? = null,
     var serviceDescription: String? = null,
     var observation: String? = null,
-    //TODO: Temp fields for images
-    var additionalPhotoUri: String? = null,
-    var rightPhotoUri: String? = null,
-    var leftPhotoUri: String? = null,
-    var frontPhotoUri: String? = null,
     var serviceReceiverName: String? = null,
     var serviceReceiverDocId: String? = null,
     var newObservations: String? = null,
     var additionalInformation: String? = null,
     var isSigned: Boolean? = null,
     var signatureUrl: String? = null,
-    var signatureUri: Uri? = null
+    var signatureUri: Uri? = null,
+    //TODO: Temp fields for images
+    var additionalPhotoUri: String? = null,
+    var rightPhotoUri: String? = null,
+    var leftPhotoUri: String? = null,
+    var frontPhotoUri: String? = null,
 ) : Parcelable

@@ -25,14 +25,8 @@ class WelcomeActivity : AppCompatActivity() {
         tvCantidadServicios.text = "1"
 
         btnBuscarItinerario.setOnClickListener {
-            LoadingDialog.show(this )
-
-            Handler(Looper.getMainLooper()).postDelayed({
-                LoadingDialog.hide()
-
-                startActivity(Intent(this, MenuActivity::class.java))
-                finish()
-            }, 2000)
+            startActivity(Intent(this, MenuActivity::class.java))
+            finish()
         }
     }
 }
