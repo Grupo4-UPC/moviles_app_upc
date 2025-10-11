@@ -2,13 +2,15 @@ package com.upc.grupo4.atencionservicio
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Base64
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
-import android.view.Menu
-import android.view.MenuItem
+import com.android.volley.Request
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
 import com.upc.grupo4.atencionservicio.databinding.ActivityLoginBinding
+import org.json.JSONObject
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
@@ -28,14 +30,14 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            val url = "http://10.0.2.2:3000/api/v1/solicitudes-tributarias/auth" // tu backend
-            val params = org.json.JSONObject().apply {
+            val url = "http://10.0.2.2:3000/api/v1/solicitudes-tributarias/auth"
+            val params = JSONObject().apply {
                 put("user", email)
                 put("password", password)
             }
 
-            val request = com.android.volley.toolbox.JsonObjectRequest(
-                com.android.volley.Request.Method.POST,
+            val request = JsonObjectRequest(
+                Request.Method.POST,
                 url,
                 params,
                 { response ->
@@ -43,18 +45,27 @@ class LoginActivity : AppCompatActivity() {
                         val success = response.getBoolean("success")
                         if (success) {
                             val data = response.getJSONObject("data")
-                            val token = data.getString("token")  // ajusta si tu backend devuelve distinto
-                            Toast.makeText(this, "Login exitoso ✅", Toast.LENGTH_SHORT).show()
+                            val token = data.getString("token")
 
-                            // 👉 Guarda el token (opcional con SharedPreferences)
+                            val userInfo = decodeJwtPayload(token)
+
+
                             val prefs = getSharedPreferences("auth", MODE_PRIVATE)
-                            prefs.edit().putString("jwt", token).apply()
+                            prefs.edit()
+                                .putString("jwt", token)
+                                .putInt("id", userInfo.optInt("sub", -1))
+                                .putString("usuario", userInfo.optString("usuario", ""))
+                                .putString("nombre", userInfo.optString("nombre", ""))
+                                .putString("role", userInfo.optString("role", ""))
+                                .putString("menu", userInfo.optJSONArray("menu")?.toString())
+                                .apply()
 
-                            // Pasa a la siguiente pantalla
+                            Toast.makeText(this, "Bienvenido ${userInfo.optString("nombre")} ✅", Toast.LENGTH_SHORT).show()
+
                             startActivity(Intent(this, OnboardingActivity::class.java))
                             finish()
                         } else {
-                            val message = response.optString("message", "Error de autenticación")
+                            val message = response.optString("message", "Usuario o contraseña incorrectos")
                             Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
                         }
                     } catch (e: Exception) {
@@ -68,29 +79,22 @@ class LoginActivity : AppCompatActivity() {
                 }
             )
 
-            val queue = com.android.volley.toolbox.Volley.newRequestQueue(this)
-            queue.add(request)
+            Volley.newRequestQueue(this).add(request)
         }
-
 
         binding.btnForgot.setOnClickListener {
             startActivity(Intent(this, ForgotPasswordActivity::class.java))
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_faq, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_faq -> {
-                startActivity(Intent(this, FAQActivity::class.java))
-                true
-            }
-
-            else -> super.onOptionsItemSelected(item)
+    private fun decodeJwtPayload(token: String): JSONObject {
+        return try {
+            val parts = token.split(".")
+            if (parts.size < 2) return JSONObject()
+            val payload = String(Base64.decode(parts[1], Base64.URL_SAFE))
+            JSONObject(payload)
+        } catch (e: Exception) {
+            JSONObject()
         }
     }
 }

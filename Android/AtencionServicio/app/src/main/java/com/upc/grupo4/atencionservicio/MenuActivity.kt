@@ -3,6 +3,7 @@ package com.upc.grupo4.atencionservicio
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
@@ -39,6 +40,15 @@ class MenuActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toggle.syncState()
 
         navigationDrawer.setNavigationItemSelectedListener(this)
+
+        val prefs = getSharedPreferences("auth", MODE_PRIVATE)
+        val nombre = prefs.getString("nombre", "Usuario desconocido")
+        val rol = prefs.getString("rol", "Sin rol")
+
+        val headerView = navigationDrawer.getHeaderView(0)
+        val tvNombre = headerView.findViewById<TextView>(R.id.tvNombre)
+
+        tvNombre.text = nombre
 
         // Set the initial fragment
         replaceFragment(ServiceListFragment())
