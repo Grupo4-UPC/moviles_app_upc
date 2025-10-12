@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ServiceTrackingFragment">
+    tools:context=".ServiceTrackingViewFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -28,19 +28,19 @@
                 android:layout_height="match_parent">
 
                 <ImageView
-                    android:id="@+id/iv_service_icon"
+                    android:id="@+id/iv_service_icon_view"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_alignParentTop="true"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="8dp"
                     android:src="@drawable/ic_service"
-                    app:tint="@color/button_disabled_background_grey" />
+                    app:tint="@color/blue_400" />
 
                 <View
                     android:layout_width="2dp"
                     android:layout_height="match_parent"
-                    android:layout_below="@id/iv_service_icon"
+                    android:layout_below="@id/iv_service_icon_view"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="8dp"
                     android:background="#CCCCCC" />
@@ -73,17 +73,6 @@
                         android:text="Paso 1"
                         android:textColor="#2E2E2E"
                         android:textSize="12sp" />
-
-                    <TextView
-                        android:id="@+id/tv_step_1_required_label"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@color/blue_500"
-                        android:paddingHorizontal="6dp"
-                        android:paddingVertical="2dp"
-                        android:text="OBLIGATORIO"
-                        android:textColor="#FFFFFF"
-                        android:textSize="10sp" />
                 </LinearLayout>
 
                 <TextView
@@ -101,13 +90,16 @@
                     android:text="Estado"
                     android:textSize="14sp" />
 
-                <Spinner
-                    android:id="@+id/sp_status"
+                <TextView
+                    android:id="@+id/tv_status_view"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="?android:attr/listPreferredItemHeightSmall"
                     android:layout_marginBottom="8dp"
-                    android:background="@null"
-                    android:spinnerMode="dropdown" />
+                    android:background="@drawable/spinner_background_blue"
+                    android:gravity="center"
+                    android:text="Realizado"
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -116,13 +108,16 @@
                     android:text="Subestado"
                     android:textSize="14sp" />
 
-                <Spinner
-                    android:id="@+id/sp_sub_status"
+                <TextView
+                    android:id="@+id/tv_sub_status_view"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="?android:attr/listPreferredItemHeightSmall"
                     android:layout_marginBottom="8dp"
-                    android:background="@null"
-                    android:spinnerMode="dropdown" />
+                    android:background="@drawable/spinner_background_blue"
+                    android:gravity="center"
+                    android:text="Todo Conforme"
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
             </LinearLayout>
         </LinearLayout>
 
@@ -148,19 +143,19 @@
                     android:background="#CCCCCC" />
 
                 <ImageView
-                    android:id="@+id/iv_photo_icon"
+                    android:id="@+id/iv_photo_icon_view"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_below="@id/line1"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="8dp"
                     android:src="@drawable/ic_camera"
-                    app:tint="@color/button_disabled_background_grey" />
+                    app:tint="@color/blue_400" />
 
                 <View
                     android:layout_width="2dp"
                     android:layout_height="match_parent"
-                    android:layout_below="@id/iv_photo_icon"
+                    android:layout_below="@id/iv_photo_icon_view"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="8dp"
                     android:background="#CCCCCC" />
@@ -193,43 +188,32 @@
                         android:text="Paso 2"
                         android:textColor="#2E2E2E"
                         android:textSize="12sp" />
-
-                    <TextView
-                        android:id="@+id/tv_step_2_required_label"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@color/blue_500"
-                        android:paddingHorizontal="6dp"
-                        android:paddingVertical="2dp"
-                        android:text="OBLIGATORIO"
-                        android:textColor="#FFFFFF"
-                        android:textSize="10sp" />
                 </LinearLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
-                    android:text="Registro fotográfico"
+                    android:text="Fotos"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/tv_photo_hint"
+                    android:id="@+id/tv_view_photo_hint"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="4dp"
-                    android:text="Es crucial seguir las indicacion al tomar las fotos"
+                    android:text="Acá podrá visualizar las fotos"
                     android:textSize="14sp" />
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_take_pictures"
+                    android:id="@+id/btn_view_pictures"
                     style="@style/MySegmentedButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:backgroundTint="@color/blue_500"
-                    android:text="@string/btn_take_pictures"
+                    android:backgroundTint="@color/blue_400"
+                    android:text="@string/btn_view_pictures"
                     android:textColor="@color/white" />
             </LinearLayout>
         </LinearLayout>
@@ -255,19 +239,19 @@
                     android:background="#CCCCCC" />
 
                 <ImageView
-                    android:id="@+id/iv_register_icon"
+                    android:id="@+id/iv_register_icon_view"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_below="@id/line2"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="8dp"
                     android:src="@drawable/ic_edit"
-                    app:tint="@color/button_disabled_background_grey" />
+                    app:tint="@color/blue_400" />
 
                 <View
                     android:layout_width="2dp"
                     android:layout_height="match_parent"
-                    android:layout_below="@id/iv_register_icon"
+                    android:layout_below="@id/iv_register_icon_view"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="8dp"
                     android:background="#CCCCCC" />
@@ -299,17 +283,6 @@
                         android:paddingVertical="4dp"
                         android:text="Paso 3"
                         android:textSize="12sp" />
-
-                    <TextView
-                        android:id="@+id/tv_step_3_required_label"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@color/blue_500"
-                        android:paddingHorizontal="6dp"
-                        android:paddingVertical="2dp"
-                        android:text="OBLIGATORIO"
-                        android:textColor="#FFFFFF"
-                        android:textSize="10sp" />
                 </LinearLayout>
 
                 <TextView
@@ -322,36 +295,24 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/tv_client_info_hint"
+                    android:id="@+id/tv_view_client_info_hint"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
-                    android:text="Se agregan los datos del cliente o persona asignada, nombre, documento de identidad y firma."
+                    android:text="Acá podrá ver los datos del cliente y observaciones del servicio"
                     android:textColor="#666666"
                     android:textSize="14sp" />
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_enter_requirements"
+                    android:id="@+id/btn_view_requirements"
                     style="@style/MySegmentedButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:backgroundTint="@color/blue_500"
-                    android:text="@string/btn_enter_requirements"
+                    android:backgroundTint="@color/blue_400"
+                    android:text="@string/btn_view_requirements"
                     android:textColor="@color/white" />
             </LinearLayout>
         </LinearLayout>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_finish_service"
-            style="@style/MySegmentedButton"
-            android:layout_width="match_parent"
-            android:layout_marginTop="10dp"
-            android:enabled="false"
-            android:text="@string/btn_end_service"
-            android:textColor="@color/button_primary_text_selector"
-            android:textSize="16sp"
-            app:backgroundTint="@color/button_primary_background_selector" />
     </LinearLayout>
-
 </ScrollView>

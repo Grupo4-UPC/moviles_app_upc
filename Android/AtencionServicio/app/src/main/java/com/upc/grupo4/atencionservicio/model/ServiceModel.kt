@@ -1,6 +1,6 @@
 package com.upc.grupo4.atencionservicio.model
 
-import android.os.Parcel
+import android.net.Uri
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
@@ -24,14 +24,16 @@ data class ServiceModel(
     var addressReference: String? = null,
     var serviceDescription: String? = null,
     var observation: String? = null,
-    var additionalPhotoUri: String? = null,
-    var rightPhotoUri: String? = null,
-    var leftPhotoUri: String? = null,
-    var frontPhotoUri: String? = null,
     var serviceReceiverName: String? = null,
     var serviceReceiverDocId: String? = null,
     var newObservations: String? = null,
     var additionalInformation: String? = null,
     var isSigned: Boolean? = null,
-    var signImg: String? = null
+    var signatureUrl: String? = null,
+    var signatureUri: Uri? = null,
+    //TODO: Temp fields for images
+    var additionalPhotoUri: String? = null,
+    var rightPhotoUri: String? = null,
+    var leftPhotoUri: String? = null,
+    var frontPhotoUri: String? = null,
 ) : Parcelable

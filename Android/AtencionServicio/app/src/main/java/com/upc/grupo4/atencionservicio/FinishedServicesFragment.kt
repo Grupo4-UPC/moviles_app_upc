@@ -2,6 +2,8 @@ package com.upc.grupo4.atencionservicio
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -10,19 +12,16 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.upc.grupo4.atencionservicio.adapter.FinishedServiceAdapter
+import com.upc.grupo4.atencionservicio.dialogs.InfoDialogFragment
 import com.upc.grupo4.atencionservicio.model.ServiceModel
 import com.upc.grupo4.atencionservicio.util.Constants
 import com.upc.grupo4.atencionservicio.util.LoadingDialog
 import com.upc.grupo4.atencionservicio.util.StatusLoadHelper
+import com.upc.grupo4.atencionservicio.util.VolleySingleton
 import kotlin.collections.ArrayList
 
 private const val ARG_FINISHED_SERVICES_LIST = "finished_services_list"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [FinishedServicesFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class FinishedServicesFragment : Fragment() {
     private lateinit var rvFinishedServices: RecyclerView
     private lateinit var finishedServiceAdapter: FinishedServiceAdapter
@@ -72,31 +71,50 @@ class FinishedServicesFragment : Fragment() {
     fun loadReviewServiceView(service: ServiceModel) {
         LoadingDialog.show(requireContext(), "Cargando información...")
 
-        val statusLoadHelper = StatusLoadHelper()
+        Handler(Looper.getMainLooper()).postDelayed({
+            // Once the task is complete, hide the dialog
+            LoadingDialog.hide()
 
-        statusLoadHelper.fetchStatusList(
-            context = requireContext(),
-            onResult = { statusList ->
-                Log.d(
-                    "FinishedServicesFragment",
-                    "Successfully fetched ${statusList.size} statuses."
-                )
+            val intent = Intent(requireContext(), StartServiceActivity::class.java)
+            intent.putExtra(Constants.SERVICE, service)
+            startActivity(intent)
+        }, 2000)
 
-                LoadingDialog.hide()
 
-                val intent = Intent(requireContext(), StartServiceActivity::class.java)
-                intent.putExtra(Constants.SERVICE, service)
-                intent.putExtra(
-                    Constants.STATUS_LIST,
-                    statusList
-                )
-                startActivity(intent)
-            },
-            onError = { errorMessage ->
-                Log.e("PendingServicesFragment", "Failed to fetch statuses: $errorMessage")
-                // Toast.makeText(requireContext(), "Error: $errorMessage", Toast.LENGTH_SHORT).show()
-            }
-        )
+        //TODO: Change this call for new endpoint to gather images URL
+//        val statusLoadHelper = StatusLoadHelper()
+//
+//        statusLoadHelper.fetchStatusList(
+//            context = requireContext(),
+//            tag = Constants.VOLLEY_TAG,
+//            onResult = { statusList ->
+//                Log.d(
+//                    "FinishedServicesFragment",
+//                    "Successfully fetched ${statusList.size} statuses."
+//                )
+//
+//                LoadingDialog.hide()
+//
+//                val intent = Intent(requireContext(), StartServiceActivity::class.java)
+//                intent.putExtra(Constants.SERVICE, service)
+//                intent.putExtra(
+//                    Constants.STATUS_LIST,
+//                    statusList
+//                )
+//                startActivity(intent)
+//            },
+//            onError = { errorMessage ->
+//                LoadingDialog.hide()
+//
+//                Log.e("FinishedServicesFragment", "Failed to fetch statuses: $errorMessage")
+//
+//                val dialogMessage =
+//                    "Ocurió un error al intentar iniciar la ruta. Intente de nuevo."
+//                InfoDialogFragment.newInstance(
+//                    message = dialogMessage,
+//                ).show(parentFragmentManager, "InfoDialogFragmentTag")
+//            }
+//        )
     }
 
     fun updateServices(newPendingServices: List<ServiceModel>) {
@@ -105,6 +123,11 @@ class FinishedServicesFragment : Fragment() {
         if (::finishedServiceAdapter.isInitialized) { // Ensure adapter is initialized
             finishedServiceAdapter.updateData(newPendingServices)
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        VolleySingleton.getInstance(requireContext()).requestQueue.cancelAll(Constants.VOLLEY_TAG)
     }
 
     companion object {
