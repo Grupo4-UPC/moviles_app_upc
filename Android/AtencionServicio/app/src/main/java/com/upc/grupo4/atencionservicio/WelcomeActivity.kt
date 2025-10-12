@@ -19,14 +19,24 @@ class WelcomeActivity : AppCompatActivity() {
         val tvCantidadServicios = findViewById<TextView>(R.id.tvCantidadServicios)
         val btnBuscarItinerario = findViewById<Button>(R.id.btn_search_itinerary)
 
-        val nombreUsuario = intent.getStringExtra("NOMBRE_USUARIO") ?: "Usuario"
-        tvNombre.text = nombreUsuario
+        val prefs = getSharedPreferences("auth", MODE_PRIVATE)
+        val nombre = prefs.getString("nombre", "Usuario")
+        val usuario = prefs.getString("usuario", "")
+        val role = prefs.getString("role", "")
+        val menu = prefs.getString("menu", "[]")
 
-        tvCantidadServicios.text = "1"
+        tvNombre.text = nombre
+        tvCantidadServicios.text = ""
 
         btnBuscarItinerario.setOnClickListener {
-            startActivity(Intent(this, MenuActivity::class.java))
-            finish()
+            LoadingDialog.show(this)
+
+            Handler(Looper.getMainLooper()).postDelayed({
+                LoadingDialog.hide()
+
+                startActivity(Intent(this, MenuActivity::class.java))
+                finish()
+            }, 2000)
         }
     }
 }
