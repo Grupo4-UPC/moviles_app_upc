@@ -1,5 +1,6 @@
 package com.upc.grupo4.atencionservicio
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -143,11 +144,20 @@ class ServiceListFragment : Fragment() {
 
         val serviceLoadHelper = ServiceLoaderHelper() // Your new helper
 
+
+        val prefs = requireContext().getSharedPreferences("auth", Context.MODE_PRIVATE)
+        val tecnicoId = prefs.getInt("id", -1)
+
+        if (tecnicoId == -1) {
+            Log.e("ServiceListFragment", "No se encontró el ID del técnico")
+            return
+        }
+
         serviceLoadHelper.fetchAllServices(
             context = requireContext(),
             tag = Constants.VOLLEY_TAG,
-            userId = "3",
-            date = "2025-10-07",
+            userId = tecnicoId.toString(),
+            date = "2025-10-14",
             onResult = { services ->
                 // Hide the loading indicator
                 LoadingDialog.hide()
