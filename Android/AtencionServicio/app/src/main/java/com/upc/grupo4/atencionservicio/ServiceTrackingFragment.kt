@@ -365,7 +365,7 @@ class ServiceTrackingFragment : Fragment() {
             intent.putExtra(Constants.STATUS, statusValueStr)
             intent.putExtra(Constants.SUB_STATUS, subStatusValueStr)
             intent.putExtra(Constants.SERVICE_DESCRIPTION, service?.serviceDescription)
-
+            intent.putExtra("ID_RUTA", service?.rootId)
             if (receivedPhotoReferences != null) {
                 val completedPhotoReferences = mutableListOf<PhotoReference>()
                 (receivedPhotoReferences as Iterable<Any?>).forEach {
@@ -442,6 +442,7 @@ class ServiceTrackingFragment : Fragment() {
                 PhotoType.RIGHT -> service?.rightPhotoUri = ref.filePath
                 PhotoType.LEFT -> service?.leftPhotoUri = ref.filePath
                 PhotoType.FRONT -> service?.frontPhotoUri = ref.filePath
+                PhotoType.SIGNATURE -> service?.frontPhotoUri = ref.filePath
             }
         }
     }

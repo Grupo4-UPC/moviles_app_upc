@@ -186,6 +186,7 @@ class PendingServicesFragment : Fragment() {
             Constants.STATUS_LIST,
             statusList
         )
+        Log.d("PendingServicesFragment", "Lanzando StartServiceActivity con service:")
 
         startServiceLauncher.launch(intent)
     }

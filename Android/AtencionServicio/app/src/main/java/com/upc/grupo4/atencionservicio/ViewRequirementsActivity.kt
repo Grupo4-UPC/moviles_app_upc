@@ -2,6 +2,7 @@ package com.upc.grupo4.atencionservicio
 
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -11,6 +12,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.net.toUri
 import coil.load
 import com.upc.grupo4.atencionservicio.model.ServiceModel
+import com.upc.grupo4.atencionservicio.model.SignatureClient
 import com.upc.grupo4.atencionservicio.util.Constants
 
 class ViewRequirementsActivity : AppCompatActivity() {
@@ -33,6 +35,8 @@ class ViewRequirementsActivity : AppCompatActivity() {
 
         val service: ServiceModel? =
             intent.getParcelableExtra(Constants.SERVICE)
+        val signatureList: ArrayList<SignatureClient>? =
+            intent.getParcelableArrayListExtra(Constants.SIGNATURE_CLIENT)
 
         toolbar = findViewById(R.id.toolbar_review_requirements)
         setSupportActionBar(toolbar)
@@ -61,10 +65,20 @@ class ViewRequirementsActivity : AppCompatActivity() {
         tvClientObservation.text = service?.newObservations
         tvAdditionalInfoValue.text = service?.additionalInformation
 
-        if (service?.signatureUrl != null) {
-            displayPhoto(service.signatureUrl!!.toUri())
-        } else if (service?.signatureUri != null) {
-            displayPhoto(service.signatureUri!!)
+
+
+        if (!signatureList.isNullOrEmpty()) {
+            val signature = signatureList[0] // Mostrar la primera firma
+
+            signature.uri?.let { uri ->
+                displayPhoto(uri)
+            } ?: run {
+                Log.e("ViewRequirementsActivity", "La firma no contiene un URI válido")
+                val ivPhotoPreview: ImageView = signPhotoView.findViewById(R.id.iv_sign_photo_view)
+               // ivPhotoPreview.setImageResource(R.drawable.ic_no_signature)
+            }
+        } else {
+            Log.e("ViewRequirementsActivity", "No hay firmas recibidas")
         }
     }
 

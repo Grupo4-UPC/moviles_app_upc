@@ -224,6 +224,9 @@ class ServiceListFragment : Fragment() {
     private fun filterServiceLists() {
         pendingServicesList = allServicesList.filter { it.status != "Realizado" }.toMutableList()
         finishedServicesList = allServicesList.filter { it.status == "Realizado" }.toMutableList()
+          Log.d("ServiceListFragment", "Total servicios: ${allServicesList.size}")
+    Log.d("ServiceListFragment", "Pendientes: ${pendingServicesList.size}")
+    Log.d("ServiceListFragment", "Finalizados: ${finishedServicesList.size}")
     }
 
     fun updateButtonText(button: MaterialButton, prefix: String, count: Int) {
