@@ -48,53 +48,47 @@ class ViewPhotosActivity : AppCompatActivity() {
         PhotoReference(PhotoType.FRONT)
     )
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+      override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_view_photos)
 
-        toolbar = findViewById(R.id.toolbar_view_photos)
+        val toolbar: Toolbar = findViewById(R.id.toolbar_view_photos)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back)
 
-        val status: String? =
+        // Estado, Subestado y descripción
+        findViewById<TextView>(R.id.tv_status_photo_view).text =
             intent.getStringExtra(Constants.STATUS)
-
-        val subStatus: String? =
+        findViewById<TextView>(R.id.tv_sub_status_photo_view).text =
             intent.getStringExtra(Constants.SUB_STATUS)
-
-        val serviceDescription: String? =
+        findViewById<TextView>(R.id.tv_service_view).text =
             intent.getStringExtra(Constants.SERVICE_DESCRIPTION)
 
-        val tvStatusValue: TextView = findViewById(R.id.tv_status_photo_view)
-        tvStatusValue.text = status
+        // Obtener lista de fotos del intent
+        val photoReferences: ArrayList<PhotoReference>? =
+            intent.getParcelableArrayListExtra(Constants.PHOTO_REFERENCES)
+        Log.d("ViewPhotosActivity", "Photo references: $photoReferences")
+        // Referencias a los 4 ImageViews
+        val iv1: ImageView = findViewById(R.id.iv_photo_view_1)
+        val iv2: ImageView = findViewById(R.id.iv_photo_view_2)
+        val iv3: ImageView = findViewById(R.id.iv_photo_view_3)
+        val iv4: ImageView = findViewById(R.id.iv_photo_view_4)
 
-        val tvSubStatusValue: TextView = findViewById(R.id.tv_sub_status_photo_view)
-        tvSubStatusValue.text = subStatus
+        
+        iv1.setImageResource(R.drawable.ic_placeholder_image)
+        iv2.setImageResource(R.drawable.ic_placeholder_image)
+        iv3.setImageResource(R.drawable.ic_placeholder_image)
+        iv4.setImageResource(R.drawable.ic_placeholder_image)
 
-        val tvServiceDesc: TextView = findViewById(R.id.tv_service_view)
-        tvServiceDesc.text = serviceDescription
-
-        additionalPhotoView = findViewById(R.id.photo_item_adicional_view)
-        rightPhotoView = findViewById(R.id.photo_item_lateral_derecho_view)
-        leftPhotoViewView = findViewById(R.id.photo_item_lateral_izquierdo_view)
-        frontPhotoView = findViewById(R.id.photo_item_parte_frontal_view)
-
-        val photoReferencesFromIntent: ArrayList<PhotoReference>? =
-            intent.getParcelableArrayListExtra(
-                Constants.PHOTO_REFERENCES
-            )
-
-        if (photoReferencesFromIntent != null) {
-            photoReferences.clear()
-            photoReferences.addAll(photoReferencesFromIntent)
+        // Cargar fotos según índice
+        photoReferences?.let { photos ->
+            if (photos.isNotEmpty()) iv1.load(photos.getOrNull(0)?.uri)
+            if (photos.size > 1) iv2.load(photos.getOrNull(1)?.uri)
+            if (photos.size > 2) iv3.load(photos.getOrNull(2)?.uri)
+            if (photos.size > 3) iv4.load(photos.getOrNull(3)?.uri)
         }
-
-        setupPhotoItem(additionalPhotoView, PhotoType.ADDITIONAL)
-        setupPhotoItem(rightPhotoView, PhotoType.RIGHT)
-        setupPhotoItem(leftPhotoViewView, PhotoType.LEFT)
-        setupPhotoItem(frontPhotoView, PhotoType.FRONT)
     }
 
     private fun setupPhotoItem(itemView: View, type: PhotoType) {

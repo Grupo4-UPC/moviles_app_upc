@@ -17,5 +17,6 @@ enum class PhotoType : Parcelable {
     ADDITIONAL,
     RIGHT,
     LEFT,
-    FRONT
+    FRONT,
+    SIGNATURE
 }

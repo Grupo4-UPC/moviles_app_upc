@@ -2,6 +2,7 @@ package com.upc.grupo4.atencionservicio
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,8 +26,20 @@ class ServiceTrackingViewFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Verificar si los argumentos llegaron correctamente
         arguments?.let {
             service = it.getParcelable(Constants.SERVICE)
+            receivedPhotoReferences = it.getParcelableArrayList(Constants.PHOTO_REFERENCES)
+        }
+
+        // Verificar que las fotos han llegado correctamente
+        if (receivedPhotoReferences.isNullOrEmpty()) {
+            Log.e("ServiceTrackingViewFragment", "No photo references found ")
+        } else {
+            receivedPhotoReferences?.forEachIndexed { index, photoReference ->
+                Log.d("ServiceTrackingViewFragment", "Photo $index: ${photoReference.uri}")
+            }
         }
     }
 
@@ -50,29 +63,14 @@ class ServiceTrackingViewFragment : Fragment() {
         tvStatus.text = service?.status
         tvSubStatus.text = service?.subStatus
 
-        if (service?.additionalPhotoUri != null) {
-            receivedPhotoReferences = listOf(
-                PhotoReference(
-                    type = PhotoType.ADDITIONAL,
-                    uri = service?.additionalPhotoUri!!.toUri()
-                ),
-                PhotoReference(
-                    type = PhotoType.RIGHT,
-                    uri = service?.rightPhotoUri!!.toUri()
-                ),
-                PhotoReference(
-                    type = PhotoType.LEFT,
-                    uri = service?.leftPhotoUri!!.toUri()
-                ),
-                PhotoReference(
-                    type = PhotoType.FRONT,
-                    uri = service?.frontPhotoUri!!.toUri()
-                )
-            )
-        }
-
-        btnViewPhotos.setOnClickListener {
-            launchViewPhotosActivity(service?.status!!, service?.subStatus!!)
+        // Verificar si las fotos llegaron correctamente antes de continuar
+        if (receivedPhotoReferences.isNullOrEmpty()) {
+            Log.e("ServiceTrackingViewFragment", "No photo references to show")
+        } else {
+            // Mostrar las fotos si están disponibles
+            btnViewPhotos.setOnClickListener {
+                launchViewPhotosActivity(service?.status!!, service?.subStatus!!)
+            }
         }
 
         btnViewRequirements.setOnClickListener {
@@ -82,23 +80,17 @@ class ServiceTrackingViewFragment : Fragment() {
         }
     }
 
-
     private fun launchViewPhotosActivity(statusValueStr: String, subStatusValueStr: String) {
         val intent = Intent(requireContext(), ViewPhotosActivity::class.java)
         intent.putExtra(Constants.STATUS, statusValueStr)
         intent.putExtra(Constants.SUB_STATUS, subStatusValueStr)
         intent.putExtra(Constants.SERVICE_DESCRIPTION, service?.serviceDescription)
 
-        if (receivedPhotoReferences != null) {
-            val completedPhotoReferences = mutableListOf<PhotoReference>()
-            (receivedPhotoReferences as Iterable<Any?>).forEach {
-                completedPhotoReferences.add(it as PhotoReference)
-            }
-
-            intent.putParcelableArrayListExtra(
-                Constants.PHOTO_REFERENCES,
-                ArrayList(completedPhotoReferences)
-            )
+        // Verificar si las fotos están disponibles antes de pasarlas
+        if (receivedPhotoReferences != null && receivedPhotoReferences!!.isNotEmpty()) {
+            intent.putParcelableArrayListExtra(Constants.PHOTO_REFERENCES, ArrayList(receivedPhotoReferences!!))
+        } else {
+            Log.e("ServiceTrackingViewFragment", "No photos to pass to ViewPhotosActivity")
         }
 
         startActivity(intent)
@@ -111,10 +103,12 @@ class ServiceTrackingViewFragment : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance(service: ServiceModel) =
+        fun newInstance(service: ServiceModel?) =
             ServiceTrackingViewFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(Constants.SERVICE, service)
+                    // Si las fotos no están vacías, las paso en los argumentos
+                    putParcelableArrayList(Constants.PHOTO_REFERENCES, ArrayList())
                 }
             }
     }

@@ -1,6 +1,7 @@
 package com.upc.grupo4.atencionservicio.util
 
 object Constants {
+    const val SERVICE_DETAIL="detailService"
     const val SERVICE = "service"
     const val GOOGLE_MAPS_URL = "http://maps.google.com/maps?q="
     const val STATUS = "status"

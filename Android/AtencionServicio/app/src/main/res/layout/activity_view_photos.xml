@@ -39,13 +39,13 @@
             android:orientation="vertical"
             android:padding="16dp">
 
+            <!-- Estado, Subestado y Servicio (igual que antes) -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
-
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -54,7 +54,6 @@
                     android:textColor="@color/black"
                     android:textSize="16sp"
                     android:textStyle="bold" />
-
                 <TextView
                     android:id="@+id/tv_status_photo_view"
                     android:layout_width="wrap_content"
@@ -77,7 +76,6 @@
                 android:layout_marginBottom="8dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
-
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -86,7 +84,6 @@
                     android:textColor="@color/black"
                     android:textSize="16sp"
                     android:textStyle="bold" />
-
                 <TextView
                     android:id="@+id/tv_sub_status_photo_view"
                     android:layout_width="wrap_content"
@@ -101,7 +98,6 @@
                 android:layout_marginBottom="8dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
-
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -110,7 +106,6 @@
                     android:textColor="@color/black"
                     android:textSize="16sp"
                     android:textStyle="bold" />
-
                 <TextView
                     android:id="@+id/tv_service_view"
                     android:layout_width="wrap_content"
@@ -132,32 +127,42 @@
                 android:text="Estas son las fotos registradas en el servicio"
                 android:textSize="16sp" />
 
-            <!-- Photo Grid -->
+            <!-- Grid de 4 fotos -->
             <GridLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="30dp"
-                android:alignmentMode="alignBounds"
                 android:columnCount="2"
                 android:rowCount="2"
+                android:alignmentMode="alignBounds"
                 android:useDefaultMargins="true">
 
-                <!-- Adicional -->
-                <include
-                    android:id="@+id/photo_item_adicional_view"
-                    layout="@layout/item_photo_view" />
-                <!-- Lateral Derecho -->
-                <include
-                    android:id="@+id/photo_item_lateral_derecho_view"
-                    layout="@layout/item_photo_view" />
-                <!-- Lateral Izquierdo -->
-                <include
-                    android:id="@+id/photo_item_lateral_izquierdo_view"
-                    layout="@layout/item_photo_view" />
-                <!-- Parte Frontal -->
-                <include
-                    android:id="@+id/photo_item_parte_frontal_view"
-                    layout="@layout/item_photo_view" />
+                <ImageView
+                    android:id="@+id/iv_photo_view_1"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_placeholder_image" />
+
+                <ImageView
+                    android:id="@+id/iv_photo_view_2"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_placeholder_image" />
+
+                <ImageView
+                    android:id="@+id/iv_photo_view_3"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_placeholder_image" />
+
+                <ImageView
+                    android:id="@+id/iv_photo_view_4"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_placeholder_image" />
             </GridLayout>
         </LinearLayout>
     </ScrollView>

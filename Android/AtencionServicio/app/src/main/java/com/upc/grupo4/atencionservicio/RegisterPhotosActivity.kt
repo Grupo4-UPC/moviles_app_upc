@@ -21,9 +21,14 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import coil.load
+import com.android.volley.NetworkResponse
+import com.android.volley.Response
+import com.android.volley.VolleyError
+import com.android.volley.toolbox.Volley
 import com.upc.grupo4.atencionservicio.model.PhotoReference
 import com.upc.grupo4.atencionservicio.model.PhotoType
 import com.upc.grupo4.atencionservicio.model.ServiceModel
+import com.upc.grupo4.atencionservicio.network.VolleyMultipartRequest
 import com.upc.grupo4.atencionservicio.util.Constants
 import java.io.File
 import java.io.IOException
@@ -146,19 +151,62 @@ class RegisterPhotosActivity : AppCompatActivity() {
                 }
             }
             if (allPhotosTaken) {
-                val resultIntent = Intent()
-                // Put the ArrayList of Parcelable objects
-                resultIntent.putParcelableArrayListExtra(
-                    Constants.PHOTO_REFERENCES,
-                    ArrayList(completedPhotoReferences) // Pass only the valid references
-                )
+               
+                val idRuta = intent.getLongExtra("ID_RUTA", -1L)
+                Log.d("RegisterPhotosActivity", "ID_RUTA recibido: $idRuta")
+                if (idRuta == -1L) {
+                    Toast.makeText(this, "No se encontró el ID de ruta.", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+
+                // Subir cada foto con Volley
+                photoReferences.forEach { ref ->
+                    val filePath = ref.filePath ?: return@forEach
+                    val tipo =  "evidencia"
+                    uploadPhotoVolley(idRuta, tipo, filePath)
+                }
+
+                Toast.makeText(this, "Fotos enviadas correctamente", Toast.LENGTH_SHORT).show()
+
+                
+                val resultIntent = Intent().apply {
+                    putParcelableArrayListExtra(Constants.PHOTO_REFERENCES, ArrayList(photoReferences))
+                }
                 setResult(Activity.RESULT_OK, resultIntent)
-                finish() // Close RegisterPhotosActivity
+                finish()
             }
         }
 
     }
+    private fun uploadPhotoVolley(idRuta: Long, tipo: String, filePath: String) {
+    val url = "http://10.0.2.2:3000/rutas/subir-firma/$idRuta" // Cambia la IP si usas físico
+    val queue = Volley.newRequestQueue(this)
 
+    val volleyRequest = object : VolleyMultipartRequest(Method.POST, url,
+        Response.Listener<NetworkResponse> { response ->
+            Log.d("VolleyUpload", "Éxito: ${response.statusCode}")
+        },
+        Response.ErrorListener { error: VolleyError ->
+            Log.e("VolleyUpload", "Error: ${error.message}")
+        }) {
+
+        override fun getParamsData(): MutableMap<String, String> {
+            val params = HashMap<String, String>()
+            params["tipo"] = tipo // firma o evidencia
+            return params
+        }
+
+        override fun getByteData(): MutableMap<String, DataPart> {
+            val params = HashMap<String, DataPart>()
+            val file = File(filePath)
+            val bytes = file.readBytes()
+            params["file"] = DataPart(file.name, bytes, "image/jpeg")
+            return params
+        }
+    }
+
+    queue.add(volleyRequest)
+   }
     private fun setupPhotoItem(itemView: View, label: String, type: PhotoType) {
         val layoutButtonCapture: LinearLayout = itemView.findViewById(R.id.layout_button_capture)
         val tvCaptureLabel: TextView = itemView.findViewById(R.id.tv_capture_label)

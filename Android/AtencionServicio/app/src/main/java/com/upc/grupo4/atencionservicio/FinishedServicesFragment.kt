@@ -9,10 +9,15 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.android.volley.Request
+import com.android.volley.toolbox.JsonObjectRequest
 import com.upc.grupo4.atencionservicio.adapter.FinishedServiceAdapter
 import com.upc.grupo4.atencionservicio.dialogs.InfoDialogFragment
+import com.upc.grupo4.atencionservicio.model.PhotoReference
+import com.upc.grupo4.atencionservicio.model.PhotoType
 import com.upc.grupo4.atencionservicio.model.ServiceModel
 import com.upc.grupo4.atencionservicio.util.Constants
 import com.upc.grupo4.atencionservicio.util.LoadingDialog
@@ -68,7 +73,7 @@ class FinishedServicesFragment : Fragment() {
         rvFinishedServices.layoutManager = LinearLayoutManager(requireContext())
     }
 
-    fun loadReviewServiceView(service: ServiceModel) {
+  /*  fun loadReviewServiceView(service: ServiceModel) {
         LoadingDialog.show(requireContext(), "Cargando información...")
 
         Handler(Looper.getMainLooper()).postDelayed({
@@ -115,7 +120,7 @@ class FinishedServicesFragment : Fragment() {
 //                ).show(parentFragmentManager, "InfoDialogFragmentTag")
 //            }
 //        )
-    }
+    } */
 
     fun updateServices(newPendingServices: List<ServiceModel>) {
         finishedServicesList.clear()
@@ -129,7 +134,57 @@ class FinishedServicesFragment : Fragment() {
         super.onStop()
         VolleySingleton.getInstance(requireContext()).requestQueue.cancelAll(Constants.VOLLEY_TAG)
     }
+    fun loadReviewServiceView(service: ServiceModel) {
+    LoadingDialog.show(requireContext(), "Cargando información...")
 
+    val url = "http://10.0.2.2:3000/rutas/detalle/${service.serviceId}" // 
+
+    val jsonRequest = JsonObjectRequest(
+        Request.Method.GET,
+        url,
+        null,
+        { response ->
+            Log.d("FinishedServicesFragment", "Detalle de ruta: $response")
+
+            // Extraer el array de fotos del JSON
+            val fotosArray = response.optJSONArray("fotos")
+            val photoReferences = mutableListOf<PhotoReference>()
+
+            fotosArray?.let { array ->
+                for (i in 0 until array.length()) {
+                    val url = array.getString(i)
+                    Log.d("FinishedServicesFragment", "Foto URL: $url")
+                    photoReferences.add(
+                        PhotoReference(
+                            type = PhotoType.ADDITIONAL,
+                            uri = url.toUri()
+                        )
+                    ) // Guardar las fotos en la lista
+                }
+            }
+            val intent = Intent(requireContext(), StartServiceActivity::class.java)
+            intent.putExtra(Constants.SERVICE, service)
+            // Verificar si las fotos están en la lista antes de pasarlas al siguiente Intent
+             if (photoReferences.isNotEmpty()) {
+
+                    intent.putParcelableArrayListExtra(Constants.PHOTO_REFERENCES, ArrayList(photoReferences))
+                    intent.putExtra(Constants.STATUS, service.status)  // Pasa el estado del servicio
+                    intent.putExtra(Constants.SUB_STATUS, service.subStatus)  // Pasa el subestado
+                    intent.putExtra(Constants.SERVICE_DESCRIPTION, service.serviceDescription)  // Pasa la descripción del servicio
+                    startActivity(intent)  // Inicia la actividad de vista de fotos
+                }
+
+        },
+        { error ->
+            Log.e("FinishedServicesFragment", "Error al obtener detalle: ${error.message}")
+            InfoDialogFragment.newInstance(
+                message = "Ocurrió un error al cargar la información. Intente de nuevo."
+            ).show(parentFragmentManager, "InfoDialogFragmentTag")
+        }
+    )
+
+com.android.volley.toolbox.Volley.newRequestQueue(requireContext()).add(jsonRequest)
+}
     companion object {
         fun newInstance(finishedServicesList: List<ServiceModel>) =
             PendingServicesFragment().apply {
