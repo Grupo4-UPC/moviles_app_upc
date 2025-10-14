@@ -19,6 +19,7 @@ import com.upc.grupo4.atencionservicio.dialogs.InfoDialogFragment
 import com.upc.grupo4.atencionservicio.model.PhotoReference
 import com.upc.grupo4.atencionservicio.model.PhotoType
 import com.upc.grupo4.atencionservicio.model.ServiceModel
+import com.upc.grupo4.atencionservicio.model.SignatureClient
 import com.upc.grupo4.atencionservicio.util.Constants
 import com.upc.grupo4.atencionservicio.util.LoadingDialog
 import com.upc.grupo4.atencionservicio.util.StatusLoadHelper
@@ -148,7 +149,9 @@ class FinishedServicesFragment : Fragment() {
 
             // Extraer el array de fotos del JSON
             val fotosArray = response.optJSONArray("fotos")
+            val signatureArray = response.optJSONArray("firmas")
             val photoReferences = mutableListOf<PhotoReference>()
+            val signatureList = mutableListOf<SignatureClient>()
 
             fotosArray?.let { array ->
                 for (i in 0 until array.length()) {
@@ -162,12 +165,26 @@ class FinishedServicesFragment : Fragment() {
                     ) // Guardar las fotos en la lista
                 }
             }
+
+            signatureArray?.let { array ->
+                for (i in 0 until array.length()) {
+                    val url = array.getString(i)
+                    Log.d("FinishedServicesFragment firma", "Foto URL: $url")
+                    signatureList.add(
+                        SignatureClient(
+                            uri = url.toUri()
+                        )
+                    ) // Guardar las firmas en la lista
+                }
+            }
+            
             val intent = Intent(requireContext(), StartServiceActivity::class.java)
             intent.putExtra(Constants.SERVICE, service)
             // Verificar si las fotos están en la lista antes de pasarlas al siguiente Intent
              if (photoReferences.isNotEmpty()) {
 
                     intent.putParcelableArrayListExtra(Constants.PHOTO_REFERENCES, ArrayList(photoReferences))
+                    intent.putParcelableArrayListExtra(Constants.SIGNATURE_CLIENT, ArrayList(signatureList))
                     intent.putExtra(Constants.STATUS, service.status)  // Pasa el estado del servicio
                     intent.putExtra(Constants.SUB_STATUS, service.subStatus)  // Pasa el subestado
                     intent.putExtra(Constants.SERVICE_DESCRIPTION, service.serviceDescription)  // Pasa la descripción del servicio

@@ -8,6 +8,7 @@ object Constants {
     const val SUB_STATUS = "sub_status"
     const val SERVICE_DESCRIPTION = "service_description"
     const val PHOTO_REFERENCES = "photo_references"
+    const val SIGNATURE_CLIENT = "signature_cliente"
     const val SERVICE_STARTED_REQUEST_KEY = "serviceStartedRequestKey"
     const val SERVICE_MODEL_BUNDLE_KEY = "serviceModelBundleKey"
     const val IS_PENDING_SERVICES_EMPTY = "isPendingServicesEmpty"

@@ -13,6 +13,7 @@ import com.google.android.material.button.MaterialButton
 import com.upc.grupo4.atencionservicio.model.PhotoReference
 import com.upc.grupo4.atencionservicio.model.PhotoType
 import com.upc.grupo4.atencionservicio.model.ServiceModel
+import com.upc.grupo4.atencionservicio.model.SignatureClient
 import com.upc.grupo4.atencionservicio.util.Constants
 import com.upc.grupo4.atencionservicio.util.VolleySingleton
 
@@ -23,7 +24,7 @@ class ServiceTrackingViewFragment : Fragment() {
     private lateinit var btnViewPhotos: MaterialButton
     private lateinit var btnViewRequirements: MaterialButton
     private var receivedPhotoReferences: List<PhotoReference>? = null
-
+    private var receivedSignatureList: List<SignatureClient>? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -31,6 +32,8 @@ class ServiceTrackingViewFragment : Fragment() {
         arguments?.let {
             service = it.getParcelable(Constants.SERVICE)
             receivedPhotoReferences = it.getParcelableArrayList(Constants.PHOTO_REFERENCES)
+
+            receivedSignatureList= it.getParcelableArrayList(Constants.SIGNATURE_CLIENT)
         }
 
         // Verificar que las fotos han llegado correctamente
@@ -74,12 +77,24 @@ class ServiceTrackingViewFragment : Fragment() {
         }
 
         btnViewRequirements.setOnClickListener {
-            val intent = Intent(requireContext(), ViewRequirementsActivity::class.java)
-            intent.putExtra(Constants.SERVICE, service)
-            startActivity(intent)
+            launchViewRequirementsActivity()
+
         }
     }
 
+    private fun launchViewRequirementsActivity() {
+        val intent = Intent(requireContext(), ViewRequirementsActivity::class.java)
+        intent.putExtra(Constants.SERVICE, service)
+
+        // Verificar si las fotos están disponibles antes de pasarlas
+        if (receivedSignatureList != null && receivedSignatureList!!.isNotEmpty()) {
+            intent.putParcelableArrayListExtra(Constants.SIGNATURE_CLIENT, ArrayList(receivedSignatureList!!))
+        } else {
+            Log.e("ServiceTrackingViewFragment", "No signature to pass to ViewRequirementsActivity")
+        }
+
+        startActivity(intent)
+    }
     private fun launchViewPhotosActivity(statusValueStr: String, subStatusValueStr: String) {
         val intent = Intent(requireContext(), ViewPhotosActivity::class.java)
         intent.putExtra(Constants.STATUS, statusValueStr)
@@ -95,7 +110,6 @@ class ServiceTrackingViewFragment : Fragment() {
 
         startActivity(intent)
     }
-
     override fun onStop() {
         super.onStop()
         VolleySingleton.getInstance(requireContext()).requestQueue.cancelAll(Constants.VOLLEY_TAG)
