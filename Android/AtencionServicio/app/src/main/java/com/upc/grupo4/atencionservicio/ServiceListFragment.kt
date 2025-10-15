@@ -86,39 +86,39 @@ class ServiceListFragment : Fragment() {
 
         actualFragmentManager = requireActivity().supportFragmentManager
 
-        /*        Handler(Looper.getMainLooper()).postDelayed({
-        //            LoadingDialog.hide()
-        //
-        //            initializeServiceLists()
-        //
-        //            // Set initial counts
-        //            updateButtonText(
-        //                btnToStart,
-        //                getString(R.string.services_to_start),
-        //                pendingServicesList.size
-        //            )
-        //            updateButtonText(
-        //                btnEnded,
-        //                getString(R.string.services_finished),
-        //                finishedServicesList.size
-        //            )
-        //
-        //            loadPendingServices()
-        //
-        //            toggleButtonGroup.addOnButtonCheckedListener { group, checkedId, isChecked ->
-        //                if (isChecked) { // Only react to the button that is being checked
-        //                    when (checkedId) {
-        //                        R.id.btnToStart -> {
-        //                            loadPendingServices()
-        //                        }
-        //
-        //                        R.id.btnEnded -> {
-        //                            loadFinishedServices()
-        //                        }
-        //                    }
-        //                }
-        //            }
-        //        }, 2000)*/
+//        Handler(Looper.getMainLooper()).postDelayed({
+//            LoadingDialog.hide()
+//
+//            initializeServiceLists()
+//
+//            // Set initial counts
+//            updateButtonText(
+//                btnToStart,
+//                getString(R.string.services_to_start),
+//                pendingServicesList.size
+//            )
+//            updateButtonText(
+//                btnEnded,
+//                getString(R.string.services_finished),
+//                finishedServicesList.size
+//            )
+//
+//            loadPendingServices()
+//
+//            toggleButtonGroup.addOnButtonCheckedListener { group, checkedId, isChecked ->
+//                if (isChecked) { // Only react to the button that is being checked
+//                    when (checkedId) {
+//                        R.id.btnToStart -> {
+//                            loadPendingServices()
+//                        }
+//
+//                        R.id.btnEnded -> {
+//                            loadFinishedServices()
+//                        }
+//                    }
+//                }
+//            }
+//        }, 2000)
 
         fetchServicesFromServer()
 
@@ -224,9 +224,9 @@ class ServiceListFragment : Fragment() {
     private fun filterServiceLists() {
         pendingServicesList = allServicesList.filter { it.status != "Realizado" }.toMutableList()
         finishedServicesList = allServicesList.filter { it.status == "Realizado" }.toMutableList()
-          Log.d("ServiceListFragment", "Total servicios: ${allServicesList.size}")
-    Log.d("ServiceListFragment", "Pendientes: ${pendingServicesList.size}")
-    Log.d("ServiceListFragment", "Finalizados: ${finishedServicesList.size}")
+        Log.d("ServiceListFragment", "Total servicios: ${allServicesList.size}")
+        Log.d("ServiceListFragment", "Pendientes: ${pendingServicesList.size}")
+        Log.d("ServiceListFragment", "Finalizados: ${finishedServicesList.size}")
     }
 
     fun updateButtonText(button: MaterialButton, prefix: String, count: Int) {

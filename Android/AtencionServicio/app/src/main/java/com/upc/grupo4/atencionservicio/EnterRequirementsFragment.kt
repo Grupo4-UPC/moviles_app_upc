@@ -14,10 +14,15 @@ import androidx.fragment.app.Fragment
 import com.github.gcacace.signaturepad.views.SignaturePad
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
+import com.upc.grupo4.atencionservicio.dialogs.InfoDialogFragment
 import com.upc.grupo4.atencionservicio.model.ServiceModel
 import com.upc.grupo4.atencionservicio.util.Constants
+import com.upc.grupo4.atencionservicio.util.LoadingDialog
+import com.upc.grupo4.atencionservicio.util.UploadImageHelper
 import java.io.File
 import java.io.FileOutputStream
+
+private const val TAG = "EnterRequirementsFragment"
 
 class EnterRequirementsFragment : Fragment() {
 
@@ -163,21 +168,61 @@ class EnterRequirementsFragment : Fragment() {
 
         btnFinish.setOnClickListener {
             if (service?.isSigned == true) {
-                val photoUri = getPhotoUri()
-                service?.signatureUri = photoUri
+                LoadingDialog.show(requireContext(), "Guardando firma...")
 
-                val resultIntent = Intent()
-                resultIntent.putExtra(
-                    Constants.SERVICE,
-                    service
-                )
-                requireActivity().setResult(Activity.RESULT_OK, resultIntent)
-                requireActivity().finish()
+                val signatureFile = getPhotoFile()
+
+                if (signatureFile != null) {
+                    val photoUri: Uri = FileProvider.getUriForFile(
+                        requireContext(),
+                        "${requireContext().packageName}.fileprovider",
+                        signatureFile
+                    )
+
+                    service?.signatureUri = photoUri
+
+                    val uploadImageHelper = UploadImageHelper()
+
+                    uploadImageHelper.uploadImage(
+                        requireContext(),
+                        TAG,
+                        service?.rootId,
+                        "firma",
+                        signatureFile.path,
+                        onSuccess = { successMessage ->
+                            LoadingDialog.hide()
+
+                            val dialogMessage =
+                                "Se ha guardado la firma satisfactoriamente"
+
+                            InfoDialogFragment.newInstance(
+                                title = "",
+                                message = dialogMessage,
+                                iconResId = R.drawable.ic_check_circle
+                            ).setOnAcceptClickListener {
+                                goToServiceTrackingFragment()
+                            }.show(parentFragmentManager, "InfoDialogFragmentTag")
+                        },
+                        onError = {
+                            LoadingDialog.hide()
+
+                            val dialog =
+                                InfoDialogFragment.newInstance(message = "Error al guardar la firma")
+                            dialog.show(parentFragmentManager, "ErrorDialog")
+                        }
+                    )
+                } else {
+                    LoadingDialog.hide()
+
+                    val dialog =
+                        InfoDialogFragment.newInstance(message = "Error al generar la firma")
+                    dialog.show(parentFragmentManager, "ErrorDialog")
+                }
             }
         }
     }
 
-    private fun getPhotoUri(): Uri {
+    private fun getPhotoFile(): File? {
         val imageDir = File(requireContext().filesDir, "Pictures/images")
 
         // Create the directories if they don't exist.
@@ -200,20 +245,24 @@ class EnterRequirementsFragment : Fragment() {
             outputStream.flush()
             outputStream.close()
 
-            val photoURI: Uri = FileProvider.getUriForFile(
-                requireContext(),
-                "${requireContext().packageName}.fileprovider",
-                signatureFile
-            )
-
-            return photoURI
+            return signatureFile
         } catch (e: Exception) {
             // Handle potential errors (e.g., IOException)
             e.printStackTrace()
 
-            return Uri.EMPTY
+            return null
             // Toast.makeText(requireContext(), "Error al guardar la firma", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun goToServiceTrackingFragment() {
+        val resultIntent = Intent()
+        resultIntent.putExtra(
+            Constants.SERVICE,
+            service
+        )
+        requireActivity().setResult(Activity.RESULT_OK, resultIntent)
+        requireActivity().finish()
     }
 
     companion object {

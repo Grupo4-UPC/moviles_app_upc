@@ -66,6 +66,7 @@ class ServiceLoaderHelper {
             val statusObject = response.getJSONObject(i)
 
             // Getting fields that might be "NULL"
+            val statusText = statusObject.optString("estado_servicio_desc")
             val referenceText = statusObject.optString("referencia")
             val observationText = statusObject.optString("observacion_servicio")
             val serviceReceiverNameText = statusObject.optString("nom_persona_atendio")
@@ -83,7 +84,7 @@ class ServiceLoaderHelper {
                 product = statusObject.getString("sku_producto_desc"),
                 serviceDate = statusObject.getString("fecha"),
                 statusId = statusObject.optLong("estado_servicio_id"),
-                status = statusObject.getString("estado_servicio_desc"),
+                status = if (statusText == "null") "" else statusText,
                 subStatusId = statusObject.optLong("subestado_servicio_id"),
                 subStatus = statusObject.getString("subestado_servicio_desc"),
                 clientDocId = statusObject.getString("num_doc_cliente"),
