@@ -21,6 +21,7 @@ import com.upc.grupo4.atencionservicio.util.Constants
 import com.upc.grupo4.atencionservicio.util.LoadingDialog
 import com.upc.grupo4.atencionservicio.util.ServiceLoaderHelper
 import com.upc.grupo4.atencionservicio.util.VolleySingleton
+import java.time.LocalDate
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -143,6 +144,8 @@ class ServiceListFragment : Fragment() {
         LoadingDialog.show(requireContext())
 
         val serviceLoadHelper = ServiceLoaderHelper() // Your new helper
+        val fechaActual = LocalDate.now().toString()
+        Log.d("DEBUG_FECHA", "La fecha actual es: $fechaActual")
 
 
         val prefs = requireContext().getSharedPreferences("auth", Context.MODE_PRIVATE)
@@ -157,7 +160,7 @@ class ServiceListFragment : Fragment() {
             context = requireContext(),
             tag = Constants.VOLLEY_TAG,
             userId = tecnicoId.toString(),
-            date = "2025-10-14",
+            date = fechaActual,
             onResult = { services ->
                 // Hide the loading indicator
                 LoadingDialog.hide()
