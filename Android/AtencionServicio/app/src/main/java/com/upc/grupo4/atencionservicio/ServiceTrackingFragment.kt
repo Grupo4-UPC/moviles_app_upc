@@ -1,9 +1,7 @@
 package com.upc.grupo4.atencionservicio
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -21,8 +19,6 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import com.android.volley.Request
-import com.android.volley.toolbox.JsonArrayRequest
-import com.android.volley.toolbox.Volley
 import com.google.android.material.button.MaterialButton
 import com.upc.grupo4.atencionservicio.dialogs.InfoDialogFragment
 import com.upc.grupo4.atencionservicio.model.PhotoReference
@@ -32,13 +28,15 @@ import com.upc.grupo4.atencionservicio.model.StatusModel
 import com.upc.grupo4.atencionservicio.model.SubStatusModel
 import com.upc.grupo4.atencionservicio.util.Constants
 import com.upc.grupo4.atencionservicio.util.LoadingDialog
-import org.json.JSONArray
-import androidx.core.net.toUri
 import com.android.volley.DefaultRetryPolicy
-import com.android.volley.TimeoutError
 import com.upc.grupo4.atencionservicio.dialogs.ConfirmationDialogFragment
 import com.upc.grupo4.atencionservicio.util.SubStatusLoadHelper
 import com.upc.grupo4.atencionservicio.util.VolleySingleton
+import org.json.JSONObject
+import com.android.volley.toolbox.JsonObjectRequest
+import android.widget.Toast
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class ServiceTrackingFragment : Fragment() {
     private var service: ServiceModel? = null
@@ -162,7 +160,13 @@ class ServiceTrackingFragment : Fragment() {
             }
 
             btnFinishService.setOnClickListener {
+                val idPedido = service?.serviceId
+                val idEstado = spStatus.selectedItemPosition
+                val idSubestado = spSubStatus.selectedItemPosition
+
                 showConfirmSaveServiceDialog()
+
+                updateEstadoSubestado(idPedido, idEstado, idSubestado, service)
             }
     }
 
@@ -511,4 +515,54 @@ class ServiceTrackingFragment : Fragment() {
                 }
             }
     }
+
+    private fun updateEstadoSubestado(
+        idPedido: Long?,
+        idEstado: Int,
+        idSubestado: Int,
+        service: ServiceModel?
+    ) {
+        if (idPedido == null || service == null) {
+            Toast.makeText(requireContext(), "Faltan datos del pedido", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val url = "http://10.0.2.2:3000/rutas/pedidos/$idPedido"
+
+        val jsonBody = JSONObject().apply {
+            put("estado", "Completado") // Valor en duro
+            put("fecha_entrega", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+            put("id_estado", idEstado)
+            put("id_subestado", idSubestado)
+            put("observacion_servicio", service.observation ?: "")
+            put("nueva_observacion", service.newObservations ?: "")
+            put("info_adicional", service.additionalInformation ?: "")
+            put("nom_persona_atendio", service.serviceReceiverName ?: "")
+            put("num_doc_persona_atendio", service.serviceReceiverDocId ?: "")
+            put("firmado", service.isSigned ?: false) // firma dinámica
+        }
+
+        val request = JsonObjectRequest(
+            Request.Method.PUT,
+            url,
+            jsonBody,
+            { response ->
+                Toast.makeText(requireContext(), "Datos actualizados correctamente ✅", Toast.LENGTH_SHORT).show()
+                Log.d("PUT_SUCCESS", response.toString())
+            },
+            { error ->
+                Toast.makeText(requireContext(), "Error al actualizar: ${error.message}", Toast.LENGTH_SHORT).show()
+                Log.e("PUT_ERROR", error.toString())
+            }
+        ).apply {
+            tag = "PUT_ESTADO"
+            retryPolicy = DefaultRetryPolicy(10000, 0, 1f)
+        }
+
+        VolleySingleton.getInstance(requireContext()).addToRequestQueue(request)
+    }
+
+
+
+
 }
