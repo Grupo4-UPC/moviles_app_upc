@@ -74,55 +74,6 @@ class FinishedServicesFragment : Fragment() {
         rvFinishedServices.layoutManager = LinearLayoutManager(requireContext())
     }
 
-  /*  fun loadReviewServiceView(service: ServiceModel) {
-        LoadingDialog.show(requireContext(), "Cargando información...")
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            // Once the task is complete, hide the dialog
-            LoadingDialog.hide()
-
-            val intent = Intent(requireContext(), StartServiceActivity::class.java)
-            intent.putExtra(Constants.SERVICE, service)
-            startActivity(intent)
-        }, 2000)
-
-
-        //TODO: Change this call for new endpoint to gather images URL
-//        val statusLoadHelper = StatusLoadHelper()
-//
-//        statusLoadHelper.fetchStatusList(
-//            context = requireContext(),
-//            tag = Constants.VOLLEY_TAG,
-//            onResult = { statusList ->
-//                Log.d(
-//                    "FinishedServicesFragment",
-//                    "Successfully fetched ${statusList.size} statuses."
-//                )
-//
-//                LoadingDialog.hide()
-//
-//                val intent = Intent(requireContext(), StartServiceActivity::class.java)
-//                intent.putExtra(Constants.SERVICE, service)
-//                intent.putExtra(
-//                    Constants.STATUS_LIST,
-//                    statusList
-//                )
-//                startActivity(intent)
-//            },
-//            onError = { errorMessage ->
-//                LoadingDialog.hide()
-//
-//                Log.e("FinishedServicesFragment", "Failed to fetch statuses: $errorMessage")
-//
-//                val dialogMessage =
-//                    "Ocurió un error al intentar iniciar la ruta. Intente de nuevo."
-//                InfoDialogFragment.newInstance(
-//                    message = dialogMessage,
-//                ).show(parentFragmentManager, "InfoDialogFragmentTag")
-//            }
-//        )
-    } */
-
     fun updateServices(newPendingServices: List<ServiceModel>) {
         finishedServicesList.clear()
         finishedServicesList.addAll(newPendingServices)
@@ -135,73 +86,72 @@ class FinishedServicesFragment : Fragment() {
         super.onStop()
         VolleySingleton.getInstance(requireContext()).requestQueue.cancelAll(Constants.VOLLEY_TAG)
     }
+
     fun loadReviewServiceView(service: ServiceModel) {
-    LoadingDialog.show(requireContext(), "Cargando información...")
+        LoadingDialog.show(requireContext(), "Cargando información...")
 
-    val url = "http://10.0.2.2:3000/rutas/detalle/${service.serviceId}" // 
+        val url = "http://10.0.2.2:3000/rutas/detalle/${service.serviceId}" //
 
-    val jsonRequest = JsonObjectRequest(
-        Request.Method.GET,
-        url,
-        null,
-        { response ->
-            Log.d("FinishedServicesFragment", "Detalle de ruta: $response")
+        val jsonRequest = JsonObjectRequest(
+            Request.Method.GET,
+            url,
+            null,
+            { response ->
+                LoadingDialog.hide()
 
-            // Extraer el array de fotos del JSON
-            val fotosArray = response.optJSONArray("fotos")
-            val signatureArray = response.optJSONArray("firmas")
-            val photoReferences = mutableListOf<PhotoReference>()
-            val signatureList = mutableListOf<SignatureClient>()
+                Log.d("FinishedServicesFragment", "Detalle de ruta: $response")
 
-            fotosArray?.let { array ->
-                for (i in 0 until array.length()) {
-                    val url = array.getString(i)
-                    Log.d("FinishedServicesFragment", "Foto URL: $url")
-                    photoReferences.add(
-                        PhotoReference(
-                            type = PhotoType.ADDITIONAL,
-                            uri = url.toUri()
-                        )
-                    ) // Guardar las fotos en la lista
+                // Extraer el array de fotos del JSON
+                val fotosArray = response.optJSONArray("fotos")
+                val photoReferences = mutableListOf<PhotoReference>()
+
+                fotosArray?.let { array ->
+                    for (i in 0 until array.length()) {
+                        val url = array.getString(i)
+                        Log.d("FinishedServicesFragment", "Foto URL: $url")
+                        photoReferences.add(
+                            PhotoReference(
+                                type = PhotoType.ADDITIONAL,
+                                uri = url.toUri()
+                            )
+                        ) // Guardar las fotos en la lista
+                    }
                 }
-            }
+                val intent = Intent(requireContext(), StartServiceActivity::class.java)
+                intent.putExtra(Constants.SERVICE, service)
+                // Verificar si las fotos están en la lista antes de pasarlas al siguiente Intent
+                if (photoReferences.isNotEmpty()) {
 
-            signatureArray?.let { array ->
-                for (i in 0 until array.length()) {
-                    val url = array.getString(i)
-                    Log.d("FinishedServicesFragment firma", "Foto URL: $url")
-                    signatureList.add(
-                        SignatureClient(
-                            uri = url.toUri()
-                        )
-                    ) // Guardar las firmas en la lista
-                }
-            }
-            
-            val intent = Intent(requireContext(), StartServiceActivity::class.java)
-            intent.putExtra(Constants.SERVICE, service)
-            // Verificar si las fotos están en la lista antes de pasarlas al siguiente Intent
-             if (photoReferences.isNotEmpty()) {
-
-                    intent.putParcelableArrayListExtra(Constants.PHOTO_REFERENCES, ArrayList(photoReferences))
-                    intent.putParcelableArrayListExtra(Constants.SIGNATURE_CLIENT, ArrayList(signatureList))
-                    intent.putExtra(Constants.STATUS, service.status)  // Pasa el estado del servicio
+                    intent.putParcelableArrayListExtra(
+                        Constants.PHOTO_REFERENCES,
+                        ArrayList(photoReferences)
+                    )
+                    intent.putExtra(
+                        Constants.STATUS,
+                        service.status
+                    )  // Pasa el estado del servicio
                     intent.putExtra(Constants.SUB_STATUS, service.subStatus)  // Pasa el subestado
-                    intent.putExtra(Constants.SERVICE_DESCRIPTION, service.serviceDescription)  // Pasa la descripción del servicio
+                    intent.putExtra(
+                        Constants.SERVICE_DESCRIPTION,
+                        service.serviceDescription
+                    )  // Pasa la descripción del servicio
                     startActivity(intent)  // Inicia la actividad de vista de fotos
                 }
 
-        },
-        { error ->
-            Log.e("FinishedServicesFragment", "Error al obtener detalle: ${error.message}")
-            InfoDialogFragment.newInstance(
-                message = "Ocurrió un error al cargar la información. Intente de nuevo."
-            ).show(parentFragmentManager, "InfoDialogFragmentTag")
-        }
-    )
+            },
+            { error ->
+                LoadingDialog.hide()
 
-com.android.volley.toolbox.Volley.newRequestQueue(requireContext()).add(jsonRequest)
-}
+                Log.e("FinishedServicesFragment", "Error al obtener detalle: ${error.message}")
+                InfoDialogFragment.newInstance(
+                    message = "Ocurrió un error al cargar la información. Intente de nuevo."
+                ).show(parentFragmentManager, "InfoDialogFragmentTag")
+            }
+        )
+
+        com.android.volley.toolbox.Volley.newRequestQueue(requireContext()).add(jsonRequest)
+    }
+
     companion object {
         fun newInstance(finishedServicesList: List<ServiceModel>) =
             PendingServicesFragment().apply {
