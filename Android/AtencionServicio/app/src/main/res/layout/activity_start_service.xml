@@ -45,7 +45,8 @@
             android:layout_width="162dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/tracking" />
+            android:text="@string/tracking"
+            app:cornerRadius="0dp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_information"
@@ -54,7 +55,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_weight="1"
-            android:text="@string/information" />
+            android:text="@string/information"
+            app:cornerRadius="0dp" />
 
     </LinearLayout>
 

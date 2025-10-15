@@ -1,6 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.AtencionServicio" parent="Theme.Material3.DayNight.NoActionBar">        <!-- Primary brand color. -->
+    <style name="Theme.AtencionServicio" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
         <item name="colorPrimary">@color/blue_500</item>
         <item name="colorPrimaryVariant">@color/blue_500</item>
         <item name="colorOnPrimary">@color/white</item>
@@ -11,7 +12,57 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">@color/white</item>
         <!-- Customize your theme here. -->
-        <item name="android:windowLightStatusBar">true</item> <!-- true for light status bar (dark icons) -->
+        <item name="android:windowLightStatusBar">true</item>
         <item name="android:windowBackground">@color/white</item>
+
+        <!-- ESQUINAS CUADRADAS GLOBALES PARA MATERIAL3 -->
+        <!-- Botones con esquinas cuadradas -->
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.App.SmallComponent</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.App.MediumComponent</item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.App.LargeComponent</item>
+
+        <!-- Cards con esquinas cuadradas -->
+        <item name="materialCardViewStyle">@style/Widget.App.CardView</item>
+
+        <!-- Botones con esquinas cuadradas -->
+        <item name="materialButtonStyle">@style/Widget.App.Button</item>
+    </style>
+
+    <!-- Esquinas cuadradas para componentes pequeños (botones) -->
+    <style name="ShapeAppearance.App.SmallComponent" parent="ShapeAppearance.Material3.SmallComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">0dp</item>
+    </style>
+
+    <!-- Esquinas cuadradas para componentes medianos -->
+    <style name="ShapeAppearance.App.MediumComponent" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">0dp</item>
+    </style>
+
+    <!-- Esquinas cuadradas para componentes grandes -->
+    <style name="ShapeAppearance.App.LargeComponent" parent="ShapeAppearance.Material3.LargeComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">0dp</item>
+    </style>
+
+    <!-- Cards con esquinas cuadradas -->
+    <style name="Widget.App.CardView" parent="Widget.Material3.CardView.Elevated">
+        <item name="shapeAppearance">@style/ShapeAppearance.App.Card</item>
+    </style>
+
+    <style name="ShapeAppearance.App.Card" parent="ShapeAppearance.Material3.Corner.None">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">0dp</item>
+    </style>
+
+    <!-- Botones con esquinas cuadradas -->
+    <style name="Widget.App.Button" parent="Widget.Material3.Button">
+        <item name="shapeAppearance">@style/ShapeAppearance.App.Button</item>
+    </style>
+
+    <style name="ShapeAppearance.App.Button" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">0dp</item>
     </style>
 </resources>

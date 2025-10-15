@@ -9,33 +9,43 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
+        android:layout_marginEnd="16dp"
         android:gravity="center"
         android:orientation="horizontal">
 
         <com.google.android.material.button.MaterialButtonToggleGroup
             android:id="@+id/toggleButtonGroup"
             style="@style/MySegmentedButtonToggleGroup"
-            app:shapeAppearanceOverlay="@style/MyRoundedShapeAppearance">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:singleSelection="true"
+            app:selectionRequired="true">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnToStart"
                 style="@style/MySegmentedButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="Por iniciar: 1"
                 android:textColor="@color/toggle_button_text_color_selector"
                 app:backgroundTint="@color/toggle_button_background_color_selector"
+                app:cornerRadius="0dp"
                 app:strokeColor="@color/toggle_button_stroke_color_selector" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnEnded"
                 style="@style/MySegmentedButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="Finalizados: 0"
                 android:textColor="@color/toggle_button_text_color_selector"
                 app:backgroundTint="@color/toggle_button_background_color_selector"
+                app:cornerRadius="0dp"
                 app:strokeColor="@color/toggle_button_stroke_color_selector" />
-
         </com.google.android.material.button.MaterialButtonToggleGroup>
     </LinearLayout>
 
@@ -43,6 +53,5 @@
         android:id="@+id/fragment_service_list_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="70dp"
-        android:gravity="center" />
+        android:layout_marginTop="70dp" />
 </FrameLayout>

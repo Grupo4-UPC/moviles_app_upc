@@ -83,6 +83,10 @@ class ConfirmationDialogFragment : DialogFragment() {
 
     override fun onStart() {
         super.onStart()
+
+        // Hacer el fondo transparente para mostrar las esquinas redondeadas
+        dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
         dialog?.window?.setLayout(
             (resources.displayMetrics.widthPixels * 0.85).toInt(),
             ViewGroup.LayoutParams.WRAP_CONTENT

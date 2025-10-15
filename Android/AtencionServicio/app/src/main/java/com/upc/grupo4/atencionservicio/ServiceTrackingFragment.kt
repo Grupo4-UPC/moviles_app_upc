@@ -14,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.TextView
@@ -23,7 +24,7 @@ import androidx.core.content.ContextCompat
 import com.android.volley.Request
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.Volley
-import com.google.android.material.button.MaterialButton
+// import com.google.android.material.button.MaterialButton
 import com.upc.grupo4.atencionservicio.dialogs.InfoDialogFragment
 import com.upc.grupo4.atencionservicio.model.PhotoReference
 import com.upc.grupo4.atencionservicio.model.PhotoType
@@ -46,9 +47,9 @@ class ServiceTrackingFragment : Fragment() {
 
     private lateinit var spStatus: Spinner
     private lateinit var spSubStatus: Spinner
-    private lateinit var btnTakePictures: MaterialButton
-    private lateinit var btnEnterRequirements: MaterialButton
-    private lateinit var btnFinishService: MaterialButton
+    private lateinit var btnTakePictures: Button
+    private lateinit var btnEnterRequirements: Button
+    private lateinit var btnFinishService: Button
     private lateinit var ivServiceIcon: ImageView
     private lateinit var ivPhotoIcon: ImageView
     private lateinit var ivRegisterIcon: ImageView
@@ -86,7 +87,7 @@ class ServiceTrackingFragment : Fragment() {
                 if (photoRefs != null && photoRefs.isNotEmpty()) {
                     receivedPhotoReferences = photoRefs
                     updatePhotoIconColor(R.color.blue_400)
-                    updateTakePhotoButtonColor(R.color.blue_400)
+                    // updateTakePhotoButtonColor(R.color.blue_400) // COMENTADO: mantiene el drawable con esquinas redondeadas
                 } else {
                     Log.d(
                         "ServiceTrackingFragment",
@@ -111,7 +112,7 @@ class ServiceTrackingFragment : Fragment() {
                 if (returnedInfo != null) {
                     service = returnedInfo
                     updateRegisterIconColor(R.color.blue_400)
-                    updateRegisterButtonColor(R.color.blue_400)
+                    // updateRegisterButtonColor(R.color.blue_400) // COMENTADO: mantiene el drawable con esquinas redondeadas
                     btnFinishService.isEnabled = true
                 } else {
                     Log.d("ServiceTrackingFragment", "No service information returned.")
@@ -150,27 +151,28 @@ class ServiceTrackingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-            loadStatusSpinner()
-            loadSubStatusSpinner()
+        loadStatusSpinner()
+        loadSubStatusSpinner()
 
-            btnTakePictures.setOnClickListener {
-                launchRegisterPhotosActivity()
-            }
+        btnTakePictures.setOnClickListener {
+            launchRegisterPhotosActivity()
+        }
 
-            btnEnterRequirements.setOnClickListener {
-                launchEnterRequirementsActivity()
-            }
+        btnEnterRequirements.setOnClickListener {
+            launchEnterRequirementsActivity()
+        }
 
-            btnFinishService.setOnClickListener {
-                showConfirmSaveServiceDialog()
-            }
+        btnFinishService.setOnClickListener {
+            showConfirmSaveServiceDialog()
+        }
     }
 
     private fun loadStatusSpinner(serviceStatus: String? = null, subStatusValue: String? = null) {
         val actualStatusOptions: ArrayList<String> = ArrayList();
         actualStatusOptions.add(getString(R.string.sp_status_default_value))
 
-        statusList?.forEach { status ->
+        // MODIFICADO: Solo toma los primeros 2 elementos para tener 3 opciones totales
+        statusList?.take(2)?.forEach { status ->
             actualStatusOptions.add(status.statusDescription)
         }
 
@@ -481,19 +483,9 @@ class ServiceTrackingFragment : Fragment() {
         ivPhotoIcon.setColorFilter(color)
     }
 
-    private fun updateTakePhotoButtonColor(colorResId: Int) {
-        val color = ContextCompat.getColor(requireContext(), colorResId)
-        btnTakePictures.setBackgroundColor(color)
-    }
-
     private fun updateRegisterIconColor(colorResId: Int) {
         val color = ContextCompat.getColor(requireContext(), colorResId)
         ivRegisterIcon.setColorFilter(color)
-    }
-
-    private fun updateRegisterButtonColor(colorResId: Int) {
-        val color = ContextCompat.getColor(requireContext(), colorResId)
-        btnEnterRequirements.setBackgroundColor(color)
     }
 
     override fun onStop() {

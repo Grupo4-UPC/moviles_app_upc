@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@drawable/dialog_rounded_background">
+
+    <!-- Icono de advertencia -->
+    <ImageView
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_gravity="center"
+        android:src="@drawable/ic_error"
+        android:contentDescription="@string/error_icon"
+        app:tint="#EF5350"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Título -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/auth_error_title"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Mensaje -->
+    <TextView
+        android:id="@+id/tv_error_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/wrong_credentials"
+        android:textSize="16sp"
+        android:textColor="@color/grey_text_color"
+        android:gravity="center"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Intentos restantes -->
+    <TextView
+        android:id="@+id/tv_attempts_remaining"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/attempts_remaining"
+        android:textSize="14sp"
+        android:textColor="#EF5350"
+        android:textStyle="bold"
+        android:layout_marginBottom="24dp" />
+
+    <!-- Botón Aceptar -->
+    <Button
+        android:id="@+id/btn_accept"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/accept"
+        android:textColor="@color/white"
+        android:backgroundTint="@color/blue_500"
+        android:textAllCaps="false"
+        android:textSize="16sp" />
+
+</LinearLayout>

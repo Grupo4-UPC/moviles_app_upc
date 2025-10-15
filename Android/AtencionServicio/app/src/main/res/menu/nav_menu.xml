@@ -6,9 +6,15 @@
     <group android:checkableBehavior="single">
         <item android:id="@+id/nav_more_services"
             android:icon="@drawable/ic_location"
-            android:title="@string/get_more_services" />
+            android:title="Obtener más servicios" />
+
+        <item android:id="@+id/nav_foto_check"
+            android:icon="@drawable/ic_camera"
+            android:title="Foto Check" />
+
         <item android:id="@+id/nav_logout"
             android:icon="@drawable/ic_logout"
-            android:title="@string/logout"/>
+            android:title="Cerrar Sesión"/>
     </group>
+
 </menu>

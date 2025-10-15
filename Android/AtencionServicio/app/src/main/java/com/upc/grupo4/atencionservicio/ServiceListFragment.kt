@@ -86,6 +86,9 @@ class ServiceListFragment : Fragment() {
         )
         updateButtonText(btnEnded, getString(R.string.services_finished), finishedServicesList.size)
 
+        // ✅ Selecciona el botón "Por iniciar" por defecto
+        toggleButtonGroup.check(R.id.btnToStart)
+
         actualFragmentManager = requireActivity().supportFragmentManager
         loadPendingServices()
 

@@ -19,7 +19,18 @@
             android:layout_height="match_parent"
             android:background="@drawable/oval_avatar_background" />
 
-        <!-- Ícono agregar -->
+        <!-- ImageView para la foto de perfil (SIN imagen por defecto) -->
+        <ImageView
+            android:id="@+id/ivProfilePhoto"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:contentDescription="Foto de perfil"
+            android:background="@drawable/rounded_profile_image"
+            android:clipToOutline="true"
+            android:src="@drawable/foto_perfil" />
+
+        <!-- Botón agregar -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btnAdd"
             android:layout_width="32dp"

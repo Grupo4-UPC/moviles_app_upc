@@ -40,10 +40,13 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
+
+    // Dependencia explícita de Material Design para asegurar compatibilidad
+    implementation("com.google.android.material:material:1.11.0")
+
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation("io.coil-kt:coil:2.6.0")

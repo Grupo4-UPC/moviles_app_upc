@@ -68,6 +68,13 @@
     <string name="view_photos">Visualizar Fotos</string>
     <string name="client_signature">Firma capturada</string>
 
+    <!-- Nuevos strings para el diálogo de error de login -->
+    <string name="error_icon">Icono de error</string>
+    <string name="auth_error_title">Error de autenticación</string>
+    <string name="wrong_credentials">Usuario o contraseña incorrectos</string>
+    <string name="attempts_remaining">Intentos restantes: %1$d</string>
+    <string name="accept">Aceptar</string>
+
     <string-array name="status_options">
         <item>Seleccionar Estado</item>
         <item>Realizado</item>
