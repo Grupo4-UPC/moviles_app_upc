@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat
 import com.google.android.material.button.MaterialButton
 import com.upc.grupo4.atencionservicio.model.PhotoReference
 import com.upc.grupo4.atencionservicio.model.ServiceModel
+import com.upc.grupo4.atencionservicio.model.SignatureClient
 import com.upc.grupo4.atencionservicio.model.StatusModel
 import com.upc.grupo4.atencionservicio.util.Constants
 
@@ -21,6 +22,7 @@ class StartServiceActivity : AppCompatActivity() {
     private lateinit var contentContainer: FrameLayout
     private lateinit var toolbar: Toolbar
     private var photoReferences: ArrayList<PhotoReference>? = null
+    private var signatureList: ArrayList<SignatureClient>? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -30,7 +32,7 @@ class StartServiceActivity : AppCompatActivity() {
         // Obtener los datos del Intent
         val service: ServiceModel? = intent.getParcelableExtra(Constants.SERVICE)
         photoReferences = intent.getParcelableArrayListExtra(Constants.PHOTO_REFERENCES)
-
+        signatureList = intent.getParcelableArrayListExtra(Constants.SIGNATURE_CLIENT)
         val statusList: ArrayList<StatusModel>? = intent.getParcelableArrayListExtra(Constants.STATUS_LIST)
 
         // Configuración de la barra de herramientas
@@ -54,7 +56,9 @@ class StartServiceActivity : AppCompatActivity() {
             val fragment = ServiceTrackingViewFragment.newInstance(service)
             val bundle = Bundle()
             bundle.putParcelableArrayList(Constants.PHOTO_REFERENCES, photoReferences)
+            bundle.putParcelableArrayList(Constants.SIGNATURE_CLIENT, signatureList)
             Log.d("StartServiceActivity", "Passing photos: ${photoReferences?.size}")
+            Log.d("StartServiceActivity", "Passing signatures: ${signatureList?.size}")
 
             fragment.arguments = bundle
 
@@ -97,7 +101,7 @@ class StartServiceActivity : AppCompatActivity() {
             1 -> {
                 styleButtonAsFilled(btnTracking)
                 styleButtonAsOutlined(btnInformation)
-                displayServiceTrackingFragment(service, statusList, photoReferences )
+                displayServiceTrackingFragment(service, statusList, photoReferences,signatureList )
             }
 
             2 -> {
@@ -127,7 +131,8 @@ class StartServiceActivity : AppCompatActivity() {
     private fun displayServiceTrackingFragment(
         service: ServiceModel?,
         statusList: ArrayList<StatusModel>?,
-        photoReferences: ArrayList<PhotoReference>?
+        photoReferences: ArrayList<PhotoReference>?,
+        signatureClient: ArrayList<SignatureClient>?
     ) {
         Log.d("StartServiceActivity", "Estado del servicio: ${service?.status}")
         if (service?.status == "" || service?.status == null) {
@@ -146,6 +151,7 @@ class StartServiceActivity : AppCompatActivity() {
                 arguments = Bundle().apply {
                     putParcelable(Constants.SERVICE, service)
                      putParcelableArrayList(Constants.PHOTO_REFERENCES, photoReferences)
+                    putParcelableArrayList(Constants.SIGNATURE_CLIENT, signatureClient)
                 }
             }
 
