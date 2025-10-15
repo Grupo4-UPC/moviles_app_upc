@@ -16,7 +16,6 @@ class WelcomeActivity : AppCompatActivity() {
         setContentView(R.layout.activity_welcome)
 
         val tvNombre = findViewById<TextView>(R.id.tvNombre)
-        val tvCantidadServicios = findViewById<TextView>(R.id.tvCantidadServicios)
         val btnBuscarItinerario = findViewById<Button>(R.id.btn_search_itinerary)
 
         val prefs = getSharedPreferences("auth", MODE_PRIVATE)
@@ -26,7 +25,6 @@ class WelcomeActivity : AppCompatActivity() {
         val menu = prefs.getString("menu", "[]")
 
         tvNombre.text = nombre
-        tvCantidadServicios.text = ""
 
         btnBuscarItinerario.setOnClickListener {
             startActivity(Intent(this, MenuActivity::class.java))
