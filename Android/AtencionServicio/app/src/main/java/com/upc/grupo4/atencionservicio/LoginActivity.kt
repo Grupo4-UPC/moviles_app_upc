@@ -39,14 +39,10 @@ class LoginActivity : AppCompatActivity() {
 
             loginUser(email, password)
         }
-
-        binding.btnForgot.setOnClickListener {
-            startActivity(Intent(this, ForgotPasswordActivity::class.java))
-        }
     }
 
     private fun loginUser(email: String, password: String) {
-        val url = "http://10.0.2.2:3001/api/v1/solicitudes-tributarias/auth"
+        val url = "http://10.0.2.2:3001/api/v1/auth"
         val params = JSONObject().apply {
             put("user", email)
             put("password", password)
