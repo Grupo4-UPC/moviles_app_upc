@@ -56,6 +56,9 @@ class MenuActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
+            R.id.nav_more_services -> {
+                replaceFragment(ServiceListFragment())
+            }
             R.id.nav_logout -> {
                 val intent = Intent(this, LoginActivity::class.java)
                 startActivity(intent)

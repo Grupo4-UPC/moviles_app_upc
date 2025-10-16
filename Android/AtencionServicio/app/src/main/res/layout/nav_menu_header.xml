@@ -20,18 +20,6 @@
             android:background="@drawable/oval_avatar_background" />
 
         <!-- Ícono agregar -->
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btnAdd"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:scaleType="center"
-            android:src="@drawable/ic_add"
-            app:backgroundTint="@color/blue_500"
-            app:borderWidth="0dp"
-            app:fabCustomSize="32dp"
-            app:tint="@android:color/white" />
     </RelativeLayout>
 
     <TextView
